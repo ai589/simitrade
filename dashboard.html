@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NYSE 1-Week Swing Screener</title>
+<style>
+  :root {
+    --bg: #0e1117; --panel: #161b24; --panel2: #1c2330; --border: #29313f;
+    --text: #dde3ec; --dim: #8b94a5; --accent: #4da3ff; --green: #34d178;
+    --red: #f0616d; --amber: #e8b13f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font: 14px/1.5 "Segoe UI", system-ui, sans-serif; padding: 24px; }
+  h1 { font-size: 22px; font-weight: 600; }
+  h2 { font-size: 15px; font-weight: 600; margin: 26px 0 10px; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
+  .sub { color: var(--dim); margin-top: 4px; font-size: 13px; }
+  .topbar { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+  .stats { display: flex; gap: 12px; flex-wrap: wrap; }
+  .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; min-width: 130px; }
+  .stat .v { font-size: 20px; font-weight: 700; }
+  .stat .l { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .05em; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; position: relative; }
+  .card .rank { position: absolute; top: 10px; right: 12px; color: var(--dim); font-size: 12px; }
+  .card .sym { font-size: 18px; font-weight: 700; }
+  .card .nm { color: var(--dim); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .scorebar { height: 6px; background: var(--panel2); border-radius: 3px; margin: 10px 0 8px; overflow: hidden; }
+  .scorebar i { display: block; height: 100%; background: linear-gradient(90deg, #2f81f7, #34d178); }
+  .lv { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-top: 8px; font-size: 12px; }
+  .lv div span { display: block; color: var(--dim); font-size: 10px; text-transform: uppercase; }
+  .green { color: var(--green); } .red { color: var(--red); } .amber { color: var(--amber); }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  select, input[type=number], input[type=text] {
+    background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 10px; font-size: 13px; outline: none;
+  }
+  input[type=number] { width: 110px; }
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  thead th { background: var(--panel2); color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: .04em;
+    padding: 9px 10px; text-align: right; cursor: pointer; user-select: none; white-space: nowrap; position: sticky; top: 0; }
+  thead th:first-child, thead th:nth-child(2) { text-align: left; }
+  tbody td { padding: 8px 10px; border-top: 1px solid var(--border); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tbody td:first-child, tbody td:nth-child(2) { text-align: left; }
+  tbody tr:hover { background: #1a2130; }
+  .tag { font-size: 10px; padding: 2px 7px; border-radius: 20px; border: 1px solid var(--border); color: var(--dim); }
+  .tag.hot { color: var(--amber); border-color: var(--amber); }
+  .sb { display: inline-block; width: 54px; height: 6px; background: var(--panel2); border-radius: 3px; vertical-align: middle; margin-right: 6px; overflow: hidden; }
+  .sb i { display: block; height: 100%; background: linear-gradient(90deg, #2f81f7, #34d178); }
+  .disclaimer { margin-top: 28px; padding: 12px 16px; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--dim); font-size: 12px; }
+  .howto { color: var(--dim); font-size: 12.5px; margin: 6px 0 0; }
+  canvas.spark { vertical-align: middle; }
+  .sortind { color: var(--accent); }
+  .zbtn { background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+  .zbtn:hover, .zbtn.active { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>NYSE 1-Week Swing Screener</h1>
+    <div class="sub" id="genInfo"></div>
+    <div class="howto">Auto-refreshes daily at 8:00 AM (scheduled task "NYSE Screener Refresh") — just reload this page. Manual refresh: double-click <b>refresh.bat</b>.</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="v" id="stBreadth"></div><div class="l">% above 20-day MA</div></div>
+    <div class="stat"><div class="v" id="stAvg5"></div><div class="l">Avg 5-day return</div></div>
+    <div class="stat"><div class="v" id="stCount"></div><div class="l">NYSE names screened</div></div>
+    <div class="stat"><div class="v" id="stRegime"></div><div class="l">Market regime</div></div>
+  </div>
+</div>
+
+<h2>Backtested strategies — live picks</h2>
+<div id="regimeBanner" class="disclaimer" style="margin:0 0 12px"></div>
+<div class="cards" id="strats" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr))"></div>
+
+<details style="margin-top:12px">
+  <summary style="cursor:pointer;color:var(--accent);font-size:13px;font-weight:600">How stocks are picked — full methodology</summary>
+  <div class="disclaimer" style="margin-top:8px">
+    <b>Every strategy runs the same pipeline; only step 3 differs.</b><br><br>
+    <b>1. Universe.</b> ~135 large, liquid NYSE-listed names across 7 sectors. Non-NYSE listings are
+    dropped automatically; every name must trade ≥ $50M/day (20-day average dollar volume) so entries
+    and exits don't move the price.<br><br>
+    <b>2. Common filters.</b> Names reporting earnings within the hold window (7 days for weekly,
+    14 for the 14-day strategy) are excluded — overnight earnings gaps can jump straight past a stop.
+    Regime-gated strategies additionally require SPY above its 50-day MA (below it for shorts).<br><br>
+    <b>3. Selection rule per strategy.</b>
+    <ul style="margin:6px 0 6px 18px">
+      <li><b>Momentum Top-10 / Top-5 / 14-day:</b> keep names in an uptrend (price &gt; 20-day MA &gt; 50-day MA)
+        that aren't overbought (RSI-14 ≤ 75), rank by combined 20-day + 60-day return, take the top N.</li>
+      <li><b>Low-vol trend:</b> same uptrend requirement, but take the 5 <i>quietest</i> names (lowest 20-day
+        volatility) — trend with the least drama.</li>
+      <li><b>Sector-neutral momentum:</b> the single highest-momentum name from each sector (~7 picks) —
+        momentum's returns with forced diversification.</li>
+      <li><b>Weekly dip:</b> among uptrend names, the 5 with the <i>worst</i> return over the last 5 days —
+        buying the routine pullback inside a healthy trend.</li>
+      <li><b>Value, deep drawdown:</b> the 5 names furthest below their own 52-week high — cheapest vs their
+        own history, no trend filter (the liquid large-cap universe is the safety net).</li>
+      <li><b>Value, below 200-day MA:</b> names below their 200-day average that have reclaimed their 20-day
+        average — cheap, but already bouncing; ranked cheapest first.</li>
+      <li><b>Shorts (bear regime only):</b> among downtrend names (price &lt; 50-day MA), short either the most
+        overbought 3-day bounce or the sharpest 5-day spike — betting the rally within a downtrend fails.
+        Backtests lost money; kept only as prepared bear-market tools.</li>
+    </ul>
+    <b>4. Levels.</b> Stop = entry − 1.5×ATR(14), target = entry + 2×ATR (weekly);
+    2×/3× ATR for the 14-day hold; inverted for shorts. ATR scales the levels to each stock's own volatility.<br><br>
+    <b>5. Sizing.</b> Shares = (account × risk%) ÷ stop distance, capped at 20% of account per position
+    and budget ÷ basket size if a budget is set.<br><br>
+    <b>6. Exit.</b> Stop hit → out; target hit → out; otherwise sell at the close on the sell-by date.
+    Every pick is also paper-logged automatically and scored against real prices — see the paper-trade record.
+  </div>
+</details>
+
+<h2>10-year backtest — growth of $10,000</h2>
+<div class="card" style="padding:16px" id="curveWrap">
+  <div class="controls" style="margin-bottom:10px">
+    <button class="zbtn" data-z="all">All 10y</button>
+    <button class="zbtn" data-z="2016-07-01,2020-01-01">2016–19</button>
+    <button class="zbtn" data-z="2020-01-01,2021-01-01">COVID 2020</button>
+    <button class="zbtn" data-z="2022-01-01,2023-01-01">2022 bear</button>
+    <button class="zbtn" data-z="last3">Last 3y</button>
+    <button class="zbtn" data-z="last1">Last 1y</button>
+    <label class="sub">From <input type="date" id="zoomFrom"></label>
+    <label class="sub">To <input type="date" id="zoomTo"></label>
+  </div>
+  <canvas id="curveChart" style="width:100%"></canvas>
+  <div class="sub" id="curveLegend" style="margin-top:8px"></div>
+</div>
+
+<h2>Paper-trade record</h2>
+<div class="sub" style="margin-bottom:10px">Every refresh logs the strategy picks above, then scores them against actual prices once the week completes (stop → target → 5-day exit). SPY is logged alongside as the benchmark. This builds the live track record to compare against the backtest before you commit real money.</div>
+<div class="cards" id="paper" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr))"></div>
+
+<h2>Top setups for the week</h2>
+<div class="cards" id="cards"></div>
+
+<h2>Position sizing</h2>
+<div class="controls">
+  <label>Account size $ <input type="number" id="acct" value="100000" step="1000"></label>
+  <label>Risk per trade % <input type="number" id="riskPct" value="1" step="0.25" min="0.1"></label>
+  <label>Trading budget $ <input type="number" id="budget" placeholder="no cap" step="1000" min="0"></label>
+  <span class="sub" id="riskNote"></span>
+</div>
+
+<h2>Full screen</h2>
+<div class="controls">
+  <input type="text" id="search" placeholder="Search symbol…" style="width:150px">
+  <select id="sector"><option value="">All sectors</option></select>
+  <select id="view">
+    <option value="all">All names</option>
+    <option value="top">Score ≥ 60 only</option>
+    <option value="cool">Exclude overbought (RSI > 75)</option>
+  </select>
+</div>
+<div style="overflow-x:auto">
+<table id="tbl">
+  <thead><tr>
+    <th data-k="sym">Sym</th><th data-k="sector">Sector</th><th data-k="score">Score</th>
+    <th>60d chart</th><th data-k="px">Last</th>
+    <th data-k="ret5">5d %</th><th data-k="ret20">20d %</th><th data-k="ret60">60d %</th>
+    <th data-k="rsi">RSI</th><th data-k="distHi20">vs 20d Hi</th><th data-k="volRatio">Vol 5/20</th>
+    <th data-k="atrPct">ATR %</th><th data-k="entry">Entry</th><th data-k="stop">Stop</th>
+    <th data-k="target">Target</th><th data-k="shares">Shares</th><th data-k="dvol">$Vol M</th>
+    <th data-k="earnDays">Earnings</th>
+  </tr></thead>
+  <tbody id="tbody"></tbody>
+</table>
+</div>
+
+<div class="disclaimer">
+  <b>How to read this:</b> Score (0–100) blends medium-term momentum (30), trend alignment vs 20/50-day MAs (20),
+  RSI positioning (20), proximity to the 20-day high (15) and volume confirmation (15) — a continuation setup
+  profile for a ~5-trading-day hold. Stop = entry − 1.5×ATR(14); Target = entry + 2×ATR(14) (≈1.33 R:R).
+  Shares = (account × risk%) ÷ (entry − stop), capped at 20% of account per position and, if a
+  trading budget is set, at budget ÷ basket size per name (basket = that strategy's pick count; 5 assumed elsewhere). Names with RSI &gt; 75 are flagged <span class="tag hot">overheated</span> —
+  short-term mean-reversion risk.
+  <br><br><b>Disclaimer:</b> This is a quantitative screen of past price action, not investment advice. Momentum
+  signals do not guarantee future returns, and a 1-week horizon is dominated by noise and news (earnings, macro).
+  Check the earnings calendar before entering any position, use the stops, and never risk money you cannot afford to lose.
+</div>
+
+<script src="data.js"></script>
+<script>
+let D = window.SCREEN_DATA;
+let rows = D.rows;
+let bySym = {};
+
+function renderFreshness() {
+  const gen = new Date(D.generated.replace(' ', 'T'));
+  const hrs = Math.max(0, (Date.now() - gen.getTime()) / 3600000);
+  const age = hrs < 1 ? `${Math.round(hrs * 60)} min ago`
+    : hrs < 48 ? `${Math.round(hrs * 10) / 10} h ago`
+    : `${Math.round(hrs / 24)} days ago`;
+  const state = hrs < 20 ? ['fresh', 'green'] : hrs < 48 ? ['ageing', 'amber'] : ['STALE', 'red'];
+  document.getElementById('genInfo').innerHTML =
+    `Data pulled <b>${D.generated}</b> (${age}) <span class="tag ${state[1] === 'green' ? '' : 'hot'}" style="color:var(--${state[1]});border-color:var(--${state[1]})">${state[0]}</span>
+     · ${D.asOfNote} · long-side continuation screen, ~5 trading day horizon`;
+}
+renderFreshness();
+setInterval(renderFreshness, 60000);
+
+// Auto-refresh when screener.py finishes writing new data (works from file:// too,
+// since <script> tags are not blocked like fetch is). Re-renders in place — a
+// location.reload() would re-read the cached data.js and loop forever.
+function checkForNewData() {
+  const s = document.createElement('script');
+  s.src = 'data.js?v=' + Date.now();
+  s.onload = () => {
+    if (window.SCREEN_DATA.generated !== D.generated) {
+      D = window.SCREEN_DATA;
+      applyData();
+    }
+    s.remove();
+  };
+  s.onerror = () => s.remove();
+  document.body.appendChild(s);
+}
+setInterval(checkForNewData, 15000);
+// (Re)render everything from the current D — used on load and when new data lands.
+function applyData() {
+  rows = D.rows;
+  bySym = Object.fromEntries(rows.map(r => [r.sym, r]));
+  renderFreshness();
+  document.getElementById('stBreadth').textContent = D.breadth20 + '%';
+  document.getElementById('stAvg5').textContent = (D.avgRet5 > 0 ? '+' : '') + D.avgRet5 + '%';
+  document.getElementById('stAvg5').className = 'v ' + (D.avgRet5 >= 0 ? 'green' : 'red');
+  document.getElementById('stCount').textContent = D.count;
+  const regime = D.breadth20 >= 65 ? ['Risk-on', 'green'] : D.breadth20 >= 45 ? ['Mixed', 'amber'] : ['Risk-off', 'red'];
+  const rg = document.getElementById('stRegime');
+  rg.textContent = regime[0]; rg.className = 'v ' + regime[1];
+  const sel = document.getElementById('sector');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All sectors</option>';
+  [...new Set(rows.map(r => r.sector))].sort().forEach(s => {
+    const o = document.createElement('option'); o.value = s; o.textContent = s;
+    sel.appendChild(o);
+  });
+  sel.value = cur;
+  renderRisk(); renderStrategies(); renderCurves(); renderPaper(); renderCards(); renderTable();
+}
+
+function fmt(n, dp = 2) { return n.toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp }); }
+function pct(n) { return (n > 0 ? '+' : '') + fmt(n) + '%'; }
+function cls(n) { return n > 0 ? 'green' : n < 0 ? 'red' : ''; }
+
+function spark(cv, data, w = 110, h = 30) {
+  cv.width = w * 2; cv.height = h * 2; cv.style.width = w + 'px'; cv.style.height = h + 'px';
+  const x = cv.getContext('2d'); x.scale(2, 2);
+  const mn = Math.min(...data), mx = Math.max(...data), rg = mx - mn || 1;
+  x.beginPath();
+  data.forEach((v, i) => {
+    const px = i / (data.length - 1) * (w - 2) + 1, py = h - 2 - (v - mn) / rg * (h - 4);
+    i ? x.lineTo(px, py) : x.moveTo(px, py);
+  });
+  const up = data[data.length - 1] >= data[0];
+  x.strokeStyle = up ? '#34d178' : '#f0616d'; x.lineWidth = 1.4; x.stroke();
+}
+
+function shares(r, basketSize = 5, stopPx) {
+  const acct = +document.getElementById('acct').value || 0;
+  const rp = +document.getElementById('riskPct').value || 0;
+  const budget = +document.getElementById('budget').value || 0;
+  const riskDollar = acct * rp / 100;
+  const perShare = Math.abs(r.entry - (stopPx != null ? stopPx : r.stop));
+  if (perShare <= 0) return 0;
+  let s = Math.floor(riskDollar / perShare);
+  // cap position at 20% of account
+  s = Math.min(s, Math.floor(acct * 0.20 / r.entry));
+  // cap by budget, split equally across the basket
+  if (budget > 0) s = Math.min(s, Math.floor(budget / basketSize / r.entry));
+  return s;
+}
+
+// Per-strategy stop/target: ATR multiples vary by hold period (1.5/2.0 for 5-day,
+// 2.0/3.0 for 14-day). Falls back to the precomputed row levels.
+function levels(r, st) {
+  const sm = st.stopMult || 1.5, tm = st.targetMult || 2.0;
+  if (!r.atr) return { stop: r.stop, target: r.target };
+  return st.side === 'short'
+    ? { stop: r.entry + sm * r.atr, target: r.entry - tm * r.atr }
+    : { stop: r.entry - sm * r.atr, target: r.entry + tm * r.atr };
+}
+
+function renderStrategies() {
+  const banner = document.getElementById('regimeBanner');
+  if (D.regimeOn === false) {
+    banner.innerHTML = `<b class="red">Regime OFF:</b> SPY ($${fmt(D.spyPx)}) is below its 50-day MA ($${fmt(D.spySma50)}).
+      Regime-gated strategies are in <b>cash</b> this week — historically, skipping these weeks cut drawdowns roughly in half.`;
+  } else {
+    banner.innerHTML = `<b class="green">Regime ON:</b> SPY ($${fmt(D.spyPx)}) is above its 50-day MA ($${fmt(D.spySma50)}) — strategies are active.
+      <span class="sub">Backtest verdict (5y, weekly, costs included): these are the best of 15 rule sets tested, but <b>none beat simply holding SPY</b> (+${D.spyStats ? fmt(D.spyStats.total,1) : '—'}% total, Sharpe ${D.spyStats ? D.spyStats.sharpe : '—'}). Trade them as a satellite around a core holding, not as the whole portfolio.</span>`;
+  }
+  const el = document.getElementById('strats'); el.innerHTML = '';
+  (D.strategies || []).forEach(st => {
+    const c = document.createElement('div'); c.className = 'card';
+    const s = st.stats;
+    const statHtml = s ? `
+      <div class="lv" style="grid-template-columns:repeat(5,1fr)">
+        <div><span>Hit rate</span>${fmt(s.hitRate,1)}%</div>
+        <div><span>Avg / hold</span><span class="${cls(s.avgWeek)}">${pct(s.avgWeek)}</span></div>
+        <div><span>Sharpe</span>${fmt(s.sharpe)}</div>
+        <div><span>Max DD</span><span class="red">${fmt(s.maxDD,1)}%</span></div>
+        <div><span>5y total</span><span class="${cls(s.total)}">${pct(s.total)}</span></div>
+      </div>` : '<div class="sub">Run backtest: python variants.py</div>';
+    let picksHtml;
+    if (!st.picks.length) {
+      picksHtml = st.bearGated
+        ? `<div class="sub" style="margin-top:8px">💤 Waiting for a bear regime (SPY &lt; 50-day MA) — shorts stay in cash while the market is in an uptrend</div>`
+        : `<div class="sub" style="margin-top:8px">💤 In cash this week (regime off)</div>`;
+    } else {
+      picksHtml = `<table style="margin-top:8px;font-size:12px"><thead><tr>
+        <th style="position:static">Sym</th><th style="position:static">Entry</th>
+        <th style="position:static">Stop</th><th style="position:static">Target</th>
+        <th style="position:static">Shares</th></tr></thead><tbody>` +
+        st.picks.map(sym => {
+          const r = bySym[sym];
+          if (!r) return '';
+          const lv = levels(r, st);
+          const n = shares(r, st.picks.length, lv.stop);
+          const spct = v => (v > 0 ? '+' : '') + fmt(v, 1) + '%';
+          return `<tr><td><b>${sym}</b></td><td>$${fmt(r.entry)}</td>
+            <td class="red">$${fmt(lv.stop)}<br><span class="sub" style="font-size:10px">${spct((lv.stop / r.entry - 1) * 100)}</span></td>
+            <td class="green">$${fmt(lv.target)}<br><span class="sub" style="font-size:10px">${spct((lv.target / r.entry - 1) * 100)}</span></td>
+            <td>${n.toLocaleString()}</td></tr>`;
+        }).join('') + '</tbody></table>';
+      const totalCost = st.picks.reduce((sum, sym) => {
+        const r = bySym[sym];
+        return r ? sum + shares(r, st.picks.length, levels(r, st).stop) * r.entry : sum;
+      }, 0);
+      picksHtml += `<div class="sub" style="margin-top:6px;font-size:11px">Total basket cost ≈ <b>$${Math.round(totalCost).toLocaleString()}</b>
+        &nbsp;·&nbsp; hold ${st.holdDays || 5} trading days
+        &nbsp;·&nbsp; sell remainder by <b>${st.sellBy || '—'}</b></div>`;
+    }
+    const shortTag = st.side === 'short' ? ' <span class="tag hot">SHORT</span>' : '';
+    const warn = (st.stats && st.stats.total < 0)
+      ? `<div style="margin-top:6px;padding:6px 8px;border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:11px">
+           ⚠ Backtest LOST money (${fmt(st.stats.total, 1)}% over 4y) — informational tool, not a recommendation</div>`
+      : '';
+    c.innerHTML = `<div class="sym" style="font-size:15px">${st.label}${shortTag}</div>
+      <div class="nm" style="white-space:normal">${st.desc}</div>${statHtml}${warn}${picksHtml}`;
+    el.appendChild(c);
+  });
+}
+
+let zoomRange = null; // {t0, t1} in ms; null = full 10y
+
+// Economic-cycle context bands (well-documented macro periods)
+const CYCLES = [
+  { from: '2016-12-14', to: '2018-12-20', label: 'Fed hiking (gradual)', color: 'rgba(77,163,255,0.08)' },
+  { from: '2019-07-31', to: '2019-10-30', label: 'Fed cuts', color: 'rgba(52,209,120,0.10)' },
+  { from: '2020-02-19', to: '2020-04-30', label: 'COVID recession', color: 'rgba(240,97,109,0.14)' },
+  { from: '2022-01-03', to: '2022-10-14', label: 'Inflation bear / fast hikes', color: 'rgba(240,97,109,0.14)' },
+  { from: '2024-09-18', to: '2025-12-18', label: 'Fed cutting cycle', color: 'rgba(52,209,120,0.10)' },
+];
+
+function renderCurves() {
+  const C = D.curves;
+  const wrap = document.getElementById('curveWrap');
+  if (!C || !C.spy) { wrap.style.display = 'none'; return; }
+  // [key, label, color, dates, benchFlag] — series carry their own date grids
+  const series = [
+    ['spy', 'SPY buy & hold', '#8b94a5', C.dates, true],
+    ['gold', 'Gold (GC=F)', '#f5e050', C.dates, true],
+    ['oil', 'Oil WTI (CL=F)', '#b0714d', C.dates, true],
+    ['momTop10', 'Momentum Top-10 + regime', '#4da3ff', C.dates],
+    ['momTop5', 'Momentum Top-5', '#34d178', C.dates],
+    ['lowvol', 'Low-vol trend + regime', '#e8b13f', C.dates],
+    ['mom14', '14-day Momentum Top-5', '#b78bfa', C.dates14],
+    ['sector14', '14-day Sector-neutral + regime', '#ff9f45', C.dates14],
+    ['valueDD', 'Value: deep 52w drawdown', '#4dd6d2', C.datesExtra],
+    ['value200', 'Value: below 200d MA', '#f286c4', C.datesExtra],
+  ].filter(s => C[s[0]] && s[3]);
+  const toT = d => new Date(d + 'T00:00:00').getTime();
+  const eqFull = series.map(([k]) => {
+    let v = 10000; return C[k].map(w => v *= 1 + w);
+  });
+  const fullT0 = Math.min(...series.map(s => toT(s[3][0])));
+  const fullT1 = Math.max(...series.map(s => toT(s[3][s[3].length - 1])));
+  const z0 = zoomRange ? Math.max(zoomRange.t0, fullT0) : fullT0;
+  const z1 = zoomRange ? Math.min(zoomRange.t1, fullT1) : fullT1;
+  // window each series to the zoom range and rebase to $10k at its first point inside
+  const win = series.map((s, si) => {
+    const pts = []; let base = null;
+    s[3].forEach((d, i) => {
+      const t = toT(d);
+      if (t < z0 || t > z1) return;
+      if (base === null) base = eqFull[si][i];
+      pts.push({ t, v: eqFull[si][i] / base * 10000 });
+    });
+    return pts;
+  });
+  const all = win.flatMap(p => p.map(q => q.v));
+  if (!all.length) return;
+  const mn = Math.min(...all, 10000) * 0.97, mx = Math.max(...all) * 1.02;
+  const cv = document.getElementById('curveChart');
+  const W = cv.parentElement.clientWidth - 32, H = 280;
+  cv.width = W * 2; cv.height = H * 2; cv.style.height = H + 'px';
+  const x = cv.getContext('2d'); x.scale(2, 2);
+  const X = t => 40 + (t - z0) / (z1 - z0 || 1) * (W - 50);
+  const Y = v => H - 22 - (v - mn) / (mx - mn) * (H - 34);
+  // economic-cycle bands behind everything
+  CYCLES.forEach(cy => {
+    const a = Math.max(toT(cy.from), z0), b = Math.min(toT(cy.to), z1);
+    if (b <= a) return;
+    x.fillStyle = cy.color;
+    x.fillRect(X(a), Y(mx), X(b) - X(a), Y(mn) - Y(mx));
+    if (X(b) - X(a) > 60) {
+      x.fillStyle = '#8b94a5'; x.font = '9px Segoe UI';
+      x.fillText(cy.label, X(a) + 3, 14);
+    }
+  });
+  // gridlines + axis labels
+  x.strokeStyle = '#29313f'; x.fillStyle = '#8b94a5'; x.font = '10px Segoe UI'; x.lineWidth = 1;
+  for (let g = 0; g <= 4; g++) {
+    const v = mn + (mx - mn) * g / 4;
+    x.beginPath(); x.moveTo(40, Y(v)); x.lineTo(W - 8, Y(v)); x.stroke();
+    x.fillText('$' + Math.round(v / 100) / 10 + 'k', 2, Y(v) + 3);
+  }
+  for (let g = 0; g < 5; g++) {
+    const t = z0 + g / 4 * (z1 - z0);
+    x.fillText(new Date(t).toISOString().slice(0, 7), X(t) - 14, H - 6);
+  }
+  series.forEach(([k, label, col, dates, bench], si) => {
+    if (!win[si].length) return;
+    x.beginPath(); x.strokeStyle = col; x.lineWidth = bench ? 1.1 : 1.8;
+    x.setLineDash(bench ? [4, 3] : []);
+    win[si].forEach((p, i) => i ? x.lineTo(X(p.t), Y(p.v)) : x.moveTo(X(p.t), Y(p.v)));
+    x.stroke();
+  });
+  x.setLineDash([]);
+  document.getElementById('curveLegend').innerHTML = series.map(([k, label, col], si) => {
+    const w = win[si];
+    return w.length ? `<span style="color:${col}">■</span> ${label} → <b>$${Math.round(w[w.length - 1].v).toLocaleString()}</b>` : '';
+  }).filter(Boolean).join(' &nbsp;·&nbsp; ')
+    + `<br>All lines rebased to $10,000 at the zoom start (${new Date(z0).toISOString().slice(0, 10)}).
+    Dashed = benchmarks (not strategies). Costs included; regime weeks in cash; value/short series need 12m
+    history so start Jul 2017. Bands: red = recession/bear, green = Fed easing, blue = Fed hiking.`;
+}
+
+document.querySelectorAll('.zbtn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.zbtn').forEach(o => o.classList.remove('active'));
+  b.classList.add('active');
+  const z = b.dataset.z, now = Date.now();
+  if (z === 'all') zoomRange = null;
+  else if (z === 'last3') zoomRange = { t0: now - 3 * 365 * 86400000, t1: now };
+  else if (z === 'last1') zoomRange = { t0: now - 365 * 86400000, t1: now };
+  else { const [a, b2] = z.split(','); zoomRange = { t0: +new Date(a), t1: +new Date(b2) }; }
+  renderCurves();
+}));
+['zoomFrom', 'zoomTo'].forEach(id =>
+  document.getElementById(id).addEventListener('change', () => {
+    const f = document.getElementById('zoomFrom').value, t = document.getElementById('zoomTo').value;
+    if (f && t) { zoomRange = { t0: +new Date(f), t1: +new Date(t) }; renderCurves(); }
+  }));
+
+function renderPaper() {
+  const el = document.getElementById('paper'); el.innerHTML = '';
+  const labels = Object.fromEntries((D.strategies || []).map(s => [s.key, s.label]));
+  labels.spy = 'SPY benchmark (hold the week, no stops)';
+  const P = D.paper || {};
+  if (!Object.keys(P).length) {
+    el.innerHTML = '<div class="sub">No paper trades yet — they start logging with each refresh.</div>';
+    return;
+  }
+  Object.entries(P).forEach(([key, a]) => {
+    const c = document.createElement('div'); c.className = 'card';
+    const closedStats = a.closed
+      ? `<div class="lv" style="grid-template-columns:repeat(4,1fr)">
+           <div><span>Closed</span>${a.closed}</div>
+           <div><span>Hit rate</span>${fmt(a.hitRate,1)}%</div>
+           <div><span>Avg trade</span><span class="${cls(a.avgRet)}">${pct(a.avgRet)}</span></div>
+           <div><span>Open</span>${a.open}</div>
+         </div>`
+      : `<div class="lv" style="grid-template-columns:repeat(2,1fr)">
+           <div><span>Open</span>${a.open}</div>
+           <div><span>Closed</span>0 — first results after 5 sessions</div>
+         </div>`;
+    const row = t => {
+      const st = t.status === 'open' ? '<span class="sub">open</span>'
+        : t.status === 'stopped' ? '<span class="red">stopped</span>'
+        : t.status === 'target' ? '<span class="green">target</span>'
+        : `<span class="sub">${t.holdDays || 5}d exit</span>`;
+      const ret = t.retPct != null ? `<span class="${cls(t.retPct)}">${pct(t.retPct)}</span>` : '—';
+      const exit = t.status === 'open'
+        ? (t.sellBy ? `<span class="sub">by ${t.sellBy.slice(5)}</span>` : '—')
+        : (t.exitDate ? t.exitDate.slice(5) : '—');
+      return `<tr><td>${t.date.slice(5)}</td><td><b>${t.sym}</b></td>
+        <td>$${fmt(t.entry)}</td><td>${st}</td><td>${exit}</td><td>${ret}</td></tr>`;
+    };
+    const mkTable = (title, trades, extra) => trades.length
+      ? `<div class="sub" style="margin-top:8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em">${title}</div>
+         <table style="margin-top:4px;font-size:12px"><thead><tr>
+         <th style="position:static">Entered</th><th style="position:static">Sym</th>
+         <th style="position:static">Entry</th><th style="position:static">Status</th>
+         <th style="position:static">Exit / sell by</th>
+         <th style="position:static">Ret</th></tr></thead><tbody>${trades.map(row).join('')}</tbody></table>${extra || ''}`
+      : '';
+    const openTr = a.trades.filter(t => t.status === 'open');
+    const closedTr = a.trades.filter(t => t.status !== 'open');
+    const moreNote = openTr.length > 10
+      ? `<div class="sub" style="font-size:11px;margin-top:4px">+ ${openTr.length - 10} more open</div>` : '';
+    c.innerHTML = `<div class="sym" style="font-size:15px">${labels[key] || key}</div>
+      ${closedStats}
+      ${mkTable('Completed trades', closedTr.slice(0, 6))}
+      ${mkTable('Open positions', openTr.slice(0, 10), moreNote)}`;
+    el.appendChild(c);
+  });
+}
+
+function renderCards() {
+  const el = document.getElementById('cards'); el.innerHTML = '';
+  rows.slice(0, 6).forEach((r, i) => {
+    const c = document.createElement('div'); c.className = 'card';
+    const rr = ((r.target - r.entry) / (r.entry - r.stop)).toFixed(2);
+    c.innerHTML = `
+      <div class="rank">#${i + 1}</div>
+      <div class="sym">${r.sym} ${r.rsi > 75 ? '<span class="tag hot">overheated</span>' : ''}${r.earnSoon ? ' <span class="tag hot">⚠ earnings ' + r.earnDate.slice(5) + '</span>' : ''}</div>
+      <div class="nm">${r.name} · ${r.sector}</div>
+      <div class="scorebar"><i style="width:${r.score}%"></i></div>
+      <div><b>${r.score}</b> <span class="sub">score</span> &nbsp; <span class="${cls(r.ret5)}">${pct(r.ret5)} 5d</span></div>
+      <div class="lv">
+        <div><span>Entry</span>$${fmt(r.entry)}</div>
+        <div><span>Stop</span><span class="red">$${fmt(r.stop)}</span><br><span class="sub" style="font-size:10px">${fmt((r.stop / r.entry - 1) * 100, 1)}%</span></div>
+        <div><span>Target</span><span class="green">$${fmt(r.target)}</span><br><span class="sub" style="font-size:10px">+${fmt((r.target / r.entry - 1) * 100, 1)}%</span></div>
+        <div><span>RSI</span>${fmt(r.rsi, 1)}</div>
+        <div><span>R : R</span>${rr}</div>
+        <div><span>Shares</span>${shares(r).toLocaleString()}</div>
+      </div>`;
+    el.appendChild(c);
+  });
+}
+
+let sortK = 'score', sortAsc = false;
+function renderTable() {
+  const q = document.getElementById('search').value.trim().toUpperCase();
+  const sec = document.getElementById('sector').value;
+  const view = document.getElementById('view').value;
+  let list = rows.filter(r =>
+    (!q || r.sym.includes(q) || r.name.toUpperCase().includes(q)) &&
+    (!sec || r.sector === sec) &&
+    (view !== 'top' || r.score >= 60) &&
+    (view !== 'cool' || r.rsi <= 75));
+  list = [...list].sort((a, b) => {
+    let va = sortK === 'shares' ? shares(a) : a[sortK], vb = sortK === 'shares' ? shares(b) : b[sortK];
+    if (typeof va === 'string') return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    if (va == null) va = 9999; if (vb == null) vb = 9999;
+    return sortAsc ? va - vb : vb - va;
+  });
+  const tb = document.getElementById('tbody'); tb.innerHTML = '';
+  list.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><b>${r.sym}</b>${r.rsi > 75 ? ' <span class="tag hot">hot</span>' : ''}</td>
+      <td class="sub">${r.sector}</td>
+      <td><span class="sb"><i style="width:${r.score}%"></i></span>${fmt(r.score, 1)}</td>
+      <td></td>
+      <td>$${fmt(r.px)}</td>
+      <td class="${cls(r.ret5)}">${pct(r.ret5)}</td>
+      <td class="${cls(r.ret20)}">${pct(r.ret20)}</td>
+      <td class="${cls(r.ret60)}">${pct(r.ret60)}</td>
+      <td class="${r.rsi > 75 ? 'amber' : ''}">${fmt(r.rsi, 1)}</td>
+      <td>${fmt(r.distHi20)}%</td>
+      <td>${fmt(r.volRatio)}</td>
+      <td>${fmt(r.atrPct)}</td>
+      <td>$${fmt(r.entry)}</td>
+      <td class="red">$${fmt(r.stop)} <span class="sub" style="font-size:10px">${fmt((r.stop / r.entry - 1) * 100, 1)}%</span></td>
+      <td class="green">$${fmt(r.target)} <span class="sub" style="font-size:10px">+${fmt((r.target / r.entry - 1) * 100, 1)}%</span></td>
+      <td>${shares(r).toLocaleString()}</td>
+      <td class="sub">${fmt(r.dvol, 0)}</td>
+      <td class="${r.earnSoon ? 'amber' : 'sub'}">${r.earnDate && r.earnDays >= 0 ? (r.earnSoon ? '⚠ ' : '') + r.earnDate.slice(5) + ' (' + r.earnDays + 'd)' : '—'}</td>`;
+    const cv = document.createElement('canvas'); cv.className = 'spark';
+    tr.children[3].appendChild(cv); spark(cv, r.spark);
+    tb.appendChild(tr);
+  });
+  document.querySelectorAll('thead th').forEach(th => {
+    th.innerHTML = th.innerHTML.replace(' <span class="sortind">▾</span>', '').replace(' <span class="sortind">▴</span>', '');
+    if (th.dataset.k === sortK) th.innerHTML += ` <span class="sortind">${sortAsc ? '▴' : '▾'}</span>`;
+  });
+}
+
+function renderRisk() {
+  const acct = +document.getElementById('acct').value || 0;
+  const rp = +document.getElementById('riskPct').value || 0;
+  const budget = +document.getElementById('budget').value || 0;
+  let note = `= $${(acct * rp / 100).toLocaleString()} risked per trade if stopped out (positions capped at 20% of account`;
+  note += budget > 0
+    ? `; budget of $${budget.toLocaleString()} split equally across each strategy's basket)`
+    : `; no budget cap — set one to limit total outlay)`;
+  document.getElementById('riskNote').textContent = note;
+}
+
+document.querySelectorAll('thead th[data-k]').forEach(th =>
+  th.addEventListener('click', () => {
+    const k = th.dataset.k;
+    if (sortK === k) sortAsc = !sortAsc; else { sortK = k; sortAsc = (k === 'sym' || k === 'sector'); }
+    renderTable();
+  }));
+['search', 'sector', 'view'].forEach(id =>
+  document.getElementById(id).addEventListener('input', renderTable));
+['acct', 'riskPct', 'budget'].forEach(id =>
+  document.getElementById(id).addEventListener('input', () => { renderRisk(); renderStrategies(); renderCards(); renderTable(); }));
+
+applyData();
+checkForNewData();
+window.addEventListener('resize', renderCurves);
+</script>
+</body>
+</html>

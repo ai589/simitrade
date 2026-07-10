@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+px5y_cache.json
+px10y_cache.json
+earnings_cache.json
+refresh_log.txt
+.claude/

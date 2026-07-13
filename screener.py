@@ -239,14 +239,16 @@ EARN_CACHE_DAYS = 3
 
 
 def fetch_earnings(symbols):
-    """Next earnings date per symbol via Yahoo quoteSummary (cookie+crumb).
-    Cached for EARN_CACHE_DAYS. Returns {normalized_sym: 'YYYY-MM-DD' or None}."""
+    """Next earnings date + company profile per symbol via Yahoo quoteSummary
+    (cookie+crumb). Cached for EARN_CACHE_DAYS.
+    Returns ({sym: 'YYYY-MM-DD' or None}, {sym: profile dict})."""
     if os.path.exists(EARN_CACHE):
         try:
             with open(EARN_CACHE, encoding="utf-8") as f:
                 cache = json.load(f)
-            if time.time() - cache.get("_ts", 0) < EARN_CACHE_DAYS * 86400:
-                return cache.get("dates", {})
+            if (time.time() - cache.get("_ts", 0) < EARN_CACHE_DAYS * 86400
+                    and "profiles" in cache):
+                return cache.get("dates", {}), cache.get("profiles", {})
         except Exception:
             pass
 
@@ -262,8 +264,8 @@ def fetch_earnings(symbols):
         if not crumb or "<" in crumb:
             raise RuntimeError("no crumb")
     except Exception as e:
-        print(f"WARNING: earnings lookup unavailable ({e}); skipping.")
-        return {}
+        print(f"WARNING: earnings/profile lookup unavailable ({e}); skipping.")
+        return {}, {}
 
     cookies = s.cookies.get_dict()
 
@@ -272,28 +274,47 @@ def fetch_earnings(symbols):
         url = f"https://query1.finance.yahoo.com/v10/finance/quoteSummary/{raw}"
         for attempt in range(3):
             try:
-                r = requests.get(url, params={"modules": "calendarEvents", "crumb": crumb},
-                                 headers=HEADERS, cookies=cookies, timeout=15)
+                r = requests.get(url, params={
+                    "modules": "calendarEvents,assetProfile,summaryDetail,price",
+                    "crumb": crumb}, headers=HEADERS, cookies=cookies, timeout=15)
                 if r.status_code == 429:
                     time.sleep(2 + attempt * 3)
                     continue
                 r.raise_for_status()
-                res = r.json()["quoteSummary"]["result"]
-                dates = res[0]["calendarEvents"]["earnings"]["earningsDate"]
-                return sym, (dates[0]["fmt"] if dates else None)
+                res = r.json()["quoteSummary"]["result"][0]
+                dates = (res.get("calendarEvents", {}).get("earnings", {})
+                         .get("earningsDate") or [])
+                date = dates[0]["fmt"] if dates else None
+                ap = res.get("assetProfile", {}) or {}
+                sd = res.get("summaryDetail", {}) or {}
+                pr = res.get("price", {}) or {}
+                fmt = lambda d: (d or {}).get("fmt")
+                profile = {
+                    "industry": ap.get("industry"),
+                    "sector": ap.get("sector"),
+                    "employees": ap.get("fullTimeEmployees"),
+                    "website": ap.get("website"),
+                    "summary": (ap.get("longBusinessSummary") or "")[:600],
+                    "mktCap": fmt(pr.get("marketCap")),
+                    "pe": fmt(sd.get("trailingPE")),
+                    "divYield": fmt(sd.get("dividendYield")),
+                    "beta": fmt(sd.get("beta")),
+                }
+                return sym, date, profile
             except Exception:
                 if attempt == 2:
-                    return sym, None
+                    return sym, None, {}
                 time.sleep(1 + attempt)
-        return sym, None
+        return sym, None, {}
 
-    out = {}
+    dates_out, prof_out = {}, {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
-        for sym, d in ex.map(one, symbols):
-            out[sym] = d
+        for sym, d, p in ex.map(one, symbols):
+            dates_out[sym] = d
+            prof_out[sym] = p
     with open(EARN_CACHE, "w", encoding="utf-8") as f:
-        json.dump({"_ts": time.time(), "dates": out}, f)
-    return out
+        json.dump({"_ts": time.time(), "dates": dates_out, "profiles": prof_out}, f)
+    return dates_out, prof_out
 
 
 PAPER_LOG = "picks_log.json"
@@ -608,9 +629,9 @@ def main():
         raise SystemExit(f"ABORT: only {len(results)} names screened (expected ~135). "
                          "Keeping previous data.js.")
 
-    # earnings dates: flag names reporting within the ~1-week hold window
-    print("Fetching earnings dates...")
-    earn = fetch_earnings([r["sym"] for r in results])
+    # earnings dates + company profiles
+    print("Fetching earnings dates and company profiles...")
+    earn, profiles = fetch_earnings([r["sym"] for r in results])
     today = datetime.date.today()
     n_soon = 0
     for r in results:
@@ -684,6 +705,7 @@ def main():
         "spyStats": spy_stats,
         "curves": curves,
         "paper": paper,
+        "profiles": profiles,
         "rows": results,
     }
     out = "data.js"

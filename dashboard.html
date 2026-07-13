@@ -55,6 +55,15 @@
   .zbtn { background: var(--panel2); color: var(--text); border: 1px solid var(--border);
     border-radius: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
   .zbtn:hover, .zbtn.active { border-color: var(--accent); color: var(--accent); }
+  .symlink { cursor: pointer; }
+  .symlink:hover { color: var(--accent); text-decoration: underline; }
+  #profileModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.62); z-index: 50; }
+  #profileCard { max-width: 580px; margin: 7vh auto; max-height: 82vh; overflow-y: auto;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+  #profileCard .close { float: right; cursor: pointer; color: var(--dim); font-size: 20px; line-height: 1; }
+  #profileCard .close:hover { color: var(--text); }
+  .plinks a { color: var(--accent); text-decoration: none; margin-right: 14px; font-size: 12.5px; }
+  .plinks a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -126,6 +135,7 @@
     <label class="sub">From <input type="date" id="zoomFrom"></label>
     <label class="sub">To <input type="date" id="zoomTo"></label>
   </div>
+  <div class="controls" id="seriesToggles" style="margin-bottom:8px"></div>
   <canvas id="curveChart" style="width:100%"></canvas>
   <div class="sub" id="curveLegend" style="margin-top:8px"></div>
 </div>
@@ -188,6 +198,8 @@
      style="display:inline-block;padding:9px 18px;border:1px solid var(--accent);border-radius:10px;color:var(--accent);text-decoration:none;font-size:13px">
     ☕ Support this project on Ko-fi</a>
 </div>
+
+<div id="profileModal"><div id="profileCard"></div></div>
 
 <script src="data.js"></script>
 <script>
@@ -281,6 +293,56 @@ function shares(r, basketSize = 5, stopPx) {
   return s;
 }
 
+// ---- Company profile modal (click any ticker symbol) ----
+function showProfile(sym) {
+  const r = bySym[sym];
+  const p = (D.profiles || {})[sym] || {};
+  const modal = document.getElementById('profileModal');
+  const card = document.getElementById('profileCard');
+  const row = (l, v) => v ? `<div><span>${l}</span>${v}</div>` : '';
+  const raw = sym.replace('.', '-');
+  card.innerHTML = `
+    <span class="close" id="profileClose">✕</span>
+    <div class="sym" style="font-size:20px">${sym}</div>
+    <div class="nm" style="white-space:normal;font-size:13px">${r ? r.name : ''}</div>
+    <div style="margin-top:6px">
+      ${p.sector ? `<span class="tag">${p.sector}</span>` : ''}
+      ${p.industry ? `<span class="tag">${p.industry}</span>` : ''}
+      ${r && r.earnSoon ? `<span class="tag hot">⚠ earnings ${r.earnDate}</span>` : ''}
+    </div>
+    <div class="lv" style="grid-template-columns:repeat(4,1fr);margin-top:12px">
+      ${r ? row('Last', '$' + fmt(r.px)) : ''}
+      ${row('Mkt cap', p.mktCap)}
+      ${row('P/E (ttm)', p.pe)}
+      ${row('Div yield', p.divYield)}
+      ${row('Beta', p.beta)}
+      ${row('Employees', p.employees ? p.employees.toLocaleString() : null)}
+      ${r ? row('RSI-14', fmt(r.rsi, 1)) : ''}
+      ${r ? row('vs 52w high', `<span class="${cls(r.dd52)}">${fmt(r.dd52, 1)}%</span>`) : ''}
+      ${r ? row('5d / 60d', `<span class="${cls(r.ret5)}">${pct(r.ret5)}</span> / <span class="${cls(r.ret60)}">${pct(r.ret60)}</span>`) : ''}
+      ${r ? row('ATR', fmt(r.atrPct, 1) + '%/day') : ''}
+      ${r && r.earnDate && r.earnDays >= 0 ? row('Next earnings', `${r.earnDate} (${r.earnDays}d)`) : ''}
+      ${r ? row('Avg $ vol', '$' + fmt(r.dvol, 0) + 'M/day') : ''}
+    </div>
+    ${p.summary ? `<p class="sub" style="margin-top:12px;font-size:12.5px;line-height:1.55">${p.summary}${p.summary.length >= 600 ? '…' : ''}</p>` : '<p class="sub" style="margin-top:12px">No company description available — run refresh.bat to fetch profiles.</p>'}
+    <div class="plinks" style="margin-top:14px">
+      ${p.website ? `<a href="${p.website}" target="_blank" rel="noopener">Website</a>` : ''}
+      <a href="https://finance.yahoo.com/quote/${raw}" target="_blank" rel="noopener">Yahoo Finance</a>
+      <a href="https://www.tradingview.com/symbols/NYSE-${sym}/" target="_blank" rel="noopener">TradingView</a>
+      <a href="https://www.google.com/finance/quote/${sym}:NYSE" target="_blank" rel="noopener">Google Finance</a>
+    </div>`;
+  modal.style.display = 'block';
+}
+document.addEventListener('click', e => {
+  const s = e.target.closest('.symlink');
+  if (s) { showProfile(s.dataset.sym); return; }
+  if (e.target.id === 'profileModal' || e.target.id === 'profileClose')
+    document.getElementById('profileModal').style.display = 'none';
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('profileModal').style.display = 'none';
+});
+
 // Per-strategy stop/target: ATR multiples vary by hold period (1.5/2.0 for 5-day,
 // 2.0/3.0 for 14-day). Falls back to the precomputed row levels.
 function levels(r, st) {
@@ -328,7 +390,7 @@ function renderStrategies() {
           const lv = levels(r, st);
           const n = shares(r, st.picks.length, lv.stop);
           const spct = v => (v > 0 ? '+' : '') + fmt(v, 1) + '%';
-          return `<tr><td><b>${sym}</b></td><td>$${fmt(r.entry)}</td>
+          return `<tr><td><b class="symlink" data-sym="${sym}">${sym}</b></td><td>$${fmt(r.entry)}</td>
             <td class="red">$${fmt(lv.stop)}<br><span class="sub" style="font-size:10px">${spct((lv.stop / r.entry - 1) * 100)}</span></td>
             <td class="green">$${fmt(lv.target)}<br><span class="sub" style="font-size:10px">${spct((lv.target / r.entry - 1) * 100)}</span></td>
             <td>${n.toLocaleString()}</td></tr>`;
@@ -363,23 +425,56 @@ const CYCLES = [
   { from: '2024-09-18', to: '2025-12-18', label: 'Fed cutting cycle', color: 'rgba(52,209,120,0.10)' },
 ];
 
+// Which trend lines are enabled (persisted; click the chips above the chart)
+const SERIES_DEFS = [
+  ['spy', 'SPY buy & hold', '#8b94a5', 'dates', true],
+  ['gold', 'Gold (GC=F)', '#f5e050', 'dates', true],
+  ['oil', 'Oil WTI (CL=F)', '#b0714d', 'dates', true],
+  ['momTop10', 'Momentum Top-10 + regime', '#4da3ff', 'dates'],
+  ['momTop5', 'Momentum Top-5', '#34d178', 'dates'],
+  ['lowvol', 'Low-vol trend + regime', '#e8b13f', 'dates'],
+  ['mom14', '14-day Momentum Top-5', '#b78bfa', 'dates14'],
+  ['sector14', '14-day Sector-neutral + regime', '#ff9f45', 'dates14'],
+  ['valueDD', 'Value: deep 52w drawdown', '#4dd6d2', 'datesExtra'],
+  ['value200', 'Value: below 200d MA', '#f286c4', 'datesExtra'],
+];
+let seriesOn = {};
+try { seriesOn = JSON.parse(localStorage.getItem('seriesOn')) || {}; } catch (e) {}
+function isOn(key) { return seriesOn[key] !== false; }  // default: on
+
+function renderSeriesToggles(available) {
+  const el = document.getElementById('seriesToggles');
+  el.innerHTML = '';
+  available.forEach(([key, label, col]) => {
+    const b = document.createElement('button');
+    b.className = 'zbtn';
+    b.style.opacity = isOn(key) ? '1' : '0.35';
+    b.innerHTML = `<span style="color:${col}">■</span> ${label}`;
+    b.title = isOn(key) ? 'Click to hide this trend' : 'Click to show this trend';
+    b.addEventListener('click', () => {
+      seriesOn[key] = !isOn(key);
+      try { localStorage.setItem('seriesOn', JSON.stringify(seriesOn)); } catch (e) {}
+      renderCurves();
+    });
+    el.appendChild(b);
+  });
+}
+
 function renderCurves() {
   const C = D.curves;
   const wrap = document.getElementById('curveWrap');
   if (!C || !C.spy) { wrap.style.display = 'none'; return; }
-  // [key, label, color, dates, benchFlag] — series carry their own date grids
-  const series = [
-    ['spy', 'SPY buy & hold', '#8b94a5', C.dates, true],
-    ['gold', 'Gold (GC=F)', '#f5e050', C.dates, true],
-    ['oil', 'Oil WTI (CL=F)', '#b0714d', C.dates, true],
-    ['momTop10', 'Momentum Top-10 + regime', '#4da3ff', C.dates],
-    ['momTop5', 'Momentum Top-5', '#34d178', C.dates],
-    ['lowvol', 'Low-vol trend + regime', '#e8b13f', C.dates],
-    ['mom14', '14-day Momentum Top-5', '#b78bfa', C.dates14],
-    ['sector14', '14-day Sector-neutral + regime', '#ff9f45', C.dates14],
-    ['valueDD', 'Value: deep 52w drawdown', '#4dd6d2', C.datesExtra],
-    ['value200', 'Value: below 200d MA', '#f286c4', C.datesExtra],
-  ].filter(s => C[s[0]] && s[3]);
+  const available = SERIES_DEFS
+    .map(([k, l, c, dk, b]) => [k, l, c, C[dk], b])
+    .filter(s => C[s[0]] && s[3]);
+  renderSeriesToggles(available);
+  const series = available.filter(s => isOn(s[0]));
+  if (!series.length) {
+    const cv0 = document.getElementById('curveChart');
+    cv0.getContext('2d').clearRect(0, 0, cv0.width, cv0.height);
+    document.getElementById('curveLegend').textContent = 'All trends hidden — click a chip above to show one.';
+    return;
+  }
   const toT = d => new Date(d + 'T00:00:00').getTime();
   const eqFull = series.map(([k]) => {
     let v = 10000; return C[k].map(w => v *= 1 + w);
@@ -494,7 +589,7 @@ function renderPaper() {
       const exit = t.status === 'open'
         ? (t.sellBy ? `<span class="sub">by ${t.sellBy.slice(5)}</span>` : '—')
         : (t.exitDate ? t.exitDate.slice(5) : '—');
-      return `<tr><td>${t.date.slice(5)}</td><td><b>${t.sym}</b></td>
+      return `<tr><td>${t.date.slice(5)}</td><td><b class="symlink" data-sym="${t.sym}">${t.sym}</b></td>
         <td>$${fmt(t.entry)}</td><td>${st}</td><td>${exit}</td><td>${ret}</td></tr>`;
     };
     const mkTable = (title, trades, extra) => trades.length
@@ -524,7 +619,7 @@ function renderCards() {
     const rr = ((r.target - r.entry) / (r.entry - r.stop)).toFixed(2);
     c.innerHTML = `
       <div class="rank">#${i + 1}</div>
-      <div class="sym">${r.sym} ${r.rsi > 75 ? '<span class="tag hot">overheated</span>' : ''}${r.earnSoon ? ' <span class="tag hot">⚠ earnings ' + r.earnDate.slice(5) + '</span>' : ''}</div>
+      <div class="sym"><span class="symlink" data-sym="${r.sym}">${r.sym}</span> ${r.rsi > 75 ? '<span class="tag hot">overheated</span>' : ''}${r.earnSoon ? ' <span class="tag hot">⚠ earnings ' + r.earnDate.slice(5) + '</span>' : ''}</div>
       <div class="nm">${r.name} · ${r.sector}</div>
       <div class="scorebar"><i style="width:${r.score}%"></i></div>
       <div><b>${r.score}</b> <span class="sub">score</span> &nbsp; <span class="${cls(r.ret5)}">${pct(r.ret5)} 5d</span></div>
@@ -560,7 +655,7 @@ function renderTable() {
   list.forEach(r => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><b>${r.sym}</b>${r.rsi > 75 ? ' <span class="tag hot">hot</span>' : ''}</td>
+      <td><b class="symlink" data-sym="${r.sym}">${r.sym}</b>${r.rsi > 75 ? ' <span class="tag hot">hot</span>' : ''}</td>
       <td class="sub">${r.sector}</td>
       <td><span class="sb"><i style="width:${r.score}%"></i></span>${fmt(r.score, 1)}</td>
       <td></td>

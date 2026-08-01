@@ -1,5 +1,5 @@
-# NYSE 1-Week Swing Trade Screener
-# Fetches 6 months of daily OHLCV from Yahoo Finance for a liquid NYSE universe,
+# NYSE + Nasdaq 1-Week Swing Trade Screener
+# Fetches 6 months of daily OHLCV from Yahoo Finance for a liquid NYSE/Nasdaq universe,
 # scores each name for a 1-week holding period, and writes data.js for dashboard.html.
 #
 # Usage:  python screener.py
@@ -12,8 +12,8 @@ import datetime
 import concurrent.futures
 import requests
 
-# Curated universe of liquid, large-cap names expected to trade on NYSE.
-# Non-NYSE listings are dropped automatically via the exchange check below.
+# Curated universe of liquid, large-cap names on NYSE or Nasdaq.
+# Listings on any other exchange are dropped automatically via the exchange check below.
 UNIVERSE = [
     # Financials
     "JPM", "BAC", "WFC", "C", "GS", "MS", "SCHW", "AXP", "V", "MA",
@@ -23,22 +23,35 @@ UNIVERSE = [
     # Healthcare
     "UNH", "JNJ", "LLY", "PFE", "MRK", "ABBV", "TMO", "ABT", "BMY", "CVS",
     "DHR", "SYK", "BSX", "MDT", "EW", "ZTS", "ELV", "CI", "HUM", "HCA",
+    # Healthcare (Nasdaq)
+    "AMGN", "GILD", "VRTX", "REGN", "ISRG", "IDXX", "DXCM",
     # Energy
     "XOM", "CVX", "COP", "SLB", "EOG", "OXY", "VLO", "PSX", "MPC", "KMI",
     "WMB", "OKE", "HAL", "DVN", "CTRA",
+    "FANG", "BKR",  # Nasdaq
     # Industrials
     "BA", "CAT", "DE", "GE", "LMT", "RTX", "UNP", "UPS", "FDX", "MMM",
     "ETN", "EMR", "PH", "ROK", "ITW", "GD", "NOC", "TDG", "CMI", "NSC",
     "WM", "RSG", "URI", "PWR",
+    "HON", "CSX", "ODFL", "PCAR", "ADP", "PAYX",  # Nasdaq
     # Tech / Communications
     "CRM", "ORCL", "IBM", "ACN", "NOW", "UBER", "SNOW", "NET", "SHOP", "TSM",
     "ANET", "DELL", "HPQ", "PLTR", "XYZ", "T", "VZ", "DIS",
+    # Tech / Communications (Nasdaq)
+    "AAPL", "MSFT", "NVDA", "GOOGL", "META", "AVGO", "AMD", "ADBE", "QCOM",
+    "INTC", "TXN", "MU", "AMAT", "LRCX", "KLAC", "PANW", "CRWD", "INTU",
+    "CSCO", "NFLX", "CMCSA", "APP", "DASH", "TTD", "ZS", "DDOG", "FTNT",
+    "WDAY", "TEAM", "MRVL", "SMCI", "ARM", "COIN", "HOOD", "MSTR", "PYPL", "EA",
     # Consumer
     "WMT", "HD", "LOW", "MCD", "NKE", "TGT", "PG", "KO", "CL", "KMB",
     "MO", "PM", "F", "GM", "CMG", "YUM", "SBUX", "DG",
+    # Consumer (Nasdaq)
+    "AMZN", "TSLA", "COST", "PEP", "MDLZ", "BKNG", "ABNB", "MAR", "ORLY",
+    "ROST", "LULU", "MNST", "KDP", "KHC",
     # Materials / Utilities / REITs
     "LIN", "APD", "SHW", "FCX", "NUE", "DOW", "DD", "ECL", "NEE", "DUK",
     "SO", "SPG", "PLD", "AMT", "O", "CCI",
+    "EXC", "XEL", "AEP", "SBAC", "EQIX",  # Nasdaq
 ]
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
@@ -184,6 +197,7 @@ def analyse(d):
     return {
         "sym": d["symbol"].replace("-", "."),
         "name": d["name"],
+        "exch": "NASDAQ" if d["exchange"].upper().startswith("NASDAQ") else "NYSE",
         "px": round(px, 2),
         "ret5": round(ret_5d * 100, 2),
         "ret20": round(ret_20d * 100, 2),
@@ -218,18 +232,27 @@ SECTORS = {
                    "ICE", "MMC", "AON", "AJG", "CB", "PGR", "TRV", "ALL", "MET", "PRU",
                    "AIG", "BRK.B"],
     "Healthcare": ["UNH", "JNJ", "LLY", "PFE", "MRK", "ABBV", "TMO", "ABT", "BMY", "CVS",
-                   "DHR", "SYK", "BSX", "MDT", "EW", "ZTS", "ELV", "CI", "HUM", "HCA"],
+                   "DHR", "SYK", "BSX", "MDT", "EW", "ZTS", "ELV", "CI", "HUM", "HCA",
+                   "AMGN", "GILD", "VRTX", "REGN", "ISRG", "IDXX", "DXCM"],
     "Energy": ["XOM", "CVX", "COP", "SLB", "EOG", "OXY", "VLO", "PSX", "MPC", "KMI",
-               "WMB", "OKE", "HAL", "DVN", "HES", "CTRA"],
+               "WMB", "OKE", "HAL", "DVN", "HES", "CTRA", "FANG", "BKR"],
     "Industrials": ["BA", "CAT", "DE", "GE", "LMT", "RTX", "UNP", "UPS", "FDX", "MMM",
                     "ETN", "EMR", "PH", "ROK", "ITW", "GD", "NOC", "TDG", "CMI", "NSC",
-                    "WM", "RSG", "URI", "PWR"],
+                    "WM", "RSG", "URI", "PWR",
+                    "HON", "CSX", "ODFL", "PCAR", "ADP", "PAYX"],
     "Tech/Comms": ["CRM", "ORCL", "IBM", "ACN", "NOW", "UBER", "SNOW", "NET", "SHOP",
-                   "TSM", "ANET", "DELL", "HPQ", "PLTR", "XYZ", "T", "VZ", "DIS"],
+                   "TSM", "ANET", "DELL", "HPQ", "PLTR", "XYZ", "T", "VZ", "DIS",
+                   "AAPL", "MSFT", "NVDA", "GOOGL", "META", "AVGO", "AMD", "ADBE", "QCOM",
+                   "INTC", "TXN", "MU", "AMAT", "LRCX", "KLAC", "PANW", "CRWD", "INTU",
+                   "CSCO", "NFLX", "CMCSA", "APP", "DASH", "TTD", "ZS", "DDOG", "FTNT",
+                   "WDAY", "TEAM", "MRVL", "SMCI", "ARM", "COIN", "HOOD", "MSTR", "PYPL", "EA"],
     "Consumer": ["WMT", "HD", "LOW", "MCD", "NKE", "TGT", "PG", "KO", "CL", "KMB", "MO",
-                 "PM", "F", "GM", "CMG", "YUM", "SBUX", "DG"],
+                 "PM", "F", "GM", "CMG", "YUM", "SBUX", "DG",
+                 "AMZN", "TSLA", "COST", "PEP", "MDLZ", "BKNG", "ABNB", "MAR", "ORLY",
+                 "ROST", "LULU", "MNST", "KDP", "KHC"],
     "Materials/Util/REIT": ["LIN", "APD", "SHW", "FCX", "NUE", "DOW", "DD", "ECL", "NEE",
-                            "DUK", "SO", "SPG", "PLD", "AMT", "O", "CCI"],
+                            "DUK", "SO", "SPG", "PLD", "AMT", "O", "CCI",
+                            "EXC", "XEL", "AEP", "SBAC", "EQIX"],
 }
 SECTOR_OF = {s: k for k, v in SECTORS.items() for s in v}
 
@@ -471,11 +494,22 @@ def strategy_picks(results, regime_on, last_session):
         [r for r in tradeable if r.get("px200") is not None
          and r["px200"] < 100 and r["aboveSma20"]],
         key=lambda r: r["px200"])
-    # short pools (deployed only in a bear regime: SPY < 50-day MA)
-    short_rally_pool = sorted(
-        [r for r in tradeable if not r["aboveSma50"] and not r["trendUp"]
-         and r.get("rsi3") is not None and r["rsi3"] > 70],
-        key=lambda r: -r["rsi3"])
+    # momentum / low-vol z-blend: names above SMA50 scored by momentum z minus
+    # volatility z — high momentum with the least chop (best Sharpe of all
+    # weekly rule sets tested; promoted to replace the retired shortRally)
+    zpool = [r for r in tradeable if r["aboveSma50"]]
+    zblend_ranked = []
+    if len(zpool) >= 2:
+        def _z(vals):
+            m = sum(vals) / len(vals)
+            sd = math.sqrt(sum((v - m) ** 2 for v in vals) / len(vals)) or 1e-9
+            return [(v - m) / sd for v in vals]
+        zm = _z([r["ret60"] + r["ret20"] for r in zpool])
+        zv = _z([r["vol20"] for r in zpool])
+        zblend_ranked = [r for _, r in sorted(
+            zip([a - b for a, b in zip(zm, zv)], zpool),
+            key=lambda p: -p[0])]
+    # short pool (deployed only in a bear regime: SPY < 50-day MA)
     short_spike_pool = sorted([r for r in tradeable if not r["aboveSma50"]],
                               key=lambda r: -r["ret5"])
 
@@ -494,7 +528,7 @@ def strategy_picks(results, regime_on, last_session):
             "sector14": vr.get("variants14", {}).get("14d sector-neutral + regime"),
             "valueDD": vr.get("variantsExtra", {}).get("deep 52w drawdown"),
             "value200": vr.get("variantsExtra", {}).get("below 200d MA + turning up"),
-            "shortRally": vr.get("variantsExtra", {}).get("short rally + bear regime"),
+            "zblend": vr["variants"].get("mom/low-vol z-blend + regime"),
             "shortSpike": vr.get("variantsExtra", {}).get("short 5d spike + bear regime"),
             "spy": vr.get("spy"),
         }
@@ -515,6 +549,10 @@ def strategy_picks(results, regime_on, last_session):
                 curves["datesExtra"] = cex["dates"]
                 curves["valueDD"] = cex.get("deep 52w drawdown")
                 curves["value200"] = cex.get("below 200d MA + turning up")
+            c2 = vr.get("curves2")
+            if c2:
+                curves["dates2"] = c2["dates"]
+                curves["zblend"] = c2.get("mom/low-vol z-blend + regime")
     except Exception:
         pass
 
@@ -585,15 +623,15 @@ def strategy_picks(results, regime_on, last_session):
          "regimeGated": False,
          "picks": [r["sym"] for r in value_200_pool[:5]],
          "stats": stats_map.get("value200")},
-        {**common5, "key": "shortRally", "label": "Short: rally in downtrend",
-         "side": "short", "bearGated": True,
-         "desc": "SHORT the most overbought bounce (RSI-3 > 70) among downtrend names "
-                 "(px<SMA50, SMA20<SMA50). Only active when SPY < 50-day MA. "
-                 "WARNING: lost 29.5% in the 4y backtest (a bull market, and borrow "
-                 "fees excluded) — kept as a prepared tool for a real bear market only.",
-         "regimeGated": False,
-         "picks": [r["sym"] for r in short_rally_pool[:5]] if not regime_on else [],
-         "stats": stats_map.get("shortRally")},
+        {**common5, "key": "zblend", "label": "Momentum / low-vol z-blend + regime",
+         "desc": "Names above their 50-day MA scored by momentum z-score (20d+60d "
+                 "return) minus volatility z-score — the strongest movers with the "
+                 "least chop, 5 names. Cash when SPY < 50-day MA. Best Sharpe (1.03) "
+                 "of all 21 weekly rule sets tested; replaced the retired "
+                 "short-rally strategy (-64% backtest).",
+         "regimeGated": True,
+         "picks": [r["sym"] for r in zblend_ranked[:5]] if regime_on else [],
+         "stats": stats_map.get("zblend")},
         {**common5, "key": "shortSpike", "label": "Short: 5-day spike below SMA50",
          "side": "short", "bearGated": True,
          "desc": "SHORT the sharpest 5-day spikes among names below their 50-day MA. "
@@ -614,7 +652,7 @@ def main():
         for d in ex.map(fetch, UNIVERSE):
             if d is None:
                 continue
-            if not d["exchange"].upper().startswith("NYSE"):
+            if not d["exchange"].upper().startswith(("NYSE", "NASDAQ")):
                 skipped_exchange.append(f'{d["symbol"]} ({d["exchange"]})')
                 continue
             row = analyse(d)
@@ -661,7 +699,7 @@ def main():
         print("WARNING: SPY fetch failed; assuming regime ON.")
 
     if skipped_exchange:
-        print("Skipped non-NYSE:", ", ".join(skipped_exchange))
+        print("Skipped (other exchange):", ", ".join(skipped_exchange))
 
     results.sort(key=lambda x: -x["score"])
     n_above20 = sum(1 for r in results if r["aboveSma20"])
@@ -694,7 +732,7 @@ def main():
 
     payload = {
         "generated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "asOfNote": "Prices as of last completed NYSE session",
+        "asOfNote": "Prices as of last completed US session",
         "count": len(results),
         "breadth20": breadth,
         "avgRet5": avg5,
@@ -721,7 +759,7 @@ def main():
             if attempt == 4:
                 raise
             time.sleep(2 * (attempt + 1))
-    print(f"Wrote {out}: {len(results)} NYSE names, breadth {breadth}% above SMA20.")
+    print(f"Wrote {out}: {len(results)} names, breadth {breadth}% above SMA20.")
     print("Top 10:", ", ".join(f'{r["sym"]}({r["score"]})' for r in results[:10]))
 
 

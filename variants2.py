@@ -18,7 +18,7 @@ LONG_LB = 260  # for 52-week-high proximity
 
 def main():
     data = load_data()
-    print(f"Universe: {len(data) - 1} NYSE names + SPY (cached).")
+    print(f"Universe: {len(data) - 1} names + SPY (cached).")
 
     cal = sorted(data["SPY"].keys())
     aligned = {}

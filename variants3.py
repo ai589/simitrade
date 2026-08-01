@@ -43,7 +43,7 @@ def stats10(periods, spy_periods):
 
 def main():
     data = load_data()
-    print(f"Universe: {len(data) - 1} NYSE names + SPY (cached). Hold = {HOLD} trading days.")
+    print(f"Universe: {len(data) - 1} names + SPY (cached). Hold = {HOLD} trading days.")
 
     cal = sorted(data["SPY"].keys())
     aligned = {}

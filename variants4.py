@@ -20,7 +20,7 @@ LONG_LB = 260
 
 def main():
     data = load_data()
-    print(f"Universe: {len(data) - 1} NYSE names + SPY (cached).")
+    print(f"Universe: {len(data) - 1} names + SPY (cached).")
 
     cal = sorted(data["SPY"].keys())
     aligned = {}

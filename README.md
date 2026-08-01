@@ -1,12 +1,12 @@
-# NYSE Swing Trade Dashboard
+# US Swing Trade Dashboard (NYSE + Nasdaq)
 
-A self-contained swing-trading research dashboard for liquid NYSE large-caps. It screens ~135 names daily, runs 11 backtested strategies (momentum, mean-reversion, value proxies, and bear-market shorts) across 1-week and 2-week horizons, and tracks every pick in an automatic paper-trade record — so you can see whether live results match the backtest **before** risking money.
+A self-contained swing-trading research dashboard for liquid NYSE and Nasdaq large-caps. It screens ~200 names daily, runs 11 backtested strategies (momentum, mean-reversion, value proxies, and bear-market shorts) across 1-week and 2-week horizons, and tracks every pick in an automatic paper-trade record — so you can see whether live results match the backtest **before** risking money.
 
 ![Dashboard](https://img.shields.io/badge/stack-Python%20%2B%20vanilla%20JS-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## What it does
 
-- **Daily screen** of ~135 liquid NYSE names (>$50M/day traded) on momentum, trend, RSI, volume, volatility and 52-week value signals
+- **Daily screen** of ~200 liquid NYSE and Nasdaq names (>$50M/day traded) on momentum, trend, RSI, volume, volatility and 52-week value signals
 - **11 strategies, all backtested 10 years** (2016–2026, weekly rebalance, trading costs included) with honest stats: hit rate, Sharpe, max drawdown, growth of $10,000
 - **Regime filter** — strategies sit in cash when SPY is below its 50-day MA (shorts activate only *below* it)
 - **Earnings filter** — names reporting within the hold window are excluded from picks

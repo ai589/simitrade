@@ -1,4 +1,4 @@
-# 5-year weekly backtest of candidate 1-week NYSE strategies.
+# 5-year weekly backtest of candidate 1-week NYSE/Nasdaq strategies.
 # Rebalance every 5 trading days: rank at close t, enter at close t, exit at close t+5.
 # Top 5 picks, equal weight, 0.10% round-trip cost per position.
 # Writes strategies.json (stats consumed by screener.py / dashboard.html).
@@ -18,7 +18,7 @@ import requests
 from screener import UNIVERSE, HEADERS
 
 CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{sym}?range=10y&interval=1d"
-# benchmarks that bypass the NYSE-only filter
+# benchmarks that bypass the exchange filter
 NONSTOCK = {"SPY", "GC=F", "CL=F"}
 COST = 0.001          # round trip per position
 TOP_N = 5
@@ -35,7 +35,7 @@ def fetch5y(sym):
                 continue
             r.raise_for_status()
             j = r.json()["chart"]["result"][0]
-            if not j["meta"].get("fullExchangeName", "").upper().startswith(("NYSE",)) and sym not in NONSTOCK:
+            if not j["meta"].get("fullExchangeName", "").upper().startswith(("NYSE", "NASDAQ")) and sym not in NONSTOCK:
                 return None
             q = j["indicators"]["quote"][0]
             out = {}
@@ -175,7 +175,7 @@ def main():
                 data[res[0]] = res[1]
     if "SPY" not in data:
         raise SystemExit("SPY fetch failed — cannot benchmark.")
-    print(f"Got {len(data) - 1} NYSE names + SPY.")
+    print(f"Got {len(data) - 1} names + SPY.")
 
     # master calendar from SPY
     cal = sorted(data["SPY"].keys())

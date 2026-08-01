@@ -1,9 +1,10 @@
 @echo off
 rem Publish the latest version of this project to github.com/ai589/simitrade
+rem and deploy to Vercel (https://simitrade.vercel.app).
 rem Mirrors the folder (minus caches/logs) into a standalone repo and pushes.
 set WORK=%LOCALAPPDATA%\simitrade-publish
 
-robocopy "%~dp0." "%WORK%" /MIR /XD .git __pycache__ .claude /XF px5y_cache.json px10y_cache.json earnings_cache.json refresh_log.txt /NFL /NDL /NJH
+robocopy "%~dp0." "%WORK%" /MIR /XD .git .vercel __pycache__ .claude /XF px5y_cache.json px10y_cache.json earnings_cache.json refresh_log.txt .env.local /NFL /NDL /NJH
 if errorlevel 8 (
   echo ERROR: file copy failed.
   pause
@@ -20,5 +21,13 @@ if errorlevel 1 (
   exit /b 1
 )
 echo Published to https://github.com/ai589/simitrade
+
+call vercel deploy --prod --yes --cwd "%WORK%"
+if errorlevel 1 (
+  echo WARNING: Vercel deploy failed - GitHub push succeeded. Run publish.bat again or "vercel deploy --prod" manually.
+  pause
+  exit /b 1
+)
+echo Deployed to https://simitrade.vercel.app
 :done
 timeout /t 5 >nul

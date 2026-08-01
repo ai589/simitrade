@@ -1,5 +1,7 @@
 __pycache__/
 *.pyc
+.vercel/
+.env.local
 px5y_cache.json
 px10y_cache.json
 earnings_cache.json

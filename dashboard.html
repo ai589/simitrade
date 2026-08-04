@@ -8,7 +8,7 @@
   :root {
     --bg: #0a0e14; --panel: #11161d; --panel2: #182029; --border: #242d39; --hair: #1a212b;
     --text: #e6ebf2; --dim: #8d97a8; --accent: #5ccfe6; --green: #3fd68f;
-    --red: #f0616d; --amber: #e8b13f;
+    --red: #f0616d; --amber: #e8b13f; --sell: #ff9264;
     --mono: "Cascadia Code", Consolas, ui-monospace, "Courier New", monospace;
     --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
     --navh: 46px;
@@ -24,6 +24,7 @@
     backdrop-filter: blur(8px); border-bottom: 1px solid var(--hair); }
   #topnav h1 { font: 600 13px/1 var(--mono); letter-spacing: .09em; text-transform: uppercase; white-space: nowrap; }
   #topnav h1::after { content: "▮"; color: var(--accent); margin-left: 7px; animation: blink 1.2s steps(1) infinite; }
+  #topnav .ver { font: 500 10.5px var(--mono); color: var(--dim); letter-spacing: .05em; white-space: nowrap; }
   #topnav nav { display: flex; gap: 2px; margin-left: auto; flex-wrap: wrap; }
   #topnav nav a { font: 500 11px var(--mono); color: var(--dim); text-decoration: none;
     padding: 5px 9px; border-radius: 6px; letter-spacing: .04em; }
@@ -104,6 +105,10 @@
   .tag { font-size: 10px; padding: 2px 7px; border-radius: 20px; border: 1px solid var(--border);
     color: var(--dim); font-family: var(--mono); }
   .tag.hot { color: var(--amber); border-color: var(--amber); }
+  .tag.holdtag { color: var(--accent); border-color: var(--accent); }
+  .tag.selltag { color: var(--sell); border-color: var(--sell); }
+  tr.sellrow { background: rgba(255,146,100,.10); }
+  tr.sellrow td:first-child { box-shadow: inset 4px 0 0 var(--sell); }
   .sb { display: inline-block; width: 54px; height: 5px; background: var(--panel2); border-radius: 3px;
     vertical-align: middle; margin-right: 6px; overflow: hidden; }
   .sb i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); }
@@ -148,6 +153,7 @@
 
 <header id="topnav">
   <h1>US Swing Screener · NYSE + Nasdaq</h1>
+  <span class="ver" title="Dashboard version — bumped on every publish. Data freshness is shown separately below.">v2026.08.04-1206 (SGT)</span>
   <nav>
     <a href="#calc">tools</a>
     <a href="#strategies">strategies</a>
@@ -246,7 +252,14 @@
     <b>5. Sizing.</b> Shares = (account × risk%) ÷ stop distance, capped at 20% of account per position
     and budget ÷ basket size if a budget is set.<br><br>
     <b>6. Exit.</b> Stop hit → out; target hit → out; otherwise sell at the close on the sell-by date.
-    Every pick is also paper-logged automatically and scored against real prices — see the paper-trade record.
+    Every pick is also paper-logged automatically and scored against real prices — see the paper-trade record.<br><br>
+    <b>7. Weekly rollover.</b> If a name you already hold is picked again this week, <b>keep holding it</b>
+    (tagged <span class="tag holdtag">↻ hold</span>) — the backtest's "sell at the close, re-enter at the same close"
+    is economically the same position, so rolling it forward just skips two spreads and commissions. Apply the
+    new week's stop/target to the held position. Names still open that <i>dropped out</i> of the picks appear as
+    <span style="color:var(--sell)">orange ✕ sell rows</span> in the same table — those are the ones to actually
+    close this week. The paper-trade record still scores each week independently (backtest-consistent), so its
+    stats stay comparable.
   </div>
 </details>
 
@@ -527,34 +540,60 @@ function renderStrategies() {
         <div><span>Max DD</span><span class="red">${fmt(s.maxDD,1)}%</span></div>
         <div><span>5y total</span><span class="${cls(s.total)}">${pct(s.total)}</span></div>
       </div>` : '<div class="sub">Run backtest: python variants.py</div>';
-    let picksHtml;
+    // Three actions per card: picks (↻ hold / new) plus orange ✕ sell rows for
+    // open positions that dropped out of this week's picks.
+    const ro = st.rotateOut || [];
+    const closeVerb = st.side === 'short' ? 'cover' : 'sell';
+    const pickRows = st.picks.map(sym => {
+      const r = bySym[sym];
+      if (!r) return '';
+      const lv = levels(r, st);
+      const n = shares(r, st.picks.length, lv.stop);
+      const spct = v => (v > 0 ? '+' : '') + fmt(v, 1) + '%';
+      const isTop = top3Up.has(si + '|' + sym);
+      let mark = isTop ? ' <span class="tag" style="color:var(--green);border-color:var(--green)">▲ top upside</span>' : '';
+      const heldSince = (st.held || {})[sym];
+      if (heldSince)
+        mark += ` <span class="tag holdtag" title="Already in your book since ${heldSince} — picked again this week, so keep holding: no need to sell and re-buy.">↻ hold</span>`;
+      else if (Object.keys(st.held || {}).length)
+        mark += ' <span class="tag" title="Not held yet — buy this one.">new</span>';
+      return `<tr${isTop ? ' class="up3row"' : ''}><td><b class="symlink" data-sym="${sym}">${sym}</b>${mark}</td><td>$${fmt(r.entry)}</td>
+        <td class="red">$${fmt(lv.stop)}<br><span class="sub" style="font-size:10px">${spct((lv.stop / r.entry - 1) * 100)}</span></td>
+        <td class="green">$${fmt(lv.target)}<br><span class="sub" style="font-size:10px">${spct((lv.target / r.entry - 1) * 100)}</span></td>
+        <td>${n.toLocaleString()}</td></tr>`;
+    }).join('');
+    const sellRows = ro.map(o => {
+      const r = bySym[o.sym];
+      return `<tr class="sellrow"><td><b class="symlink" data-sym="${o.sym}">${o.sym}</b>
+        <span class="tag selltag" title="Still open from ${o.since} but no longer picked — close this position this week.">✕ ${closeVerb}</span></td>
+        <td>${r ? '$' + fmt(r.px) : '—'}</td>
+        <td colspan="2" class="sub" style="text-align:right;font-size:11px">held since ${o.since.slice(5)}</td>
+        <td class="sub" style="font-size:11px">${closeVerb} by ${o.sellBy ? o.sellBy.slice(5) : '—'}</td></tr>`;
+    }).join('');
+    let picksHtml = '';
     if (!st.picks.length) {
       picksHtml = st.bearGated
         ? `<div class="sub" style="margin-top:8px">💤 Waiting for a bear regime (SPY &lt; 50-day MA) — shorts stay in cash while the market is in an uptrend</div>`
         : `<div class="sub" style="margin-top:8px">💤 In cash this week (regime off)</div>`;
-    } else {
-      picksHtml = `<table style="margin-top:8px;font-size:12px"><thead><tr>
+    }
+    if (pickRows || sellRows) {
+      picksHtml += `<table style="margin-top:8px;font-size:12px"><thead><tr>
         <th style="position:static">Sym</th><th style="position:static">Entry</th>
         <th style="position:static">Stop</th><th style="position:static">Target</th>
-        <th style="position:static">Shares</th></tr></thead><tbody>` +
-        st.picks.map(sym => {
-          const r = bySym[sym];
-          if (!r) return '';
-          const lv = levels(r, st);
-          const n = shares(r, st.picks.length, lv.stop);
-          const spct = v => (v > 0 ? '+' : '') + fmt(v, 1) + '%';
-          const isTop = top3Up.has(si + '|' + sym);
-          const mark = isTop ? ' <span class="tag" style="color:var(--green);border-color:var(--green)">▲ top upside</span>' : '';
-          return `<tr${isTop ? ' class="up3row"' : ''}><td><b class="symlink" data-sym="${sym}">${sym}</b>${mark}</td><td>$${fmt(r.entry)}</td>
-            <td class="red">$${fmt(lv.stop)}<br><span class="sub" style="font-size:10px">${spct((lv.stop / r.entry - 1) * 100)}</span></td>
-            <td class="green">$${fmt(lv.target)}<br><span class="sub" style="font-size:10px">${spct((lv.target / r.entry - 1) * 100)}</span></td>
-            <td>${n.toLocaleString()}</td></tr>`;
-        }).join('') + '</tbody></table>';
-      const totalCost = st.picks.reduce((sum, sym) => {
+        <th style="position:static">Shares</th></tr></thead><tbody>${pickRows}${sellRows}</tbody></table>`;
+    }
+    if (st.picks.length) {
+      const held = st.held || {};
+      const newPicks = st.picks.filter(sym => !held[sym]);
+      const newCost = newPicks.reduce((sum, sym) => {
         const r = bySym[sym];
         return r ? sum + shares(r, st.picks.length, levels(r, st).stop) * r.entry : sum;
       }, 0);
-      picksHtml += `<div class="sub" style="margin-top:6px;font-size:11px">Total basket cost ≈ <b>$${Math.round(totalCost).toLocaleString()}</b>
+      const heldNote = Object.keys(held).length
+        ? ` &nbsp;·&nbsp; <span style="color:var(--accent)">${Object.keys(held).length} carried over (↻ hold)</span>` : '';
+      const sellNote = ro.length
+        ? ` &nbsp;·&nbsp; <span style="color:var(--sell)">${ro.length} to close (✕ ${closeVerb})</span>` : '';
+      picksHtml += `<div class="sub" style="margin-top:6px;font-size:11px">New buys ≈ <b>$${Math.round(newCost).toLocaleString()}</b>${heldNote}${sellNote}
         &nbsp;·&nbsp; hold ${st.holdDays || 5} trading days
         &nbsp;·&nbsp; sell remainder by <b>${st.sellBy || '—'}</b></div>`;
     }

@@ -458,6 +458,16 @@ def update_paper_log(datamap, strategies, results, today_str):
         a["hitRate"] = round(a["wins"] / a["closed"] * 100, 1) if a["closed"] else None
         a["avgRet"] = round(a["sumRet"] / a["closed"], 2) if a["closed"] else None
         a["trades"] = sorted(a["trades"], key=lambda x: x["date"], reverse=True)[:40]
+    # names still open from an earlier session, per strategy — powers the
+    # hold / new / rotate-out view on the strategy cards (earliest entry wins,
+    # since that is when the human actually bought)
+    for e in log["entries"]:
+        if e["status"] != "open" or e["date"] >= today_str or e["strategy"] not in agg:
+            continue
+        ho = agg[e["strategy"]].setdefault("heldOpen", {})
+        cur = ho.get(e["sym"])
+        if cur is None or e["date"] < cur["since"]:
+            ho[e["sym"]] = {"since": e["date"], "sellBy": e.get("sellBy")}
     return agg
 
 
@@ -729,6 +739,16 @@ def main():
     n_open = sum(a["open"] for a in paper.values())
     n_closed = sum(a["closed"] for a in paper.values())
     print(f"Paper log: {n_open} open, {n_closed} closed trades.")
+
+    # Weekly rollover view: a pick already open from an earlier session is a HOLD
+    # (keep it — selling and re-buying the same close is the backtest's implicit
+    # behaviour, minus the costs); open names no longer picked should rotate out.
+    for st in strategies:
+        ho = (paper.get(st["key"]) or {}).get("heldOpen") or {}
+        st["held"] = {s: ho[s]["since"] for s in st["picks"] if s in ho}
+        st["rotateOut"] = [
+            {"sym": s, "since": v["since"], "sellBy": v.get("sellBy")}
+            for s, v in sorted(ho.items()) if s not in st["picks"]]
 
     payload = {
         "generated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),

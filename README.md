@@ -6,6 +6,7 @@ A self-contained swing-trading research dashboard for liquid NYSE and Nasdaq lar
 
 ## What it does
 
+- **Auto-refresh 3× per trading day** — 8:00 AM SGT plus ~10-15 min after the US open and close via Windows scheduled tasks; `market_guard.py` converts to America/New_York time so the schedule survives US daylight-saving flips and skips weekends
 - **Daily screen** of ~200 liquid NYSE and Nasdaq names (>$50M/day traded) on momentum, trend, RSI, volume, volatility and 52-week value signals
 - **11 strategies, all backtested 10 years** (2016–2026, weekly rebalance, trading costs included) with honest stats: hit rate, Sharpe, max drawdown, growth of $10,000
 - **Regime filter** — strategies sit in cash when SPY is below its 50-day MA (shorts activate only *below* it)

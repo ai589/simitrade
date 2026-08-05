@@ -13293,6 +13293,18 @@
    "holdDays": 5,
    "sellBy": "2026-08-11",
    "status": "open"
+  },
+  {
+   "date": "2026-08-04",
+   "strategy": "zblend",
+   "sym": "JD",
+   "entry": 32.97,
+   "stop": 31.93,
+   "target": 34.35,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-11",
+   "status": "open"
   }
  ]
 }

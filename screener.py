@@ -28,9 +28,11 @@ UNIVERSE = [
     "MCK", "BDX", "A", "IQV", "RMD", "NVO",
     # Healthcare (Nasdaq)
     "AMGN", "GILD", "VRTX", "REGN", "ISRG", "IDXX", "DXCM", "GEHC",
+    "AZN", "NVS",  # pharma ADRs (AZN Nasdaq, NVS NYSE)
     # Energy
     "XOM", "CVX", "COP", "SLB", "EOG", "OXY", "VLO", "PSX", "MPC", "KMI",
     "WMB", "OKE", "HAL", "DVN", "TRGP", "LNG",
+    "SHEL", "BP",  # oil-major ADRs (NYSE)
     "FANG", "BKR",  # Nasdaq
     # Industrials
     "BA", "CAT", "DE", "GE", "LMT", "RTX", "UNP", "UPS", "FDX", "MMM",
@@ -46,7 +48,8 @@ UNIVERSE = [
     "CSCO", "NFLX", "CMCSA", "APP", "DASH", "TTD", "ZS", "DDOG", "FTNT",
     "WDAY", "TEAM", "MRVL", "SMCI", "ARM", "COIN", "HOOD", "MSTR", "PYPL", "EA",
     "ADI", "NXPI", "SNPS", "CDNS", "ASML",
-    "APH", "MSI", "SPOT", "SE",  # NYSE
+    "BIDU", "NTES",  # China internet ADRs (Nasdaq)
+    "APH", "MSI", "SPOT", "SE", "SAP",  # NYSE
     # Consumer
     "WMT", "HD", "LOW", "MCD", "NKE", "TGT", "PG", "KO", "CL", "KMB",
     "MO", "PM", "F", "GM", "CMG", "YUM", "SBUX", "DG",
@@ -54,6 +57,8 @@ UNIVERSE = [
     # Consumer (Nasdaq)
     "AMZN", "TSLA", "COST", "PEP", "MDLZ", "BKNG", "ABNB", "MAR", "ORLY",
     "ROST", "LULU", "MNST", "KDP", "KHC",
+    "PDD", "JD", "TCOM", "MELI",  # e-commerce/travel ADRs + MELI (Nasdaq)
+    "BABA",  # NYSE
     # Materials / Utilities / REITs
     "LIN", "APD", "SHW", "FCX", "NUE", "DOW", "DD", "ECL", "NEE", "DUK",
     "SO", "SPG", "PLD", "AMT", "O", "CCI",
@@ -241,9 +246,10 @@ SECTORS = {
     "Healthcare": ["UNH", "JNJ", "LLY", "PFE", "MRK", "ABBV", "TMO", "ABT", "BMY", "CVS",
                    "DHR", "SYK", "BSX", "MDT", "EW", "ZTS", "ELV", "CI", "HUM", "HCA",
                    "AMGN", "GILD", "VRTX", "REGN", "ISRG", "IDXX", "DXCM",
-                   "MCK", "BDX", "GEHC", "A", "IQV", "RMD", "NVO"],
+                   "MCK", "BDX", "GEHC", "A", "IQV", "RMD", "NVO", "AZN", "NVS"],
     "Energy": ["XOM", "CVX", "COP", "SLB", "EOG", "OXY", "VLO", "PSX", "MPC", "KMI",
-               "WMB", "OKE", "HAL", "DVN", "FANG", "BKR", "TRGP", "LNG"],
+               "WMB", "OKE", "HAL", "DVN", "FANG", "BKR", "TRGP", "LNG",
+               "SHEL", "BP"],
     "Industrials": ["BA", "CAT", "DE", "GE", "LMT", "RTX", "UNP", "UPS", "FDX", "MMM",
                     "ETN", "EMR", "PH", "ROK", "ITW", "GD", "NOC", "TDG", "CMI", "NSC",
                     "WM", "RSG", "URI", "PWR",
@@ -255,12 +261,14 @@ SECTORS = {
                    "INTC", "TXN", "MU", "AMAT", "LRCX", "KLAC", "PANW", "CRWD", "INTU",
                    "CSCO", "NFLX", "CMCSA", "APP", "DASH", "TTD", "ZS", "DDOG", "FTNT",
                    "WDAY", "TEAM", "MRVL", "SMCI", "ARM", "COIN", "HOOD", "MSTR", "PYPL", "EA",
-                   "ADI", "NXPI", "SNPS", "CDNS", "ASML", "APH", "MSI", "SPOT", "SE"],
+                   "ADI", "NXPI", "SNPS", "CDNS", "ASML", "APH", "MSI", "SPOT", "SE",
+                   "BIDU", "NTES", "SAP"],
     "Consumer": ["WMT", "HD", "LOW", "MCD", "NKE", "TGT", "PG", "KO", "CL", "KMB", "MO",
                  "PM", "F", "GM", "CMG", "YUM", "SBUX", "DG",
                  "AMZN", "TSLA", "COST", "PEP", "MDLZ", "BKNG", "ABNB", "MAR", "ORLY",
                  "ROST", "LULU", "MNST", "KDP", "KHC",
-                 "TJX", "RCL", "HLT", "EL", "DECK", "TM"],
+                 "TJX", "RCL", "HLT", "EL", "DECK", "TM",
+                 "PDD", "JD", "TCOM", "MELI", "BABA"],
     "Materials/Util/REIT": ["LIN", "APD", "SHW", "FCX", "NUE", "DOW", "DD", "ECL", "NEE",
                             "DUK", "SO", "SPG", "PLD", "AMT", "O", "CCI",
                             "EXC", "XEL", "AEP", "SBAC", "EQIX",
@@ -682,8 +690,8 @@ def strategy_picks(results, regime_on, last_session):
          "desc": "SHORT the fastest 20-day gainers with RSI-14 ≥ 80 — parabolic "
                  "blow-offs, the classic overbought/overvalued proxy. Judge it on the "
                  "bear-weeks row below, not the full sample: shorting a decade-long "
-                 "bull loses by design, but in SPY<50-day-MA weeks this rule made "
-                 "+41% at Sharpe 1.1 (best of 6 overvalued-short rules tested).",
+                 "bull loses by design; whatever edge this rule has shows only in "
+                 "SPY<50-day-MA weeks (one of 6 overvalued-short rules tested).",
          "regimeGated": False,
          "emptyNote": "No names with RSI-14 ≥ 80 this week — blow-offs are rare "
                       "outside manias, so this strategy is often flat.",
@@ -694,8 +702,8 @@ def strategy_picks(results, regime_on, last_session):
          "desc": "SHORT names stretched ≥20% above their own 200-day MA with "
                  "RSI-14 ≥ 75 — the most extended and overbought, i.e. richest vs "
                  "their own trend. Judge it on the bear-weeks row below: full-sample "
-                 "shorting loses, but in SPY<50-day-MA weeks this made +28% "
-                 "(2nd best of 6 overvalued-short rules tested).",
+                 "shorting loses; whatever edge this rule has shows only in "
+                 "SPY<50-day-MA weeks (one of 6 overvalued-short rules tested).",
          "regimeGated": False,
          "emptyNote": "No names ≥20% above their 200-day MA with RSI ≥ 75 this "
                       "week — extreme extensions have cooled off.",

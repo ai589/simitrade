@@ -17,23 +17,26 @@ import requests
 UNIVERSE = [
     # Financials
     "JPM", "BAC", "WFC", "C", "GS", "MS", "SCHW", "AXP", "V", "MA",
-    "BLK", "KKR", "BX", "APO", "USB", "PNC", "TFC", "COF", "BK", "SPGI",
+    "BLK", "KKR", "BX", "APO", "USB", "PNC", "TFC", "COF", "SPGI",
     "MCO", "ICE", "AON", "AJG", "CB", "PGR", "TRV", "ALL", "MET",
-    "PRU", "AIG", "BRK-B",
+    "PRU", "AIG", "BRK-B", "AFL", "SYF",
+    "CME", "IBKR",  # Nasdaq
+    # BK, MMC, DFS, CTRA, HES removed: tickers 404 on Yahoo (acquired/delisted)
     # Healthcare
     "UNH", "JNJ", "LLY", "PFE", "MRK", "ABBV", "TMO", "ABT", "BMY", "CVS",
     "DHR", "SYK", "BSX", "MDT", "EW", "ZTS", "ELV", "CI", "HUM", "HCA",
+    "MCK", "BDX", "A", "IQV", "RMD", "NVO",
     # Healthcare (Nasdaq)
-    "AMGN", "GILD", "VRTX", "REGN", "ISRG", "IDXX", "DXCM",
+    "AMGN", "GILD", "VRTX", "REGN", "ISRG", "IDXX", "DXCM", "GEHC",
     # Energy
     "XOM", "CVX", "COP", "SLB", "EOG", "OXY", "VLO", "PSX", "MPC", "KMI",
-    "WMB", "OKE", "HAL", "DVN", "CTRA",
+    "WMB", "OKE", "HAL", "DVN", "TRGP", "LNG",
     "FANG", "BKR",  # Nasdaq
     # Industrials
     "BA", "CAT", "DE", "GE", "LMT", "RTX", "UNP", "UPS", "FDX", "MMM",
     "ETN", "EMR", "PH", "ROK", "ITW", "GD", "NOC", "TDG", "CMI", "NSC",
-    "WM", "RSG", "URI", "PWR",
-    "HON", "CSX", "ODFL", "PCAR", "ADP", "PAYX",  # Nasdaq
+    "WM", "RSG", "URI", "PWR", "GEV", "VRT", "HWM",
+    "HON", "CSX", "ODFL", "PCAR", "ADP", "PAYX", "AXON",  # Nasdaq
     # Tech / Communications
     "CRM", "ORCL", "IBM", "ACN", "NOW", "UBER", "SNOW", "NET", "SHOP", "TSM",
     "ANET", "DELL", "HPQ", "PLTR", "XYZ", "T", "VZ", "DIS",
@@ -42,16 +45,20 @@ UNIVERSE = [
     "INTC", "TXN", "MU", "AMAT", "LRCX", "KLAC", "PANW", "CRWD", "INTU",
     "CSCO", "NFLX", "CMCSA", "APP", "DASH", "TTD", "ZS", "DDOG", "FTNT",
     "WDAY", "TEAM", "MRVL", "SMCI", "ARM", "COIN", "HOOD", "MSTR", "PYPL", "EA",
+    "ADI", "NXPI", "SNPS", "CDNS", "ASML",
+    "APH", "MSI", "SPOT", "SE",  # NYSE
     # Consumer
     "WMT", "HD", "LOW", "MCD", "NKE", "TGT", "PG", "KO", "CL", "KMB",
     "MO", "PM", "F", "GM", "CMG", "YUM", "SBUX", "DG",
+    "TJX", "RCL", "HLT", "EL", "DECK", "TM",
     # Consumer (Nasdaq)
     "AMZN", "TSLA", "COST", "PEP", "MDLZ", "BKNG", "ABNB", "MAR", "ORLY",
     "ROST", "LULU", "MNST", "KDP", "KHC",
     # Materials / Utilities / REITs
     "LIN", "APD", "SHW", "FCX", "NUE", "DOW", "DD", "ECL", "NEE", "DUK",
     "SO", "SPG", "PLD", "AMT", "O", "CCI",
-    "EXC", "XEL", "AEP", "SBAC", "EQIX",  # Nasdaq
+    "VST", "NEM", "DLR", "PSA", "SRE", "D",
+    "EXC", "XEL", "AEP", "SBAC", "EQIX", "CEG",  # Nasdaq
 ]
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
@@ -229,30 +236,35 @@ def analyse(d):
 SECTORS = {
     "Financials": ["JPM", "BAC", "WFC", "C", "GS", "MS", "SCHW", "AXP", "V", "MA", "BLK",
                    "KKR", "BX", "APO", "USB", "PNC", "TFC", "COF", "BK", "SPGI", "MCO",
-                   "ICE", "MMC", "AON", "AJG", "CB", "PGR", "TRV", "ALL", "MET", "PRU",
-                   "AIG", "BRK.B"],
+                   "ICE", "AON", "AJG", "CB", "PGR", "TRV", "ALL", "MET", "PRU",
+                   "AIG", "BRK.B", "AFL", "SYF", "CME", "IBKR"],
     "Healthcare": ["UNH", "JNJ", "LLY", "PFE", "MRK", "ABBV", "TMO", "ABT", "BMY", "CVS",
                    "DHR", "SYK", "BSX", "MDT", "EW", "ZTS", "ELV", "CI", "HUM", "HCA",
-                   "AMGN", "GILD", "VRTX", "REGN", "ISRG", "IDXX", "DXCM"],
+                   "AMGN", "GILD", "VRTX", "REGN", "ISRG", "IDXX", "DXCM",
+                   "MCK", "BDX", "GEHC", "A", "IQV", "RMD", "NVO"],
     "Energy": ["XOM", "CVX", "COP", "SLB", "EOG", "OXY", "VLO", "PSX", "MPC", "KMI",
-               "WMB", "OKE", "HAL", "DVN", "HES", "CTRA", "FANG", "BKR"],
+               "WMB", "OKE", "HAL", "DVN", "FANG", "BKR", "TRGP", "LNG"],
     "Industrials": ["BA", "CAT", "DE", "GE", "LMT", "RTX", "UNP", "UPS", "FDX", "MMM",
                     "ETN", "EMR", "PH", "ROK", "ITW", "GD", "NOC", "TDG", "CMI", "NSC",
                     "WM", "RSG", "URI", "PWR",
-                    "HON", "CSX", "ODFL", "PCAR", "ADP", "PAYX"],
+                    "HON", "CSX", "ODFL", "PCAR", "ADP", "PAYX",
+                    "GEV", "VRT", "HWM", "AXON"],
     "Tech/Comms": ["CRM", "ORCL", "IBM", "ACN", "NOW", "UBER", "SNOW", "NET", "SHOP",
                    "TSM", "ANET", "DELL", "HPQ", "PLTR", "XYZ", "T", "VZ", "DIS",
                    "AAPL", "MSFT", "NVDA", "GOOGL", "META", "AVGO", "AMD", "ADBE", "QCOM",
                    "INTC", "TXN", "MU", "AMAT", "LRCX", "KLAC", "PANW", "CRWD", "INTU",
                    "CSCO", "NFLX", "CMCSA", "APP", "DASH", "TTD", "ZS", "DDOG", "FTNT",
-                   "WDAY", "TEAM", "MRVL", "SMCI", "ARM", "COIN", "HOOD", "MSTR", "PYPL", "EA"],
+                   "WDAY", "TEAM", "MRVL", "SMCI", "ARM", "COIN", "HOOD", "MSTR", "PYPL", "EA",
+                   "ADI", "NXPI", "SNPS", "CDNS", "ASML", "APH", "MSI", "SPOT", "SE"],
     "Consumer": ["WMT", "HD", "LOW", "MCD", "NKE", "TGT", "PG", "KO", "CL", "KMB", "MO",
                  "PM", "F", "GM", "CMG", "YUM", "SBUX", "DG",
                  "AMZN", "TSLA", "COST", "PEP", "MDLZ", "BKNG", "ABNB", "MAR", "ORLY",
-                 "ROST", "LULU", "MNST", "KDP", "KHC"],
+                 "ROST", "LULU", "MNST", "KDP", "KHC",
+                 "TJX", "RCL", "HLT", "EL", "DECK", "TM"],
     "Materials/Util/REIT": ["LIN", "APD", "SHW", "FCX", "NUE", "DOW", "DD", "ECL", "NEE",
                             "DUK", "SO", "SPG", "PLD", "AMT", "O", "CCI",
-                            "EXC", "XEL", "AEP", "SBAC", "EQIX"],
+                            "EXC", "XEL", "AEP", "SBAC", "EQIX",
+                            "VST", "CEG", "NEM", "DLR", "PSA", "SRE", "D"],
 }
 SECTOR_OF = {s: k for k, v in SECTORS.items() for s in v}
 
@@ -522,6 +534,14 @@ def strategy_picks(results, regime_on, last_session):
     # short pool (deployed only in a bear regime: SPY < 50-day MA)
     short_spike_pool = sorted([r for r in tradeable if not r["aboveSma50"]],
                               key=lambda r: -r["ret5"])
+    # overvalued shorts (always in; price proxies for "overvalued" — the two
+    # winners of the round-5 overvalued-short tests, judged on bear-regime weeks)
+    short_blowoff_pool = sorted([r for r in tradeable if r["rsi"] >= 80],
+                                key=lambda r: -r["ret20"])
+    short_overext_pool = sorted(
+        [r for r in tradeable if r.get("px200") is not None
+         and r["px200"] > 120 and r["rsi"] >= 75],
+        key=lambda r: -r["px200"])
 
     stats_map = {}
     curves = None
@@ -540,6 +560,8 @@ def strategy_picks(results, regime_on, last_session):
             "value200": vr.get("variantsExtra", {}).get("below 200d MA + turning up"),
             "zblend": vr["variants"].get("mom/low-vol z-blend + regime"),
             "shortSpike": vr.get("variantsExtra", {}).get("short 5d spike + bear regime"),
+            "shortBlowoff": vr.get("variantsExtra", {}).get("short RSI blow-off"),
+            "shortOverext": vr.get("variantsExtra", {}).get("short overbought extension"),
             "spy": vr.get("spy"),
         }
         c = vr.get("curves")
@@ -559,10 +581,16 @@ def strategy_picks(results, regime_on, last_session):
                 curves["datesExtra"] = cex["dates"]
                 curves["valueDD"] = cex.get("deep 52w drawdown")
                 curves["value200"] = cex.get("below 200d MA + turning up")
+                curves["shortSpike"] = cex.get("short 5d spike + bear regime")
+                curves["shortBlowoff"] = cex.get("short RSI blow-off")
+                curves["shortOverext"] = cex.get("short overbought extension")
+                curves["bearFlags"] = cex.get("bearFlags")
             c2 = vr.get("curves2")
             if c2:
                 curves["dates2"] = c2["dates"]
                 curves["zblend"] = c2.get("mom/low-vol z-blend + regime")
+                curves["sectorNeutral"] = c2.get("sector-neutral mom + regime")
+                curves["weeklyDip"] = c2.get("weekly dip in uptrend")
     except Exception:
         pass
 
@@ -636,20 +664,43 @@ def strategy_picks(results, regime_on, last_session):
         {**common5, "key": "zblend", "label": "Momentum / low-vol z-blend + regime",
          "desc": "Names above their 50-day MA scored by momentum z-score (20d+60d "
                  "return) minus volatility z-score — the strongest movers with the "
-                 "least chop, 5 names. Cash when SPY < 50-day MA. Best Sharpe (1.03) "
-                 "of all 21 weekly rule sets tested; replaced the retired "
-                 "short-rally strategy (-64% backtest).",
+                 "least chop, 5 names. Cash when SPY < 50-day MA. Replaced the "
+                 "retired short-rally strategy (-64% backtest).",
          "regimeGated": True,
          "picks": [r["sym"] for r in zblend_ranked[:5]] if regime_on else [],
          "stats": stats_map.get("zblend")},
         {**common5, "key": "shortSpike", "label": "Short: 5-day spike below SMA50",
          "side": "short", "bearGated": True,
          "desc": "SHORT the sharpest 5-day spikes among names below their 50-day MA. "
-                 "Only active when SPY < 50-day MA. WARNING: lost 51.3% in the 4y "
+                 "Only active when SPY < 50-day MA. WARNING: lost 67% over the full "
                  "backtest — informational; shorting weekly was a losing game in this sample.",
          "regimeGated": False,
          "picks": [r["sym"] for r in short_spike_pool[:5]] if not regime_on else [],
          "stats": stats_map.get("shortSpike")},
+        {**common5, "key": "shortBlowoff", "label": "Short: RSI blow-off (always in)",
+         "side": "short",
+         "desc": "SHORT the fastest 20-day gainers with RSI-14 ≥ 80 — parabolic "
+                 "blow-offs, the classic overbought/overvalued proxy. Judge it on the "
+                 "bear-weeks row below, not the full sample: shorting a decade-long "
+                 "bull loses by design, but in SPY<50-day-MA weeks this rule made "
+                 "+41% at Sharpe 1.1 (best of 6 overvalued-short rules tested).",
+         "regimeGated": False,
+         "emptyNote": "No names with RSI-14 ≥ 80 this week — blow-offs are rare "
+                      "outside manias, so this strategy is often flat.",
+         "picks": [r["sym"] for r in short_blowoff_pool[:5]],
+         "stats": stats_map.get("shortBlowoff")},
+        {**common5, "key": "shortOverext", "label": "Short: overbought extension (always in)",
+         "side": "short",
+         "desc": "SHORT names stretched ≥20% above their own 200-day MA with "
+                 "RSI-14 ≥ 75 — the most extended and overbought, i.e. richest vs "
+                 "their own trend. Judge it on the bear-weeks row below: full-sample "
+                 "shorting loses, but in SPY<50-day-MA weeks this made +28% "
+                 "(2nd best of 6 overvalued-short rules tested).",
+         "regimeGated": False,
+         "emptyNote": "No names ≥20% above their 200-day MA with RSI ≥ 75 this "
+                      "week — extreme extensions have cooled off.",
+         "picks": [r["sym"] for r in short_overext_pool[:5]],
+         "stats": stats_map.get("shortOverext")},
     ]], stats_map.get("spy"), curves
 
 

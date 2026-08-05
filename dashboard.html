@@ -153,7 +153,7 @@
 
 <header id="topnav">
   <h1>US Swing Screener · NYSE + Nasdaq</h1>
-  <span class="ver" title="Dashboard version — bumped on every publish. Data freshness is shown separately below.">v2026.08.05-1118 (SGT)</span>
+  <span class="ver" title="Dashboard version — bumped on every publish. Data freshness is shown separately below.">v2026.08.05-1706 (SGT)</span>
   <nav>
     <a href="#calc">tools</a>
     <a href="#strategies">strategies</a>
@@ -221,7 +221,6 @@
   <button class="zbtn" data-w="full">10 years (full)</button>
   <span class="sub" style="font-size:11.5px">— recomputes each card's hit rate / Sharpe / drawdown / total over the chosen trailing window</span>
 </div>
-<div class="controls" id="stratToggles" style="margin-bottom:10px"></div>
 <div class="cards" id="strats"></div>
 
 <details style="margin-top:12px">
@@ -513,7 +512,6 @@ if (['1', '5', 'full'].includes(qpWin)) statsWin = qpWin;
 const CURVE_DATES = { momTop10: 'dates', momTop5: 'dates', lowvol: 'dates',
   mom14: 'dates14', sector14: 'dates14',
   valueDD: 'datesExtra', value200: 'datesExtra', shortSpike: 'datesExtra',
-  shortBlowoff: 'datesExtra', shortOverext: 'datesExtra',
   zblend: 'dates2', sectorNeutral: 'dates2', weeklyDip: 'dates2' };
 
 function windowStats(key) {
@@ -532,32 +530,6 @@ function windowStats(key) {
   let eq = 1, peak = 1, mdd = 0;
   win.forEach(x => { eq *= 1 + x; peak = Math.max(peak, eq); mdd = Math.min(mdd, eq / peak - 1); });
   return { hitRate: win.filter(x => x > 0).length / n * 100,
-    avgWeek: mean * 100, sharpe: mean / sd * Math.sqrt(52),
-    maxDD: mdd * 100, total: (eq - 1) * 100 };
-}
-
-// Shorts' fair horizon: same stats but over SPY<50-day-MA weeks only (the
-// regime shorting is supposed to work in), within the selected stats window.
-// bearFlags is aligned to the datesExtra grid, where all short curves live.
-function bearStats(key) {
-  const C = D.curves || {};
-  const w = C[key], dates = C[CURVE_DATES[key]], flags = C.bearFlags;
-  if (!w || !dates || !flags || w.length !== dates.length
-      || flags.length !== w.length) return null;
-  let cut = '';
-  if (statsWin !== 'full') {
-    const cutoff = new Date(D.generated.slice(0, 10) + 'T00:00:00');
-    cutoff.setFullYear(cutoff.getFullYear() - (+statsWin));
-    cut = cutoff.toISOString().slice(0, 10);
-  }
-  const win = w.filter((_, i) => flags[i] === 1 && dates[i] >= cut);
-  const n = win.length;
-  if (n < 4) return null;
-  const mean = win.reduce((a, b) => a + b, 0) / n;
-  const sd = Math.sqrt(win.reduce((a, b) => a + (b - mean) * (b - mean), 0) / n) || 1e-9;
-  let eq = 1, peak = 1, mdd = 0;
-  win.forEach(x => { eq *= 1 + x; peak = Math.max(peak, eq); mdd = Math.min(mdd, eq / peak - 1); });
-  return { weeks: n, hitRate: win.filter(x => x > 0).length / n * 100,
     avgWeek: mean * 100, sharpe: mean / sd * Math.sqrt(52),
     maxDD: mdd * 100, total: (eq - 1) * 100 };
 }
@@ -592,14 +564,12 @@ function renderStrategies() {
     banner.innerHTML = `<b class="green">Regime ON:</b> SPY ($${fmt(D.spyPx)}) is above its 50-day MA ($${fmt(D.spySma50)}) — strategies are active.
       <span class="sub">Backtest verdict (5y, weekly, costs included): these are the best of 15 rule sets tested, but <b>none beat simply holding SPY</b> (+${D.spyStats ? fmt(D.spyStats.total,1) : '—'}% total, Sharpe ${D.spyStats ? D.spyStats.sharpe : '—'}). Trade them as a satellite around a core holding, not as the whole portfolio.</span>`;
   }
-  renderStratToggles();
   const el = document.getElementById('strats'); el.innerHTML = '';
-  // Top 3 highest-upside picks across visible strategies (potential % gain to target;
+  // Top 3 highest-upside picks across ALL strategies (potential % gain to target;
   // for shorts the "gain" is entry falling to target). Keyed per strategy+symbol so
   // the same name in two strategies is ranked independently.
   const allPicks = [];
   (D.strategies || []).forEach((st, si) => {
-    if (!isStratOn(st.key)) return;
     (st.picks || []).forEach(sym => {
       const r = bySym[sym];
       if (!r) return;
@@ -610,7 +580,6 @@ function renderStrategies() {
   const top3Up = new Set(
     allPicks.sort((a, b) => b.upside - a.upside).slice(0, 3).map(p => p.key));
   (D.strategies || []).forEach((st, si) => {
-    if (!isStratOn(st.key)) return;
     const c = document.createElement('div'); c.className = 'card';
     const ws = windowStats(st.key);
     const s = ws || st.stats;
@@ -623,18 +592,6 @@ function renderStrategies() {
         <div><span>Max DD</span><span class="red">${fmt(s.maxDD,1)}%</span></div>
         <div><span>${wl} total</span><span class="${cls(s.total)}">${pct(s.total)}</span></div>
       </div>` : '<div class="sub">Run backtest: python variants.py</div>';
-    // Shorts get a second row: performance in SPY<50d-MA weeks only — their
-    // intended regime, and the fair horizon (full-sample stats span a long bull).
-    const bs = st.side === 'short' ? bearStats(st.key) : null;
-    const bearHtml = bs ? `
-      <div class="sub" style="margin-top:6px;font-size:11px">Bear-regime weeks only (SPY &lt; 50-day MA) — the fair test for a short:</div>
-      <div class="lv" style="grid-template-columns:repeat(5,1fr)">
-        <div><span>Bear weeks</span>${bs.weeks}</div>
-        <div><span>Hit rate</span>${fmt(bs.hitRate,1)}%</div>
-        <div><span>Avg / hold</span><span class="${cls(bs.avgWeek)}">${pct(bs.avgWeek)}</span></div>
-        <div><span>Sharpe</span>${fmt(bs.sharpe)}</div>
-        <div><span>Total</span><span class="${cls(bs.total)}">${pct(bs.total)}</span></div>
-      </div>` : '';
     // Three actions per card: picks (↻ hold / new) plus orange ✕ sell rows for
     // open positions that dropped out of this week's picks.
     const ro = st.rotateOut || [];
@@ -667,9 +624,7 @@ function renderStrategies() {
     }).join('');
     let picksHtml = '';
     if (!st.picks.length) {
-      picksHtml = st.emptyNote
-        ? `<div class="sub" style="margin-top:8px">💤 ${st.emptyNote}</div>`
-        : st.bearGated
+      picksHtml = st.bearGated
         ? `<div class="sub" style="margin-top:8px">💤 Waiting for a bear regime (SPY &lt; 50-day MA) — shorts stay in cash while the market is in an uptrend</div>`
         : `<div class="sub" style="margin-top:8px">💤 In cash this week (regime off)</div>`;
     }
@@ -695,18 +650,14 @@ function renderStrategies() {
         &nbsp;·&nbsp; sell remainder by <b>${st.sellBy || '—'}</b></div>`;
     }
     const shortTag = st.side === 'short' ? ' <span class="tag hot">SHORT</span>' : '';
-    const yrs = st.stats && st.stats.weeks
-      ? fmt(st.stats.weeks * (st.holdDays === 10 ? 14 : 7) / 365, 1) + 'y' : 'full sample';
     const warn = (st.stats && st.stats.total < 0)
       ? `<div style="margin-top:6px;padding:6px 8px;border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:11px">
-           ⚠ Backtest LOST money (${fmt(st.stats.total, 1)}% over ${yrs})${st.side === 'short' ? ' — judge a short on the bear-weeks row above' : ''} — informational tool, not a recommendation</div>`
+           ⚠ Backtest LOST money (${fmt(st.stats.total, 1)}% over 4y) — informational tool, not a recommendation</div>`
       : '';
     c.innerHTML = `<div class="sym" style="font-size:15px">${st.label}${shortTag}</div>
-      <div class="nm" style="white-space:normal">${st.desc}</div>${statHtml}${bearHtml}${warn}${picksHtml}`;
+      <div class="nm" style="white-space:normal">${st.desc}</div>${statHtml}${warn}${picksHtml}`;
     el.appendChild(c);
   });
-  if (!el.children.length)
-    el.innerHTML = '<div class="sub">All strategies hidden — click a chip above to show one.</div>';
 }
 
 let zoomRange = null; // {t0, t1} in ms; null = full 10y
@@ -733,53 +684,10 @@ const SERIES_DEFS = [
   ['valueDD', 'Value: deep 52w drawdown', '#4dd6d2', 'datesExtra'],
   ['value200', 'Value: below 200d MA', '#f286c4', 'datesExtra'],
   ['zblend', 'Momentum/low-vol z-blend + regime', '#8fd14f', 'dates2'],
-  ['shortSpike', 'Short: 5d spike + bear regime', '#f0616d', 'datesExtra'],
-  ['shortBlowoff', 'Short: RSI blow-off', '#ff7ab8', 'datesExtra'],
-  ['shortOverext', 'Short: overbought extension', '#b34747', 'datesExtra'],
 ];
 let seriesOn = {};
 try { seriesOn = JSON.parse(localStorage.getItem('seriesOn')) || {}; } catch (e) {}
 function isOn(key) { return seriesOn[key] !== false; }  // default: on
-
-// Which strategies are visible (persisted; chips above the strategy cards).
-// One toggle hides the strategy everywhere: picks card, paper card, chart line.
-let stratOn = {};
-try { stratOn = JSON.parse(localStorage.getItem('stratOn')) || {}; } catch (e) {}
-function isStratOn(key) { return stratOn[key] !== false; }  // default: on
-function saveStratOn() {
-  try { localStorage.setItem('stratOn', JSON.stringify(stratOn)); } catch (e) {}
-}
-
-function renderStratToggles() {
-  const el = document.getElementById('stratToggles');
-  el.innerHTML = '';
-  const rerender = () => { renderStrategies(); renderPaper(); renderCurves(); };
-  (D.strategies || []).forEach(st => {
-    const b = document.createElement('button');
-    b.className = 'zbtn';
-    b.style.opacity = isStratOn(st.key) ? '1' : '0.35';
-    b.textContent = st.label;
-    b.title = isStratOn(st.key) ? 'Click to hide this strategy' : 'Click to show this strategy';
-    b.addEventListener('click', () => {
-      stratOn[st.key] = !isStratOn(st.key);
-      saveStratOn();
-      rerender();
-    });
-    el.appendChild(b);
-  });
-  [['show all', true], ['hide all', false]].forEach(([label, on]) => {
-    const b = document.createElement('button');
-    b.className = 'zbtn';
-    b.style.fontSize = '11px';
-    b.textContent = label;
-    b.addEventListener('click', () => {
-      (D.strategies || []).forEach(st => stratOn[st.key] = on);
-      saveStratOn();
-      rerender();
-    });
-    el.appendChild(b);
-  });
-}
 
 function renderSeriesToggles(available) {
   const el = document.getElementById('seriesToggles');
@@ -803,11 +711,9 @@ function renderCurves() {
   const C = D.curves;
   const wrap = document.getElementById('curveWrap');
   if (!C || !C.spy) { wrap.style.display = 'none'; return; }
-  const stratKeys = new Set((D.strategies || []).map(s => s.key));
   const available = SERIES_DEFS
     .map(([k, l, c, dk, b]) => [k, l, c, C[dk], b])
-    .filter(s => C[s[0]] && s[3])
-    .filter(s => !stratKeys.has(s[0]) || isStratOn(s[0]));
+    .filter(s => C[s[0]] && s[3]);
   renderSeriesToggles(available);
   const series = available.filter(s => isOn(s[0]));
   if (!series.length) {
@@ -909,9 +815,7 @@ function renderPaper() {
     el.innerHTML = '<div class="sub">No paper trades yet — they start logging with each refresh.</div>';
     return;
   }
-  const stratKeys = new Set((D.strategies || []).map(s => s.key));
   Object.entries(P).forEach(([key, a]) => {
-    if (stratKeys.has(key) && !isStratOn(key)) return;
     const c = document.createElement('div'); c.className = 'card';
     const closedStats = a.closed
       ? `<div class="lv" style="grid-template-columns:repeat(4,1fr)">

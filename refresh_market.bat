@@ -8,3 +8,8 @@ python market_guard.py >> refresh_log.txt 2>&1
 if errorlevel 1 exit /b 0
 echo ===== %date% %time% (US open/close refresh) ===== >> refresh_log.txt
 python screener.py >> refresh_log.txt 2>&1
+if errorlevel 1 (
+  echo ERROR: refresh failed - skipping publish. >> refresh_log.txt
+  exit /b 1
+)
+call "%~dp0publish_silent.bat"

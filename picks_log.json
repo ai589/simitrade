@@ -16665,6 +16665,18 @@
    "holdDays": 5,
    "sellBy": "2026-08-14",
    "status": "open"
+  },
+  {
+   "date": "2026-08-07",
+   "strategy": "lowvol",
+   "sym": "BRK.B",
+   "entry": 521.8,
+   "stop": 510.62,
+   "target": 536.7,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-14",
+   "status": "open"
   }
  ]
 }

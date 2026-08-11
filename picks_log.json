@@ -17004,7 +17004,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-14",
-   "status": "open"
+   "status": "stopped",
+   "exitDate": "2026-08-10",
+   "exitPx": 94.39,
+   "days": 1,
+   "retPct": -3.19
   },
   {
    "date": "2026-08-10",
@@ -17829,6 +17833,30 @@
    "entry": 310.43,
    "stop": 284.96,
    "target": 344.39,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-17",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-10",
+   "strategy": "zblend",
+   "sym": "CRWD",
+   "entry": 225.16,
+   "stop": 210.55,
+   "target": 244.64,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-17",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-10",
+   "strategy": "zblend",
+   "sym": "WDAY",
+   "entry": 184.19,
+   "stop": 169.98,
+   "target": 203.13,
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",

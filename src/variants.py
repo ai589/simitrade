@@ -13,7 +13,12 @@ import concurrent.futures
 
 from backtest import fetch5y, features, stats, UNIVERSE, TOP_N, HOLD, LOOKBACK, COST, NONSTOCK
 
-CACHE = "px10y_cache.json"
+# Repo layout: scripts live in src/, mutable state (caches, results) in state/.
+# VR is imported by variants2-5.py so all rounds share the same results file.
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATE = os.path.join(ROOT, "state")
+VR = os.path.join(STATE, "variants_results.json")
+CACHE = os.path.join(STATE, "px10y_cache.json")
 
 
 def load_data():
@@ -146,16 +151,16 @@ def main():
     # merge, don't overwrite — rounds 3-5 (variants2/3/4.py) store their results
     # in the same file
     merged = {}
-    if os.path.exists("variants_results.json"):
+    if os.path.exists(VR):
         try:
-            with open("variants_results.json", encoding="utf-8") as f:
+            with open(VR, encoding="utf-8") as f:
                 merged = json.load(f)
         except Exception:
             pass
     merged["spy"] = spy_stats
     merged["variants"] = results
     merged["curves"] = curves
-    with open("variants_results.json", "w", encoding="utf-8") as f:
+    with open(VR, "w", encoding="utf-8") as f:
         json.dump(merged, f, indent=1)
     print("\nWrote variants_results.json (merged)")
 

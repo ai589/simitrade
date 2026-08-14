@@ -5,7 +5,7 @@ cd /d "%~dp0"
 start "" dashboard.html
 echo Dashboard opened with existing data.
 echo Pulling fresh prices now - the page will reload itself when done...
-python screener.py
+python src\screener.py
 if errorlevel 1 (
   echo.
   echo ERROR: refresh failed. The dashboard is still showing the previous data.

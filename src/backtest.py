@@ -11,11 +11,16 @@
 
 import json
 import math
+import os
 import time
 import concurrent.futures
 import requests
 
 from screener import UNIVERSE, HEADERS
+
+# Legacy standalone output (nothing reads it; kept for reference in archive/)
+STRATEGIES_JSON = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                               "archive", "strategies.json")
 
 CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{sym}?range=10y&interval=1d"
 # benchmarks that bypass the exchange filter
@@ -253,7 +258,7 @@ def main():
               f"{st['maxDD']:>8}{st['total']:>8}{st['avgWeekH1']:>8}{st['avgWeekH2']:>8}"
               f"{st['beatSpyPct']:>7}")
 
-    with open("strategies.json", "w", encoding="utf-8") as f:
+    with open(STRATEGIES_JSON, "w", encoding="utf-8") as f:
         json.dump(out, f, indent=1)
     print("\nWrote strategies.json")
     print("NOTE: survivorship bias (today's universe) inflates all rows roughly equally;"

@@ -11,7 +11,7 @@ import math
 import time
 
 from backtest import features, stats, TOP_N, HOLD, COST, NONSTOCK
-from variants import load_data
+from variants import load_data, VR
 
 LOOKBACK = 70
 LONG_LB = 260  # keep the shared rebalance grid of rounds 3/4
@@ -128,7 +128,7 @@ def main():
               f"{st['maxDD']:>8}{st['total']:>8}{st['avgWeekH1']:>8}{st['avgWeekH2']:>8}")
 
     # merge (not replace) into variantsExtra/curvesExtra — same dates as round 4
-    with open("variants_results.json", encoding="utf-8") as f:
+    with open(VR, encoding="utf-8") as f:
         merged = json.load(f)
     merged.setdefault("variantsExtra", {}).update(results)
     cex = merged.setdefault("curvesExtra", {})
@@ -136,7 +136,7 @@ def main():
                              for t in rebalances])
     for key in VARIANTS:
         cex[key] = [round(w, 5) for w in weekly[key]]
-    with open("variants_results.json", "w", encoding="utf-8") as f:
+    with open(VR, "w", encoding="utf-8") as f:
         json.dump(merged, f, indent=1)
     print("\nMerged into variants_results.json (variantsExtra + curvesExtra)")
 

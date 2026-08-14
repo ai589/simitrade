@@ -11,7 +11,7 @@ import math
 import time
 
 from backtest import features, stats, TOP_N, COST, NONSTOCK
-from variants import load_data
+from variants import load_data, VR
 
 HOLD = 5
 LOOKBACK = 70
@@ -65,6 +65,34 @@ def main():
         "short 5d spike + bear regime": (lambda f: [s for s, x in sorted(
             [(s, x) for s, x in f.items() if x["px"] < x["sma50"]],
             key=lambda p: -p[1]["ret5"])[:TOP_N]], True),
+        # ---- overvalued-short candidates (always in; price proxies for
+        # "overvalued" since historical fundamentals aren't available) ----
+        "short overbought extension": (lambda f: [s for s, x in sorted(
+            [(s, x) for s, x in f.items()
+             if x.get("sma200") and x["px"] > 1.2 * x["sma200"]
+             and x["rsi14"] is not None and x["rsi14"] >= 75],
+            key=lambda p: -p[1]["px"] / p[1]["sma200"])[:TOP_N]], False),
+        "short pure extension": (lambda f: [s for s, x in sorted(
+            [(s, x) for s, x in f.items() if x.get("sma200")],
+            key=lambda p: -p[1]["px"] / p[1]["sma200"])[:TOP_N]], False),
+        "short parabolic crack": (lambda f: [s for s, x in sorted(
+            [(s, x) for s, x in f.items()
+             if x["ret60"] >= 0.20 and x["px"] < x["sma20"]],
+            key=lambda p: -p[1]["ret60"])[:TOP_N]], False),
+        "short 12m run crack": (lambda f: [s for s, x in sorted(
+            [(s, x) for s, x in f.items()
+             if x.get("ret252") is not None and x["ret252"] >= 0.50
+             and x["px"] < x["sma20"]],
+            key=lambda p: -p[1]["ret252"])[:TOP_N]], False),
+        "short 52w-high fade": (lambda f: [s for s, x in sorted(
+            [(s, x) for s, x in f.items()
+             if x.get("dd52") is not None and x["dd52"] >= -0.02
+             and x["ret5"] < 0 and x.get("ret252") is not None],
+            key=lambda p: -p[1]["ret252"])[:TOP_N]], False),
+        "short RSI blow-off": (lambda f: [s for s, x in sorted(
+            [(s, x) for s, x in f.items()
+             if x["rsi14"] is not None and x["rsi14"] >= 80],
+            key=lambda p: -p[1]["ret20"])[:TOP_N]], False),
     }
 
     VALUE = {
@@ -90,6 +118,7 @@ def main():
 
     weekly = {k: [] for k in list(SHORTS) + list(VALUE)}
     spy_weekly = []
+    bear_flags = []  # 1 when SPY < its 50d MA at the rebalance — shorts' regime
 
     for t in rebalances:
         feats = {}
@@ -108,6 +137,7 @@ def main():
         spy_win = spy_closes[t - LOOKBACK + 1: t + 1]
         spyf = features(spy_win, spy_win, [0] * LOOKBACK)
         bear = spyf["px"] < spyf["sma50"]
+        bear_flags.append(1 if bear else 0)
         spy_weekly.append(spy_closes[t + HOLD] / spy_closes[t] - 1)
 
         for key, (fn, gated) in SHORTS.items():
@@ -144,14 +174,24 @@ def main():
         print(f"[{tag}] {key:<28}{st['hitRate']:>6}{st['avgWeek']:>8}{st['sharpe']:>8}"
               f"{st['maxDD']:>8}{st['total']:>8}{st['avgWeekH1']:>8}{st['avgWeekH2']:>8}")
 
-    with open("variants_results.json", encoding="utf-8") as f:
+    # Shorts judged on their intended regime: SPY < 50d MA weeks only.
+    bw = [i for i, b in enumerate(bear_flags) if b]
+    print(f"\nBear-regime weeks only ({len(bw)} of {len(rebalances)}) — "
+          f"selection metric for shorts:")
+    print(f"{'variant':<32}{'hit%':>6}{'avg wk':>8}{'sharpe':>8}{'maxDD':>8}{'total':>8}")
+    for key in SHORTS:
+        bs = stats([weekly[key][i] for i in bw], [spy_weekly[i] for i in bw])
+        print(f"[S] {key:<28}{bs['hitRate']:>6}{bs['avgWeek']:>8}{bs['sharpe']:>8}"
+              f"{bs['maxDD']:>8}{bs['total']:>8}")
+
+    with open(VR, encoding="utf-8") as f:
         merged = json.load(f)
     merged["variantsExtra"] = results
     dates = [time.strftime("%Y-%m-%d", time.gmtime(cal[t] * 86400)) for t in rebalances]
-    merged["curvesExtra"] = {"dates": dates}
+    merged["curvesExtra"] = {"dates": dates, "bearFlags": bear_flags}
     for key in weekly:
         merged["curvesExtra"][key] = [round(w, 5) for w in weekly[key]]
-    with open("variants_results.json", "w", encoding="utf-8") as f:
+    with open(VR, "w", encoding="utf-8") as f:
         json.dump(merged, f, indent=1)
     print("\nMerged into variants_results.json (variantsExtra + curvesExtra)")
     print("NOTE: short returns exclude borrow fees; value = price-proxy value "

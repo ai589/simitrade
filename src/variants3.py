@@ -9,7 +9,7 @@ import math
 import time
 
 from backtest import features, TOP_N, COST, NONSTOCK
-from variants import load_data
+from variants import load_data, VR
 from screener import SECTOR_OF
 
 HOLD = 10
@@ -136,7 +136,7 @@ def main():
         print(f"{key:<34}{st['hitRate']:>6}{st['avgWeek']:>8}{st['sharpe']:>8}"
               f"{st['maxDD']:>8}{st['total']:>8}{st['avgWeekH1']:>8}{st['avgWeekH2']:>8}")
 
-    with open("variants_results.json", encoding="utf-8") as f:
+    with open(VR, encoding="utf-8") as f:
         merged = json.load(f)
     merged["variants14"] = results
     merged["spy14"] = spy_stats
@@ -145,7 +145,7 @@ def main():
     merged["curves14"] = {"dates": dates}
     for key in VARIANTS:
         merged["curves14"][key] = [round(w, 5) for w in periods[key]]
-    with open("variants_results.json", "w", encoding="utf-8") as f:
+    with open(VR, "w", encoding="utf-8") as f:
         json.dump(merged, f, indent=1)
     print("\nMerged into variants_results.json (variants14 + curves14)")
 

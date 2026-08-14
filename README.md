@@ -20,25 +20,30 @@ A self-contained swing-trading research dashboard for liquid NYSE and Nasdaq lar
 
 ```
 pip install requests
-python screener.py      # pulls prices, writes data.js  (~1 min)
-python variants.py      # 10y backtest round 1 (momentum/low-vol)   ─┐
-python variants2.py     # round 2 (sector-neutral, dips)             │ run once,
-python variants3.py     # round 3 (14-day holds)                     │ then quarterly
-python variants4.py     # round 4 (shorts, value proxies)           ─┘
+python src/screener.py      # pulls prices, writes data.js  (~1 min)
+python src/variants.py      # 10y backtest round 1 (momentum/low-vol)   ─┐
+python src/variants2.py     # round 2 (sector-neutral, dips)             │ run once,
+python src/variants3.py     # round 3 (14-day holds)                     │ then quarterly
+python src/variants4.py     # round 4 (shorts, value proxies)            │
+python src/variants5.py     # round 5 (blends; merges after round 4)    ─┘
 ```
 
 Then open `dashboard.html` in a browser. `refresh.bat` opens the dashboard and refreshes data in one double-click; the page auto-reloads itself when new data lands. Schedule `refresh_silent.bat` daily (e.g. Windows Task Scheduler at 8:00 AM) and the paper-trade record builds itself.
 
 ## Architecture
 
-| File | Role |
+| Path | Role |
 |---|---|
-| `screener.py` | Daily data pull (Yahoo Finance chart API), scoring, strategy picks, paper-trade log |
 | `dashboard.html` | The entire UI — single file, no build step, no dependencies |
-| `backtest.py` | Shared backtest engine + 10-year data fetch |
-| `variants*.py` | Strategy research rounds; results merge into `variants_results.json` |
-| `data.js` | Generated data payload read by the dashboard |
-| `picks_log.json` | Paper-trade history (auto-generated) |
+| `data.js` | Generated data payload read by the dashboard (kept at root for Vercel) |
+| `src/screener.py` | Daily data pull (Yahoo Finance chart API), scoring, strategy picks, paper-trade log |
+| `src/backtest.py` | Shared backtest engine + 10-year data fetch |
+| `src/variants*.py` | Strategy research rounds; results merge into `state/variants_results.json` |
+| `src/market_guard.py` | US market-hours gate for the open/close scheduled refresh |
+| `state/` | Mutable state: paper-trade history (`picks_log.json`), backtest results, price/earnings caches |
+| `logs/` | `refresh_log.txt` from the scheduled refreshes |
+| `archive/` | Superseded files kept for reference (legacy `strategies.json`) |
+| `refresh*.bat`, `publish.bat` | Entry points: manual/scheduled refresh, publish to GitHub + Vercel |
 
 ## Honest findings from the backtests
 

@@ -9,7 +9,7 @@ import math
 import time
 
 from backtest import features, stats, TOP_N, HOLD, COST, NONSTOCK
-from variants import load_data
+from variants import load_data, VR
 from screener import SECTOR_OF
 
 LOOKBACK = 70
@@ -143,7 +143,7 @@ def main():
               f"{st['maxDD']:>8}{st['total']:>8}{st['avgWeekH1']:>8}{st['avgWeekH2']:>8}")
 
     # merge into variants_results.json (keep round-2 results and curves)
-    with open("variants_results.json", encoding="utf-8") as f:
+    with open(VR, encoding="utf-8") as f:
         merged = json.load(f)
     merged["variants"].update(results)
     dates = [time.strftime("%Y-%m-%d", time.gmtime(cal[t] * 86400)) for t in rebalances]
@@ -151,7 +151,7 @@ def main():
     for key in VARIANTS:
         merged["curves2"][key] = [round(w, 5) for w in weekly[key]]
     merged["curves2"]["spy"] = [round(w, 5) for w in spy_weekly]
-    with open("variants_results.json", "w", encoding="utf-8") as f:
+    with open(VR, "w", encoding="utf-8") as f:
         json.dump(merged, f, indent=1)
     print("\nMerged into variants_results.json")
 

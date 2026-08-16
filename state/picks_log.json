@@ -22729,6 +22729,18 @@
    "holdDays": 5,
    "sellBy": "2026-08-21",
    "status": "open"
+  },
+  {
+   "date": "2026-08-14",
+   "strategy": "lowvol",
+   "sym": "SBUX",
+   "entry": 107.69,
+   "stop": 103.62,
+   "target": 113.11,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-21",
+   "status": "open"
   }
  ]
 }

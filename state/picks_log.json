@@ -12576,7 +12576,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 157.04,
+   "days": 10,
+   "retPct": -2.68
   },
   {
    "date": "2026-08-03",
@@ -12620,7 +12624,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 89.61,
+   "days": 10,
+   "retPct": 4.65
   },
   {
    "date": "2026-08-03",
@@ -12632,7 +12640,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 60.7,
+   "days": 10,
+   "retPct": 5.38
   },
   {
    "date": "2026-08-03",
@@ -12644,7 +12656,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 157.04,
+   "days": 10,
+   "retPct": -2.68
   },
   {
    "date": "2026-08-03",
@@ -12656,7 +12672,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 89.61,
+   "days": 10,
+   "retPct": 4.65
   },
   {
    "date": "2026-08-03",
@@ -12684,7 +12704,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 268.95,
+   "days": 10,
+   "retPct": -0.47
   },
   {
    "date": "2026-08-03",
@@ -12696,7 +12720,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 370.53,
+   "days": 10,
+   "retPct": -0.83
   },
   {
    "date": "2026-08-03",
@@ -12708,7 +12736,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 154.31,
+   "days": 10,
+   "retPct": 3.6
   },
   {
    "date": "2026-08-03",
@@ -12720,7 +12752,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 356.02,
+   "days": 10,
+   "retPct": 1.75
   },
   {
    "date": "2026-08-03",
@@ -13084,7 +13120,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 327.96,
+   "days": 10,
+   "retPct": 6.64
   },
   {
    "date": "2026-08-03",
@@ -13096,7 +13136,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 479.02,
+   "days": 10,
+   "retPct": 11.65
   },
   {
    "date": "2026-08-03",
@@ -13108,7 +13152,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 327.96,
+   "days": 10,
+   "retPct": 6.64
   },
   {
    "date": "2026-08-03",
@@ -14852,7 +14900,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-08-19",
-   "status": "open"
+   "status": "stopped",
+   "exitDate": "2026-08-17",
+   "exitPx": 157.31,
+   "days": 8,
+   "retPct": -8.01
   },
   {
    "date": "2026-08-05",
@@ -17816,7 +17868,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 479.02,
+   "days": 5,
+   "retPct": 5.04
   },
   {
    "date": "2026-08-10",
@@ -17828,7 +17884,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 151.2,
+   "days": 5,
+   "retPct": -0.18
   },
   {
    "date": "2026-08-10",
@@ -17856,7 +17916,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 377.94,
+   "days": 5,
+   "retPct": 2.14
   },
   {
    "date": "2026-08-10",
@@ -17868,7 +17932,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 213.63,
+   "days": 5,
+   "retPct": -1.85
   },
   {
    "date": "2026-08-10",
@@ -17896,7 +17964,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 173.52,
+   "days": 5,
+   "retPct": -0.33
   },
   {
    "date": "2026-08-10",
@@ -17940,7 +18012,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 212.4,
+   "days": 5,
+   "retPct": -0.13
   },
   {
    "date": "2026-08-10",
@@ -17952,7 +18028,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 479.02,
+   "days": 5,
+   "retPct": 5.04
   },
   {
    "date": "2026-08-10",
@@ -17964,7 +18044,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 151.2,
+   "days": 5,
+   "retPct": -0.18
   },
   {
    "date": "2026-08-10",
@@ -17992,7 +18076,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 377.94,
+   "days": 5,
+   "retPct": 2.14
   },
   {
    "date": "2026-08-10",
@@ -18004,7 +18092,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 213.63,
+   "days": 5,
+   "retPct": -1.85
   },
   {
    "date": "2026-08-10",
@@ -18028,7 +18120,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 257.98,
+   "days": 5,
+   "retPct": 2.39
   },
   {
    "date": "2026-08-10",
@@ -18056,7 +18152,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 64.95,
+   "days": 5,
+   "retPct": 2.35
   },
   {
    "date": "2026-08-10",
@@ -18068,7 +18168,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 307.1,
+   "days": 5,
+   "retPct": 1.22
   },
   {
    "date": "2026-08-10",
@@ -18080,7 +18184,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 479.02,
+   "days": 5,
+   "retPct": 5.04
   },
   {
    "date": "2026-08-10",
@@ -18108,7 +18216,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 212.4,
+   "days": 5,
+   "retPct": -0.13
   },
   {
    "date": "2026-08-10",
@@ -18120,7 +18232,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 615.86,
+   "days": 5,
+   "retPct": 7.5
   },
   {
    "date": "2026-08-10",
@@ -18132,7 +18248,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 370.53,
+   "days": 5,
+   "retPct": -2.58
   },
   {
    "date": "2026-08-10",
@@ -18144,7 +18264,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "stopped",
+   "exitDate": "2026-08-17",
+   "exitPx": 263.42,
+   "days": 5,
+   "retPct": -4.35
   },
   {
    "date": "2026-08-10",
@@ -18172,7 +18296,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 142.75,
+   "days": 5,
+   "retPct": 2.82
   },
   {
    "date": "2026-08-10",
@@ -18216,7 +18344,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 81.6,
+   "days": 5,
+   "retPct": 2.84
   },
   {
    "date": "2026-08-10",
@@ -18228,7 +18360,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 120.81,
+   "days": 5,
+   "retPct": -2.29
   },
   {
    "date": "2026-08-10",
@@ -18392,7 +18528,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 13.86,
+   "days": 5,
+   "retPct": 5.64
   },
   {
    "date": "2026-08-10",
@@ -18404,7 +18544,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 95.61,
+   "days": 5,
+   "retPct": -3.13
   },
   {
    "date": "2026-08-10",
@@ -18416,7 +18560,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 150.57,
+   "days": 5,
+   "retPct": -0.44
   },
   {
    "date": "2026-08-10",
@@ -18428,7 +18576,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 148.31,
+   "days": 5,
+   "retPct": 0.86
   },
   {
    "date": "2026-08-10",
@@ -18456,7 +18608,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 95.61,
+   "days": 5,
+   "retPct": -3.13
   },
   {
    "date": "2026-08-10",
@@ -18468,7 +18624,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 51.79,
+   "days": 5,
+   "retPct": 3.35
   },
   {
    "date": "2026-08-10",
@@ -18496,7 +18656,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 394.74,
+   "days": 5,
+   "retPct": 3.23
   },
   {
    "date": "2026-08-10",
@@ -18524,7 +18688,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 327.96,
+   "days": 5,
+   "retPct": -1.91
   },
   {
    "date": "2026-08-10",
@@ -18536,7 +18704,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 377.94,
+   "days": 5,
+   "retPct": 2.14
   },
   {
    "date": "2026-08-10",
@@ -18548,7 +18720,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 64.95,
+   "days": 5,
+   "retPct": 2.35
   },
   {
    "date": "2026-08-10",
@@ -18576,7 +18752,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 148.51,
+   "days": 5,
+   "retPct": 1.05
   },
   {
    "date": "2026-08-10",
@@ -18588,7 +18768,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 775.41,
+   "days": 5,
+   "retPct": 0.36
   },
   {
    "date": "2026-08-10",
@@ -18600,7 +18784,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 615.86,
+   "days": 5,
+   "retPct": 6.75
   },
   {
    "date": "2026-08-10",
@@ -18612,7 +18800,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 65.76,
+   "days": 5,
+   "retPct": 2.46
   },
   {
    "date": "2026-08-10",
@@ -18640,7 +18832,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 121.64,
+   "days": 5,
+   "retPct": -4.56
   },
   {
    "date": "2026-08-10",
@@ -18668,7 +18864,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 302.74,
+   "days": 5,
+   "retPct": -1.7
   },
   {
    "date": "2026-08-10",
@@ -18680,7 +18880,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 249.51,
+   "days": 5,
+   "retPct": -4.32
   },
   {
    "date": "2026-08-10",
@@ -18708,7 +18912,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 307.68,
+   "days": 5,
+   "retPct": -0.89
   },
   {
    "date": "2026-08-10",
@@ -18720,7 +18928,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-17",
-   "status": "open"
+   "status": "time-exit",
+   "exitDate": "2026-08-17",
+   "exitPx": 213.63,
+   "days": 5,
+   "retPct": -5.12
   },
   {
    "date": "2026-08-10",
@@ -19080,7 +19292,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-18",
-   "status": "open"
+   "status": "stopped",
+   "exitDate": "2026-08-17",
+   "exitPx": 265.44,
+   "days": 4,
+   "retPct": -4.18
   },
   {
    "date": "2026-08-11",
@@ -21512,7 +21728,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-18",
-   "status": "open"
+   "status": "stopped",
+   "exitDate": "2026-08-17",
+   "exitPx": 44.39,
+   "days": 4,
+   "retPct": -3.92
   },
   {
    "date": "2026-08-11",
@@ -22740,6 +22960,786 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-08-21",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-14",
+   "strategy": "sectorNeutral",
+   "sym": "DXCM",
+   "entry": 89.75,
+   "stop": 85.37,
+   "target": 95.59,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-21",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-14",
+   "strategy": "sector14",
+   "sym": "DXCM",
+   "entry": 89.75,
+   "stop": 83.91,
+   "target": 98.51,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-28",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop10",
+   "sym": "DELL",
+   "entry": 479.02,
+   "stop": 431.53,
+   "target": 542.34,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop10",
+   "sym": "SNOW",
+   "entry": 327.96,
+   "stop": 308.08,
+   "target": 354.46,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop10",
+   "sym": "WDAY",
+   "entry": 193.83,
+   "stop": 176.0,
+   "target": 217.61,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop10",
+   "sym": "SMCI",
+   "entry": 38.32,
+   "stop": 34.48,
+   "target": 43.44,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop10",
+   "sym": "AXON",
+   "entry": 615.86,
+   "stop": 561.89,
+   "target": 687.82,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop10",
+   "sym": "SHOP",
+   "entry": 151.2,
+   "stop": 140.8,
+   "target": 165.06,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop10",
+   "sym": "HPQ",
+   "entry": 29.51,
+   "stop": 27.53,
+   "target": 32.15,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop10",
+   "sym": "PANW",
+   "entry": 377.94,
+   "stop": 356.0,
+   "target": 407.2,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop10",
+   "sym": "ANET",
+   "entry": 199.82,
+   "stop": 184.95,
+   "target": 219.64,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop10",
+   "sym": "ABNB",
+   "entry": 182.21,
+   "stop": 173.59,
+   "target": 193.71,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop5",
+   "sym": "DELL",
+   "entry": 479.02,
+   "stop": 431.53,
+   "target": 542.34,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop5",
+   "sym": "SNOW",
+   "entry": 327.96,
+   "stop": 308.08,
+   "target": 354.46,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop5",
+   "sym": "WDAY",
+   "entry": 193.83,
+   "stop": 176.0,
+   "target": 217.61,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop5",
+   "sym": "SMCI",
+   "entry": 38.32,
+   "stop": 34.48,
+   "target": 43.44,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "momTop5",
+   "sym": "AXON",
+   "entry": 615.86,
+   "stop": 561.89,
+   "target": 687.82,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "lowvol",
+   "sym": "PNC",
+   "entry": 257.98,
+   "stop": 252.13,
+   "target": 265.78,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "lowvol",
+   "sym": "TFC",
+   "entry": 53.34,
+   "stop": 52.01,
+   "target": 55.12,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "lowvol",
+   "sym": "BAC",
+   "entry": 64.95,
+   "stop": 63.42,
+   "target": 66.99,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "lowvol",
+   "sym": "USB",
+   "entry": 65.76,
+   "stop": 64.25,
+   "target": 67.78,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "lowvol",
+   "sym": "V",
+   "entry": 363.2,
+   "stop": 352.93,
+   "target": 376.9,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sectorNeutral",
+   "sym": "DELL",
+   "entry": 479.02,
+   "stop": 431.53,
+   "target": 542.34,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sectorNeutral",
+   "sym": "AXON",
+   "entry": 615.86,
+   "stop": 561.89,
+   "target": 687.82,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sectorNeutral",
+   "sym": "ABNB",
+   "entry": 182.21,
+   "stop": 173.59,
+   "target": 193.71,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sectorNeutral",
+   "sym": "IQV",
+   "entry": 236.62,
+   "stop": 224.84,
+   "target": 252.32,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sectorNeutral",
+   "sym": "VLO",
+   "entry": 343.75,
+   "stop": 327.1,
+   "target": 365.95,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sectorNeutral",
+   "sym": "NEM",
+   "entry": 119.25,
+   "stop": 113.42,
+   "target": 127.03,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sectorNeutral",
+   "sym": "BX",
+   "entry": 142.08,
+   "stop": 135.15,
+   "target": 151.32,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "weeklyDip",
+   "sym": "LULU",
+   "entry": 118.27,
+   "stop": 112.41,
+   "target": 126.09,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "weeklyDip",
+   "sym": "AVGO",
+   "entry": 393.49,
+   "stop": 369.78,
+   "target": 425.11,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "weeklyDip",
+   "sym": "PDD",
+   "entry": 86.89,
+   "stop": 83.25,
+   "target": 91.75,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "weeklyDip",
+   "sym": "AMZN",
+   "entry": 262.93,
+   "stop": 251.05,
+   "target": 278.77,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "weeklyDip",
+   "sym": "FCX",
+   "entry": 66.87,
+   "stop": 63.12,
+   "target": 71.87,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "mom14",
+   "sym": "DELL",
+   "entry": 479.02,
+   "stop": 415.7,
+   "target": 574.0,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-31",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "mom14",
+   "sym": "SNOW",
+   "entry": 327.96,
+   "stop": 301.46,
+   "target": 367.71,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-31",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "mom14",
+   "sym": "SMCI",
+   "entry": 38.32,
+   "stop": 33.2,
+   "target": 46.0,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-31",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "mom14",
+   "sym": "AXON",
+   "entry": 615.86,
+   "stop": 543.9,
+   "target": 723.8,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-31",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "mom14",
+   "sym": "SHOP",
+   "entry": 151.2,
+   "stop": 137.34,
+   "target": 171.99,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-31",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sector14",
+   "sym": "DELL",
+   "entry": 479.02,
+   "stop": 415.7,
+   "target": 574.0,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-31",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sector14",
+   "sym": "AXON",
+   "entry": 615.86,
+   "stop": 543.9,
+   "target": 723.8,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-31",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sector14",
+   "sym": "ABNB",
+   "entry": 182.21,
+   "stop": 170.71,
+   "target": 199.46,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-31",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sector14",
+   "sym": "IQV",
+   "entry": 236.62,
+   "stop": 220.92,
+   "target": 260.17,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-31",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sector14",
+   "sym": "VLO",
+   "entry": 343.75,
+   "stop": 321.55,
+   "target": 377.05,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-31",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sector14",
+   "sym": "NEM",
+   "entry": 119.25,
+   "stop": 111.47,
+   "target": 130.92,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-31",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "sector14",
+   "sym": "BX",
+   "entry": 142.08,
+   "stop": 132.84,
+   "target": 155.94,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-08-31",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "valueDD",
+   "sym": "TTD",
+   "entry": 13.86,
+   "stop": 12.21,
+   "target": 16.06,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "valueDD",
+   "sym": "MSTR",
+   "entry": 95.61,
+   "stop": 87.18,
+   "target": 106.85,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "valueDD",
+   "sym": "COIN",
+   "entry": 150.57,
+   "stop": 138.1,
+   "target": 167.19,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "valueDD",
+   "sym": "ORCL",
+   "entry": 148.31,
+   "stop": 137.47,
+   "target": 162.77,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "valueDD",
+   "sym": "APP",
+   "entry": 320.77,
+   "stop": 285.75,
+   "target": 367.47,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "value200",
+   "sym": "BSX",
+   "entry": 51.79,
+   "stop": 49.42,
+   "target": 54.95,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "value200",
+   "sym": "INTU",
+   "entry": 341.08,
+   "stop": 319.42,
+   "target": 369.96,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "value200",
+   "sym": "ISRG",
+   "entry": 394.74,
+   "stop": 376.92,
+   "target": 418.5,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "value200",
+   "sym": "TSLA",
+   "entry": 338.31,
+   "stop": 318.47,
+   "target": 364.77,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "value200",
+   "sym": "ACN",
+   "entry": 173.51,
+   "stop": 162.14,
+   "target": 188.67,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "zblend",
+   "sym": "SNOW",
+   "entry": 327.96,
+   "stop": 308.08,
+   "target": 354.46,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "zblend",
+   "sym": "DELL",
+   "entry": 479.02,
+   "stop": 431.53,
+   "target": 542.34,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "zblend",
+   "sym": "A",
+   "entry": 148.51,
+   "stop": 143.5,
+   "target": 155.19,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "zblend",
+   "sym": "BAC",
+   "entry": 64.95,
+   "stop": 63.42,
+   "target": 66.99,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "zblend",
+   "sym": "PYPL",
+   "entry": 60.7,
+   "stop": 58.27,
+   "target": 63.94,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "shortOverext",
+   "sym": "MPC",
+   "entry": 359.31,
+   "stop": 375.94,
+   "target": 337.13,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "shortOverext",
+   "sym": "TEAM",
+   "entry": 158.38,
+   "stop": 171.23,
+   "target": 141.24,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "shortOverext",
+   "sym": "PSX",
+   "entry": 235.66,
+   "stop": 245.98,
+   "target": 221.9,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-17",
+   "strategy": "spy",
+   "sym": "SPY",
+   "entry": 775.41,
+   "stop": 0.0,
+   "target": 9000000000.0,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-24",
    "status": "open"
   }
  ]

@@ -1,6 +1,7 @@
 # NYSE + Nasdaq 1-Week Swing Trade Screener
-# Fetches 6 months of daily OHLCV from Yahoo Finance for a liquid NYSE/Nasdaq universe,
-# scores each name for a 1-week holding period, and writes data.js for dashboard.html.
+# Fetches 2y of daily OHLCV from Yahoo Finance for the S&P 500 + Nasdaq-100 + Dow 30
+# universe (see universe.py), scores each name for a 1-week holding period, and writes
+# data.js for dashboard.html.
 #
 # Usage:  python screener.py
 
@@ -12,59 +13,13 @@ import datetime
 import concurrent.futures
 import requests
 
-# Curated universe of liquid, large-cap names on NYSE or Nasdaq.
-# Listings on any other exchange are dropped automatically via the exchange check below.
-UNIVERSE = [
-    # Financials
-    "JPM", "BAC", "WFC", "C", "GS", "MS", "SCHW", "AXP", "V", "MA",
-    "BLK", "KKR", "BX", "APO", "USB", "PNC", "TFC", "COF", "SPGI",
-    "MCO", "ICE", "AON", "AJG", "CB", "PGR", "TRV", "ALL", "MET",
-    "PRU", "AIG", "BRK-B", "AFL", "SYF",
-    "CME", "IBKR",  # Nasdaq
-    # BK, MMC, DFS, CTRA, HES removed: tickers 404 on Yahoo (acquired/delisted)
-    # Healthcare
-    "UNH", "JNJ", "LLY", "PFE", "MRK", "ABBV", "TMO", "ABT", "BMY", "CVS",
-    "DHR", "SYK", "BSX", "MDT", "EW", "ZTS", "ELV", "CI", "HUM", "HCA",
-    "MCK", "BDX", "A", "IQV", "RMD", "NVO",
-    # Healthcare (Nasdaq)
-    "AMGN", "GILD", "VRTX", "REGN", "ISRG", "IDXX", "DXCM", "GEHC",
-    "AZN", "NVS",  # pharma ADRs (AZN Nasdaq, NVS NYSE)
-    # Energy
-    "XOM", "CVX", "COP", "SLB", "EOG", "OXY", "VLO", "PSX", "MPC", "KMI",
-    "WMB", "OKE", "HAL", "DVN", "TRGP", "LNG",
-    "SHEL", "BP",  # oil-major ADRs (NYSE)
-    "FANG", "BKR",  # Nasdaq
-    # Industrials
-    "BA", "CAT", "DE", "GE", "LMT", "RTX", "UNP", "UPS", "FDX", "MMM",
-    "ETN", "EMR", "PH", "ROK", "ITW", "GD", "NOC", "TDG", "CMI", "NSC",
-    "WM", "RSG", "URI", "PWR", "GEV", "VRT", "HWM",
-    "HON", "CSX", "ODFL", "PCAR", "ADP", "PAYX", "AXON",  # Nasdaq
-    # Tech / Communications
-    "CRM", "ORCL", "IBM", "ACN", "NOW", "UBER", "SNOW", "NET", "SHOP", "TSM",
-    "ANET", "DELL", "HPQ", "PLTR", "XYZ", "T", "VZ", "DIS",
-    # Tech / Communications (Nasdaq)
-    "AAPL", "MSFT", "NVDA", "GOOGL", "META", "AVGO", "AMD", "ADBE", "QCOM",
-    "INTC", "TXN", "MU", "AMAT", "LRCX", "KLAC", "PANW", "CRWD", "INTU",
-    "CSCO", "NFLX", "CMCSA", "APP", "DASH", "TTD", "ZS", "DDOG", "FTNT",
-    "WDAY", "TEAM", "MRVL", "SMCI", "ARM", "COIN", "HOOD", "MSTR", "PYPL", "EA",
-    "ADI", "NXPI", "SNPS", "CDNS", "ASML",
-    "BIDU", "NTES",  # China internet ADRs (Nasdaq)
-    "APH", "MSI", "SPOT", "SE", "SAP",  # NYSE
-    # Consumer
-    "WMT", "HD", "LOW", "MCD", "NKE", "TGT", "PG", "KO", "CL", "KMB",
-    "MO", "PM", "F", "GM", "CMG", "YUM", "SBUX", "DG",
-    "TJX", "RCL", "HLT", "EL", "DECK", "TM",
-    # Consumer (Nasdaq)
-    "AMZN", "TSLA", "COST", "PEP", "MDLZ", "BKNG", "ABNB", "MAR", "ORLY",
-    "ROST", "LULU", "MNST", "KDP", "KHC",
-    "PDD", "JD", "TCOM", "MELI",  # e-commerce/travel ADRs + MELI (Nasdaq)
-    "BABA",  # NYSE
-    # Materials / Utilities / REITs
-    "LIN", "APD", "SHW", "FCX", "NUE", "DOW", "DD", "ECL", "NEE", "DUK",
-    "SO", "SPG", "PLD", "AMT", "O", "CCI",
-    "VST", "NEM", "DLR", "PSA", "SRE", "D",
-    "EXC", "XEL", "AEP", "SBAC", "EQIX", "CEG",  # Nasdaq
-]
+# Universe = S&P 500 + Nasdaq-100 + Dow 30 constituents (Wikipedia, weekly cache in
+# state/universe.json) + a short pinned EXTRAS list; see universe.py. Listings on any
+# other exchange are dropped automatically via the exchange check in main().
+# UNIVERSE is Yahoo-form (BRK-B); UNIVERSE_INFO / SECTOR_OF are keyed dot-form (BRK.B).
+from universe import load_universe, fold_sector, BUCKETS
+
+UNIVERSE, UNIVERSE_INFO, UNIVERSE_META = load_universe()
 
 # Repo layout: this file lives in src/; generated site data (data.js) stays at
 # the repo root for Vercel, mutable state (caches, logs, results) in state/.
@@ -243,43 +198,10 @@ def analyse(d):
     }
 
 
-SECTORS = {
-    "Financials": ["JPM", "BAC", "WFC", "C", "GS", "MS", "SCHW", "AXP", "V", "MA", "BLK",
-                   "KKR", "BX", "APO", "USB", "PNC", "TFC", "COF", "BK", "SPGI", "MCO",
-                   "ICE", "AON", "AJG", "CB", "PGR", "TRV", "ALL", "MET", "PRU",
-                   "AIG", "BRK.B", "AFL", "SYF", "CME", "IBKR"],
-    "Healthcare": ["UNH", "JNJ", "LLY", "PFE", "MRK", "ABBV", "TMO", "ABT", "BMY", "CVS",
-                   "DHR", "SYK", "BSX", "MDT", "EW", "ZTS", "ELV", "CI", "HUM", "HCA",
-                   "AMGN", "GILD", "VRTX", "REGN", "ISRG", "IDXX", "DXCM",
-                   "MCK", "BDX", "GEHC", "A", "IQV", "RMD", "NVO", "AZN", "NVS"],
-    "Energy": ["XOM", "CVX", "COP", "SLB", "EOG", "OXY", "VLO", "PSX", "MPC", "KMI",
-               "WMB", "OKE", "HAL", "DVN", "FANG", "BKR", "TRGP", "LNG",
-               "SHEL", "BP"],
-    "Industrials": ["BA", "CAT", "DE", "GE", "LMT", "RTX", "UNP", "UPS", "FDX", "MMM",
-                    "ETN", "EMR", "PH", "ROK", "ITW", "GD", "NOC", "TDG", "CMI", "NSC",
-                    "WM", "RSG", "URI", "PWR",
-                    "HON", "CSX", "ODFL", "PCAR", "ADP", "PAYX",
-                    "GEV", "VRT", "HWM", "AXON"],
-    "Tech/Comms": ["CRM", "ORCL", "IBM", "ACN", "NOW", "UBER", "SNOW", "NET", "SHOP",
-                   "TSM", "ANET", "DELL", "HPQ", "PLTR", "XYZ", "T", "VZ", "DIS",
-                   "AAPL", "MSFT", "NVDA", "GOOGL", "META", "AVGO", "AMD", "ADBE", "QCOM",
-                   "INTC", "TXN", "MU", "AMAT", "LRCX", "KLAC", "PANW", "CRWD", "INTU",
-                   "CSCO", "NFLX", "CMCSA", "APP", "DASH", "TTD", "ZS", "DDOG", "FTNT",
-                   "WDAY", "TEAM", "MRVL", "SMCI", "ARM", "COIN", "HOOD", "MSTR", "PYPL", "EA",
-                   "ADI", "NXPI", "SNPS", "CDNS", "ASML", "APH", "MSI", "SPOT", "SE",
-                   "BIDU", "NTES", "SAP"],
-    "Consumer": ["WMT", "HD", "LOW", "MCD", "NKE", "TGT", "PG", "KO", "CL", "KMB", "MO",
-                 "PM", "F", "GM", "CMG", "YUM", "SBUX", "DG",
-                 "AMZN", "TSLA", "COST", "PEP", "MDLZ", "BKNG", "ABNB", "MAR", "ORLY",
-                 "ROST", "LULU", "MNST", "KDP", "KHC",
-                 "TJX", "RCL", "HLT", "EL", "DECK", "TM",
-                 "PDD", "JD", "TCOM", "MELI", "BABA"],
-    "Materials/Util/REIT": ["LIN", "APD", "SHW", "FCX", "NUE", "DOW", "DD", "ECL", "NEE",
-                            "DUK", "SO", "SPG", "PLD", "AMT", "O", "CCI",
-                            "EXC", "XEL", "AEP", "SBAC", "EQIX",
-                            "VST", "CEG", "NEM", "DLR", "PSA", "SRE", "D"],
-}
-SECTOR_OF = {s: k for k, v in SECTORS.items() for s in v}
+# Sector buckets (7) — each name's GICS sector folded by universe.py; keyed dot-form.
+# variants2/3.py import SECTOR_OF for their sector-neutral backtests.
+SECTOR_OF = {s: i["sector7"] for s, i in UNIVERSE_INFO.items()}
+SECTORS = {b: sorted(s for s, k in SECTOR_OF.items() if k == b) for b in BUCKETS}
 
 
 EARN_CACHE = os.path.join(STATE, "earnings_cache.json")
@@ -288,18 +210,42 @@ EARN_CACHE_DAYS = 3
 
 def fetch_earnings(symbols):
     """Next earnings date + company profile per symbol via Yahoo quoteSummary
-    (cookie+crumb). Cached for EARN_CACHE_DAYS.
+    (cookie+crumb). Cached for EARN_CACHE_DAYS; symbols missing from a fresh cache
+    (e.g. after a universe change) are fetched and merged without resetting the TTL.
     Returns ({sym: 'YYYY-MM-DD' or None}, {sym: profile dict})."""
+    cache = None
     if os.path.exists(EARN_CACHE):
         try:
             with open(EARN_CACHE, encoding="utf-8") as f:
                 cache = json.load(f)
-            if (time.time() - cache.get("_ts", 0) < EARN_CACHE_DAYS * 86400
-                    and "profiles" in cache):
-                return cache.get("dates", {}), cache.get("profiles", {})
         except Exception:
-            pass
+            cache = None
+    fresh = (bool(cache) and "profiles" in cache
+             and time.time() - cache.get("_ts", 0) < EARN_CACHE_DAYS * 86400)
+    if fresh:
+        missing = [s for s in symbols if s not in cache["profiles"]]
+        if not missing:
+            return cache.get("dates", {}), cache.get("profiles", {})
+        print(f"Earnings cache: fetching {len(missing)} symbols not yet cached...")
+        d, p = _quote_summary(missing)
+        if p:
+            cache.setdefault("dates", {}).update(d)
+            cache["profiles"].update(p)
+            with open(EARN_CACHE, "w", encoding="utf-8") as f:
+                json.dump(cache, f)
+        return cache.get("dates", {}), cache.get("profiles", {})
 
+    d, p = _quote_summary(symbols)
+    if p is None:  # crumb failure: a stale cache beats nothing
+        return (cache.get("dates", {}), cache.get("profiles", {})) if cache else ({}, {})
+    with open(EARN_CACHE, "w", encoding="utf-8") as f:
+        json.dump({"_ts": time.time(), "dates": d, "profiles": p}, f)
+    return d, p
+
+
+def _quote_summary(symbols):
+    """Live Yahoo quoteSummary for `symbols`. Returns (dates, profiles), or (None, None)
+    when the cookie/crumb handshake fails."""
     s = requests.Session()
     s.headers.update(HEADERS)
     try:
@@ -313,7 +259,7 @@ def fetch_earnings(symbols):
             raise RuntimeError("no crumb")
     except Exception as e:
         print(f"WARNING: earnings/profile lookup unavailable ({e}); skipping.")
-        return {}, {}
+        return None, None
 
     cookies = s.cookies.get_dict()
 
@@ -360,8 +306,6 @@ def fetch_earnings(symbols):
         for sym, d, p in ex.map(one, symbols):
             dates_out[sym] = d
             prof_out[sym] = p
-    with open(EARN_CACHE, "w", encoding="utf-8") as f:
-        json.dump({"_ts": time.time(), "dates": dates_out, "profiles": prof_out}, f)
     return dates_out, prof_out
 
 
@@ -717,7 +661,19 @@ def strategy_picks(results, regime_on, last_session):
     ]], stats_map.get("spy"), curves
 
 
+def open_paper_syms():
+    """Symbols with an open paper trade in picks_log.json (dot-form)."""
+    try:
+        with open(PAPER_LOG, encoding="utf-8") as f:
+            return {e["sym"] for e in json.load(f)["entries"] if e.get("status") == "open"}
+    except Exception:
+        return set()
+
+
 def main():
+    c = UNIVERSE_META.get("counts", {})
+    print(f"Universe: {len(UNIVERSE)} names (S&P {c.get('spx')} | NDX {c.get('ndx')} | "
+          f"DJI {c.get('dji')} | extras {c.get('extras')}; list as of {UNIVERSE_META.get('date')})")
     print(f"Fetching {len(UNIVERSE)} symbols...")
     results = []
     skipped_exchange = []
@@ -732,18 +688,36 @@ def main():
             row = analyse(d)
             if row:
                 row["sector"] = SECTOR_OF.get(row["sym"], "Other")
+                row["ix"] = UNIVERSE_INFO.get(row["sym"], {}).get("ix", [])
                 results.append(row)
                 datamap[row["sym"]] = d["rows"]
 
+    # Open paper trades on names that have since left the universe (index rebalance,
+    # liquidity dip) still need bars so they can close normally instead of dangling.
+    orphans = sorted(s for s in open_paper_syms()
+                     if s != "SPY" and s not in datamap and s.replace(".", "-") not in UNIVERSE)
+    if orphans:
+        print(f"Fetching {len(orphans)} open paper-trade names no longer in universe: "
+              + ", ".join(orphans))
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
+            for d in ex.map(fetch, [s.replace(".", "-") for s in orphans]):
+                if d and d["rows"]:
+                    datamap[d["symbol"].replace("-", ".")] = d["rows"]  # bars only; not screened
+
     # Safety guard for unattended runs: if the fetch came back badly degraded,
     # keep yesterday's data.js rather than overwriting it with a partial screen.
-    if len(results) < 80:
-        raise SystemExit(f"ABORT: only {len(results)} names screened (expected ~135). "
-                         "Keeping previous data.js.")
+    min_ok = int(0.6 * len(UNIVERSE))
+    if len(results) < min_ok:
+        raise SystemExit(f"ABORT: only {len(results)} of {len(UNIVERSE)} names screened "
+                         f"(floor {min_ok}). Keeping previous data.js.")
 
     # earnings dates + company profiles
     print("Fetching earnings dates and company profiles...")
     earn, profiles = fetch_earnings([r["sym"] for r in results])
+    # Any name still unbucketed (no GICS/hand/ICB sector) takes its Yahoo profile sector.
+    for r in results:
+        if r["sector"] == "Other":
+            r["sector"] = fold_sector((profiles.get(r["sym"]) or {}).get("sector")) or "Other"
     today = datetime.date.today()
     n_soon = 0
     for r in results:
@@ -827,7 +801,8 @@ def main():
         "spyStats": spy_stats,
         "curves": curves,
         "paper": paper,
-        "profiles": profiles,
+        # only the screened names — the cache accumulates names that have since dropped out
+        "profiles": {r["sym"]: profiles[r["sym"]] for r in results if r["sym"] in profiles},
         "rows": results,
     }
     out = os.path.join(ROOT, "data.js")

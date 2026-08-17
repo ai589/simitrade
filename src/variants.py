@@ -1,13 +1,15 @@
 # Round 2: refined strategy variants over the same 5y weekly framework.
 # Adds: SPY regime filter (cash when SPY < SMA50), skip-recent-week momentum,
 # risk-adjusted momentum, and top-N concentration tests.
-# Caches raw 5y data in px5y_cache.json so re-runs are instant.
+# Caches raw 10y data in state/px10y_cache.json so re-runs are instant (refetched when
+# >24h old, when the universe has gained names, or with --refetch).
 #
-# Usage:  python variants.py
+# Usage:  python variants.py [--refetch]
 
 import json
 import math
 import os
+import sys
 import time
 import concurrent.futures
 
@@ -19,14 +21,28 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATE = os.path.join(ROOT, "state")
 VR = os.path.join(STATE, "variants_results.json")
 CACHE = os.path.join(STATE, "px10y_cache.json")
+# Sidecar recording which symbols the cache ATTEMPTED (not which succeeded), so names that
+# legitimately return nothing (delisted, non-NYSE/Nasdaq) don't force a refetch every run.
+CACHE_META = os.path.join(STATE, "px10y_cache.meta.json")
 
 
-def load_data():
-    if os.path.exists(CACHE) and time.time() - os.path.getmtime(CACHE) < 86400:
-        with open(CACHE, encoding="utf-8") as f:
-            raw = json.load(f)
-        return {s: {int(k): tuple(v) for k, v in d.items()} for s, d in raw.items()}
+def load_data(force=None):
+    if force is None:
+        force = "--refetch" in sys.argv
     syms = UNIVERSE + sorted(NONSTOCK)
+    if not force and os.path.exists(CACHE) and time.time() - os.path.getmtime(CACHE) < 86400:
+        try:
+            with open(CACHE_META, encoding="utf-8") as f:
+                attempted = set(json.load(f).get("universe", []))
+        except Exception:
+            attempted = set()
+        missing = sorted(set(syms) - attempted)
+        if not missing:
+            with open(CACHE, encoding="utf-8") as f:
+                raw = json.load(f)
+            return {s: {int(k): tuple(v) for k, v in d.items()} for s, d in raw.items()}
+        print(f"px10y cache lacks {len(missing)} universe names "
+              f"({', '.join(missing[:8])}{'...' if len(missing) > 8 else ''}); refetching all.")
     print(f"Fetching 10y history for {len(syms)} symbols...")
     data = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
@@ -35,6 +51,8 @@ def load_data():
                 data[res[0]] = res[1]
     with open(CACHE, "w", encoding="utf-8") as f:
         json.dump(data, f)
+    with open(CACHE_META, "w", encoding="utf-8") as f:
+        json.dump({"ts": time.time(), "universe": sorted(syms)}, f)
     return data
 
 

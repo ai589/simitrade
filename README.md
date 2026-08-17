@@ -1,14 +1,14 @@
 # US Swing Trade Dashboard (NYSE + Nasdaq)
 
-A self-contained swing-trading research dashboard for liquid NYSE and Nasdaq large-caps. It screens ~200 names daily, runs 11 backtested strategies (momentum, mean-reversion, value proxies, and bear-market shorts) across 1-week and 2-week horizons, and tracks every pick in an automatic paper-trade record — so you can see whether live results match the backtest **before** risking money.
+A self-contained swing-trading research dashboard for liquid NYSE and Nasdaq large-caps. It screens ~540 names daily (the current S&P 500, Nasdaq-100 and Dow 30 constituents plus a few pinned ADRs), runs 13 backtested strategies (momentum, mean-reversion, value proxies, and bear-market shorts) across 1-week and 2-week horizons, and tracks every pick in an automatic paper-trade record — so you can see whether live results match the backtest **before** risking money.
 
 ![Dashboard](https://img.shields.io/badge/stack-Python%20%2B%20vanilla%20JS-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## What it does
 
 - **Auto-refresh 3× per trading day** — 8:00 AM SGT plus ~10-15 min after the US open and close via Windows scheduled tasks; `market_guard.py` converts to America/New_York time so the schedule survives US daylight-saving flips and skips weekends
-- **Daily screen** of ~200 liquid NYSE and Nasdaq names (>$50M/day traded) on momentum, trend, RSI, volume, volatility and 52-week value signals
-- **11 strategies, all backtested 10 years** (2016–2026, weekly rebalance, trading costs included) with honest stats: hit rate, Sharpe, max drawdown, growth of $10,000
+- **Daily screen** of ~540 liquid NYSE and Nasdaq names — S&P 500 + Nasdaq-100 + Dow 30, list auto-refreshed weekly from Wikipedia (>$50M/day traded) on momentum, trend, RSI, volume, volatility and 52-week value signals
+- **13 strategies, all backtested 10 years** (2016–2026, weekly rebalance, trading costs included) with honest stats: hit rate, Sharpe, max drawdown, growth of $10,000
 - **Regime filter** — strategies sit in cash when SPY is below its 50-day MA (shorts activate only *below* it)
 - **Earnings filter** — names reporting within the hold window are excluded from picks
 - **ATR-based levels** — every pick gets a stop and target scaled to its own volatility, with % distances
@@ -20,7 +20,7 @@ A self-contained swing-trading research dashboard for liquid NYSE and Nasdaq lar
 
 ```
 pip install requests
-python src/screener.py      # pulls prices, writes data.js  (~1 min)
+python src/screener.py      # pulls prices, writes data.js  (~1-3 min)
 python src/variants.py      # 10y backtest round 1 (momentum/low-vol)   ─┐
 python src/variants2.py     # round 2 (sector-neutral, dips)             │ run once,
 python src/variants3.py     # round 3 (14-day holds)                     │ then quarterly
@@ -37,6 +37,7 @@ Then open `dashboard.html` in a browser. `refresh.bat` opens the dashboard and r
 | `dashboard.html` | The entire UI — single file, no build step, no dependencies |
 | `data.js` | Generated data payload read by the dashboard (kept at root for Vercel) |
 | `src/screener.py` | Daily data pull (Yahoo Finance chart API), scoring, strategy picks, paper-trade log |
+| `src/universe.py` | Universe = S&P 500 ∪ Nasdaq-100 ∪ Dow 30 (Wikipedia constituent lists, weekly cache in `state/universe.json`) + pinned extras; GICS sectors folded into 7 buckets |
 | `src/backtest.py` | Shared backtest engine + 10-year data fetch |
 | `src/variants*.py` | Strategy research rounds; results merge into `state/variants_results.json` |
 | `src/market_guard.py` | US market-hours gate for the open/close scheduled refresh |
@@ -51,7 +52,7 @@ Then open `dashboard.html` in a browser. `refresh.bat` opens the dashboard and r
 - **Every short strategy tested lost money** — five configurations, all negative, before borrow fees
 - Buying dips works at a 5-day horizon and **fails at 14 days**; momentum survives longer holds
 - The regime filter's entire value is concentrated in bear markets (2020, 2022) — it costs return the rest of the time
-- Survivorship bias: the universe is today's constituents, so absolute returns are flattered; treat rankings as the reliable output
+- Survivorship bias: the universe is the index constituents as of the run date, so absolute returns are flattered; treat rankings as the reliable output
 
 ## Disclaimer
 

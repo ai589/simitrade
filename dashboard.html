@@ -61,6 +61,15 @@
   .card .rank { position: absolute; top: 10px; right: 12px; color: var(--dim); font: 600 11px var(--mono); }
   .card .sym { font: 700 17px var(--mono); letter-spacing: .01em; }
   .card .nm { color: var(--dim); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* Tables inside cards (strategy picks, paper log): tighter cells so a 5-6 column table
+     fits a ~390px card; the symbol cell may wrap its tags; and the card scrolls
+     horizontally as a last resort instead of spilling under the next card. */
+  .card { overflow-x: auto; }
+  .card table { font-size: 12px; }
+  .card thead th { padding: 7px 6px; }
+  .card tbody td { padding: 6px 6px; }
+  .card tbody td:first-child { white-space: normal; line-height: 1.7; }
+  .card tbody td:first-child .tag { white-space: nowrap; }
   .scorebar { height: 5px; background: var(--panel2); border-radius: 3px; margin: 10px 0 8px; overflow: hidden; }
   .scorebar i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); }
   .lv { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px 4px; margin-top: 8px; font-size: 12.5px;
@@ -153,7 +162,7 @@
 
 <header id="topnav">
   <h1>US Swing Screener · NYSE + Nasdaq</h1>
-  <span class="ver" title="Dashboard version — bumped on every publish. Data freshness is shown separately below.">v2026.08.18-2140 (SGT)</span>
+  <span class="ver" title="Dashboard version — bumped on every publish. Data freshness is shown separately below.">v2026.08.19-0415 (SGT)</span>
   <nav>
     <a href="#calc">tools</a>
     <a href="#strategies">strategies</a>
@@ -736,7 +745,7 @@ function renderStrategies() {
       basketRisk += n * Math.abs(r.entry - lv.stop);
       const spct = v => (v > 0 ? '+' : '') + fmt(v, 1) + '%';
       const isTop = top3Up.has(si + '|' + sym);
-      let mark = isTop ? ' <span class="tag" style="color:var(--green);border-color:var(--green)">▲ top upside</span>' : '';
+      let mark = isTop ? ' <span class="tag" style="color:var(--green);border-color:var(--green)" title="One of the 3 highest potential gains to target across visible strategies">▲ top</span>' : '';
       if (skip) mark += ` <span class="tag" style="color:var(--dim)" title="More than the max-per-sector count already taken from ${r.sector} in this basket - skip (or raise the cap in Position sizing).">sector cap</span>`;
       const heldSince = (st.held || {})[sym];
       if (heldSince)
@@ -753,8 +762,8 @@ function renderStrategies() {
       return `<tr class="sellrow"><td><b class="symlink" data-sym="${o.sym}">${o.sym}</b>
         <span class="tag selltag" title="Still open from ${o.since} but no longer picked — close this position this week.">✕ ${closeVerb}</span></td>
         <td>${r ? '$' + fmt(r.px) : '—'}</td>
-        <td colspan="2" class="sub" style="text-align:right;font-size:11px">held since ${o.since.slice(5)}</td>
-        <td class="sub" style="font-size:11px">${closeVerb} by ${o.sellBy ? o.sellBy.slice(5) : '—'}</td></tr>`;
+        <td colspan="2" class="sub" style="text-align:right;font-size:11px" title="Held since ${o.since}">since ${o.since.slice(5)}</td>
+        <td class="sub" style="font-size:11px" title="${closeVerb} by ${o.sellBy || '—'}">by ${o.sellBy ? o.sellBy.slice(5) : '—'}</td></tr>`;
     }).join('');
     let picksHtml = '';
     if (!st.picks.length) {
@@ -1040,7 +1049,7 @@ function renderPaper() {
          <table style="margin-top:4px;font-size:12px"><thead><tr>
          <th style="position:static">Entered</th><th style="position:static">Sym</th>
          <th style="position:static">Entry</th><th style="position:static">Status</th>
-         <th style="position:static">Exit / sell by</th>
+         <th style="position:static" title="Exit date, or sell-by date while open">Exit</th>
          <th style="position:static">Ret</th></tr></thead><tbody>${trades.map(row).join('')}</tbody></table>${extra || ''}`
       : '';
     const openTr = a.trades.filter(t => t.status === 'open');

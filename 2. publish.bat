@@ -7,7 +7,7 @@ set WORK=%LOCALAPPDATA%\simitrade-publish
 rem Bump the dashboard version stamp (header "vYYYY.MM.DD-HHMM (SGT)") to now.
 python -c "import re,datetime,io;p=r'%~dp0dashboard.html';s=io.open(p,encoding='utf-8').read();s=re.sub(r'v\d{4}\.\d{2}\.\d{2}-\d{4} \(SGT\)',datetime.datetime.now().strftime('v%%Y.%%m.%%d-%%H%%M (SGT)'),s,count=1);io.open(p,'w',encoding='utf-8',newline='').write(s)"
 
-robocopy "%~dp0." "%WORK%" /MIR /XD .git .vercel __pycache__ .claude logs /XF px5y_cache.json px10y_cache.json px10y_cache.meta.json earnings_cache.json universe.json refresh_log.txt .env.local CLAUDE.md /NFL /NDL /NJH
+robocopy "%~dp0." "%WORK%" /MIR /XD .git .vercel __pycache__ .claude logs /XF px5y_cache.json px10y_cache.json px10y_cache.meta.json earnings_cache.json universe.json tiger_config.json orders_sent.json refresh_log.txt .env.local CLAUDE.md /NFL /NDL /NJH
 if errorlevel 8 (
   echo ERROR: file copy failed.
   pause

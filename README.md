@@ -42,6 +42,7 @@ Then open `dashboard.html` in a browser. `refresh.bat` opens the dashboard and r
 | `src/backtest.py` | Shared backtest engine + 10-year data fetch |
 | `src/variants*.py` | Strategy research rounds; results merge into `state/variants_results.json` |
 | `src/market_guard.py` | US market-hours gate for the open/close scheduled refresh |
+| `src/push_orders.py` | Optional: push the week's picks to Tiger Brokers as bracket orders (limit entry + take-profit + stop-loss), sized like the dashboard; dry run by default |
 | `state/` | Mutable state: paper-trade history (`picks_log.json`), backtest results, price/earnings caches |
 | `logs/` | `refresh_log.txt` from the scheduled refreshes |
 | `archive/` | Superseded files kept for reference (legacy `strategies.json`) |

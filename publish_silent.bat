@@ -13,7 +13,7 @@ if errorlevel 1 (
   exit /b 1
 )
 
-robocopy "%~dp0." "%WORK%" /MIR /XD .git .vercel __pycache__ .claude logs /XF px5y_cache.json px10y_cache.json px10y_cache.meta.json earnings_cache.json universe.json refresh_log.txt publish_log.txt .env.local CLAUDE.md /NFL /NDL /NJH >> logs\publish_log.txt 2>&1
+robocopy "%~dp0." "%WORK%" /MIR /XD .git .vercel __pycache__ .claude logs /XF px5y_cache.json px10y_cache.json px10y_cache.meta.json earnings_cache.json universe.json tiger_config.json orders_sent.json refresh_log.txt publish_log.txt .env.local CLAUDE.md /NFL /NDL /NJH >> logs\publish_log.txt 2>&1
 if errorlevel 8 (
   echo ERROR: file copy failed - nothing published. >> logs\publish_log.txt
   exit /b 1

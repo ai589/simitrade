@@ -7,6 +7,8 @@ px10y_cache.json
 earnings_cache.json
 universe.json
 px10y_cache.meta.json
+tiger_config.json
+orders_sent.json
 refresh_log.txt
 publish_log.txt
 .claude/

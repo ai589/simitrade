@@ -1,0 +1,18 @@
+{
+  "tiger_id": "YOUR_TIGER_ID",
+  "private_key_path": "C:/path/to/tiger_private_key.pem",
+  "paper_account": "YOUR_PAPER_ACCOUNT_NO",
+  "live_account": "",
+  "allow_live": false,
+  "strategies": ["mom14", "sector14", "valueDD"],
+  "account_size": 100000,
+  "risk_pct": 1.0,
+  "max_heat_pct": 6.0,
+  "max_per_sector": 2,
+  "max_pos_pct": 20,
+  "regime_scale": true,
+  "budget": 0,
+  "entry_limit_slip_pct": 0.5,
+  "max_orders_per_run": 20,
+  "skip_health": ["demoted", "research"]
+}

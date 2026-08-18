@@ -153,7 +153,7 @@
 
 <header id="topnav">
   <h1>US Swing Screener · NYSE + Nasdaq</h1>
-  <span class="ver" title="Dashboard version — bumped on every publish. Data freshness is shown separately below.">v2026.08.18-0800 (SGT)</span>
+  <span class="ver" title="Dashboard version — bumped on every publish. Data freshness is shown separately below.">v2026.08.18-2140 (SGT)</span>
   <nav>
     <a href="#calc">tools</a>
     <a href="#strategies">strategies</a>
@@ -209,7 +209,14 @@
       <label>Risk per trade % <input type="number" id="riskPct" value="1" step="0.25" min="0.1"></label>
       <label>Trading budget $ <input type="number" id="budget" placeholder="no cap" step="1000" min="0"></label>
     </div>
+    <div class="controls" style="margin-top:8px;margin-bottom:0">
+      <label title="Total open risk (sum of every visible pick's distance to stop x shares) may not exceed this % of the account. Sizes are scaled down pro-rata when it would.">Max portfolio heat % <input type="number" id="maxHeat" value="6" step="0.5" min="0"></label>
+      <label title="Within one strategy basket, at most this many names from the same sector; the rest are skipped. 0 = off.">Max per sector <input type="number" id="maxSector" value="2" step="1" min="0"></label>
+      <label title="Single position notional cap as % of account.">Max position % <input type="number" id="maxPos" value="20" step="5" min="1"></label>
+      <label title="Full size only when SPY is above its 50-day MA AND more than half the universe is above its 20-day MA; half size when only one holds; quarter size when neither."><input type="checkbox" id="regimeScale" checked> Scale by regime</label>
+    </div>
     <div class="sub" id="riskNote" style="margin-top:10px;font-size:12px"></div>
+    <div class="sub" id="heatNote" style="margin-top:6px;font-size:12px"></div>
   </div>
 </div>
 
@@ -258,8 +265,13 @@
     </ul>
     <b>4. Levels.</b> Stop = entry − 1.5×ATR(14), target = entry + 2×ATR (weekly);
     2×/3× ATR for the 14-day hold; inverted for shorts. ATR scales the levels to each stock's own volatility.<br><br>
-    <b>5. Sizing.</b> Shares = (account × risk%) ÷ stop distance, capped at 20% of account per position
-    and budget ÷ basket size if a budget is set.<br><br>
+    <b>5. Sizing.</b> Volatility-targeted: shares = (account × risk%) ÷ stop distance, so one ATR-stop move is the
+    same fraction of the account for every name; capped at the max-position % and at budget ÷ basket size if a budget
+    is set. Then three portfolio brakes (Position sizing panel): a <b>regime multiplier</b> (×1 when SPY &gt; 50-day MA
+    and breadth &gt; 50%, ×0.5 when only one holds, ×0.25 when neither), a <b>portfolio heat cap</b> (total $ at
+    risk across all visible picks, deduped by name, may not exceed the cap — sizes scale down pro-rata) and a
+    <b>per-sector cap</b> within each basket (extra names tagged <span class="tag" style="color:var(--dim)">sector cap</span>
+    are skipped — with ~540 names a momentum basket will happily hand you eight semis at once).<br><br>
     <b>6. Exit.</b> Stop hit → out; target hit → out; otherwise sell at the close on the sell-by date.
     Every pick is also paper-logged automatically and scored against real prices — see the paper-trade record.<br><br>
     <b>7. Weekly rollover.</b> If a name you already hold is picked again this week, <b>keep holding it</b>
@@ -448,19 +460,42 @@ function spark(cv, data, w = 110, h = 30) {
   x.strokeStyle = up ? '#34d178' : '#f0616d'; x.lineWidth = 1.4; x.stroke();
 }
 
-function shares(r, basketSize = 5, stopPx) {
+// Sizing = volatility-targeted: risk% of account / (distance to the ATR stop), so a
+// 1-ATR move is the same fraction of the account for every name. On top of that:
+// max position notional, optional budget split, a regime multiplier and (in the
+// strategy cards) a portfolio-heat scale-down and a per-sector cap.
+function regimeMult() {
+  if (!document.getElementById('regimeScale').checked) return 1;
+  const a = D.regimeOn !== false, b = (D.breadth20 || 0) > 50;
+  return a && b ? 1 : (a || b) ? 0.5 : 0.25;
+}
+let heatScale = 1;  // set by renderStrategies() from the visible baskets
+function shares(r, basketSize = 5, stopPx, scale = 1) {
   const acct = +document.getElementById('acct').value || 0;
   const rp = +document.getElementById('riskPct').value || 0;
   const budget = +document.getElementById('budget').value || 0;
-  const riskDollar = acct * rp / 100;
+  const maxPos = (+document.getElementById('maxPos').value || 20) / 100;
+  const riskDollar = acct * rp / 100 * regimeMult() * scale;
   const perShare = Math.abs(r.entry - (stopPx != null ? stopPx : r.stop));
   if (perShare <= 0) return 0;
   let s = Math.floor(riskDollar / perShare);
-  // cap position at 20% of account
-  s = Math.min(s, Math.floor(acct * 0.20 / r.entry));
+  // cap position notional
+  s = Math.min(s, Math.floor(acct * maxPos / r.entry));
   // cap by budget, split equally across the basket
   if (budget > 0) s = Math.min(s, Math.floor(budget / basketSize / r.entry));
   return s;
+}
+// Which picks in a basket survive the per-sector cap (picks are already ranked).
+function sectorKeep(st) {
+  const cap = +document.getElementById('maxSector').value || 0;
+  const keep = new Set(), seen = {};
+  (st.picks || []).forEach(sym => {
+    const r = bySym[sym]; if (!r) return;
+    const sec = r.sector || '?';
+    seen[sec] = (seen[sec] || 0) + 1;
+    if (!cap || seen[sec] <= cap) keep.add(sym);
+  });
+  return keep;
 }
 
 // ---- Company profile modal (click any ticker symbol) ----
@@ -637,9 +672,34 @@ function renderStrategies() {
   });
   const top3Up = new Set(
     allPicks.sort((a, b) => b.upside - a.upside).slice(0, 3).map(p => p.key));
+  // Portfolio heat: unscaled $ risk of every visible pick (deduped by symbol - the same
+  // name in two baskets is one position), vs the max-heat cap. Scale sizes pro-rata.
+  const acct = +document.getElementById('acct').value || 0;
+  const maxHeat = +document.getElementById('maxHeat').value || 0;
+  const riskBySym = {};
+  (D.strategies || []).forEach(st => {
+    if (!isStratOn(st.key)) return;
+    const keep = sectorKeep(st);
+    (st.picks || []).forEach(sym => {
+      const r = bySym[sym]; if (!r || !keep.has(sym)) return;
+      const lv = levels(r, st);
+      const risk = shares(r, st.picks.length, lv.stop, 1) * Math.abs(r.entry - lv.stop);
+      riskBySym[sym] = Math.max(riskBySym[sym] || 0, risk);
+    });
+  });
+  const heat0 = Object.values(riskBySym).reduce((a, b) => a + b, 0);
+  heatScale = (maxHeat > 0 && acct > 0 && heat0 > acct * maxHeat / 100) ? acct * maxHeat / 100 / heat0 : 1;
+  const heatAfter = heat0 * heatScale;
+  const rm = regimeMult();
+  const hn = document.getElementById('heatNote');
+  if (hn) hn.innerHTML = acct > 0 ? `Open risk across visible picks (${Object.keys(riskBySym).length} names): <b>$${Math.round(heatAfter).toLocaleString()}</b> = ${fmt(heatAfter / acct * 100, 1)}% of account`
+    + (heatScale < 1 ? ` — <span style="color:var(--amber)">over the ${maxHeat}% cap, all sizes scaled ×${fmt(heatScale, 2)}</span>` : (maxHeat > 0 ? ` (cap ${maxHeat}%)` : ''))
+    + (rm < 1 ? ` · <span style="color:var(--amber)">regime multiplier ×${rm}</span>` : ' · regime multiplier ×1') : '';
   (D.strategies || []).forEach((st, si) => {
     if (!isStratOn(st.key)) return;
     const c = document.createElement('div'); c.className = 'card';
+    const keep = sectorKeep(st);
+    let basketRisk = 0;
     const ws = windowStats(st.key);
     const s = ws || st.stats;
     const wl = ws ? statsWin + 'y' : '10y';
@@ -671,10 +731,13 @@ function renderStrategies() {
       const r = bySym[sym];
       if (!r) return '';
       const lv = levels(r, st);
-      const n = shares(r, st.picks.length, lv.stop);
+      const skip = !keep.has(sym);
+      const n = skip ? 0 : shares(r, st.picks.length, lv.stop, heatScale);
+      basketRisk += n * Math.abs(r.entry - lv.stop);
       const spct = v => (v > 0 ? '+' : '') + fmt(v, 1) + '%';
       const isTop = top3Up.has(si + '|' + sym);
       let mark = isTop ? ' <span class="tag" style="color:var(--green);border-color:var(--green)">▲ top upside</span>' : '';
+      if (skip) mark += ` <span class="tag" style="color:var(--dim)" title="More than the max-per-sector count already taken from ${r.sector} in this basket - skip (or raise the cap in Position sizing).">sector cap</span>`;
       const heldSince = (st.held || {})[sym];
       if (heldSince)
         mark += ` <span class="tag holdtag" title="Already in your book since ${heldSince} — picked again this week, so keep holding: no need to sell and re-buy.">↻ hold</span>`;
@@ -712,13 +775,14 @@ function renderStrategies() {
       const newPicks = st.picks.filter(sym => !held[sym]);
       const newCost = newPicks.reduce((sum, sym) => {
         const r = bySym[sym];
-        return r ? sum + shares(r, st.picks.length, levels(r, st).stop) * r.entry : sum;
+        return r && keep.has(sym) ? sum + shares(r, st.picks.length, levels(r, st).stop, heatScale) * r.entry : sum;
       }, 0);
       const heldNote = Object.keys(held).length
         ? ` &nbsp;·&nbsp; <span style="color:var(--accent)">${Object.keys(held).length} carried over (↻ hold)</span>` : '';
       const sellNote = ro.length
         ? ` &nbsp;·&nbsp; <span style="color:var(--sell)">${ro.length} to close (✕ ${closeVerb})</span>` : '';
       picksHtml += `<div class="sub" style="margin-top:6px;font-size:11px">New buys ≈ <b>$${Math.round(newCost).toLocaleString()}</b>${heldNote}${sellNote}
+        &nbsp;·&nbsp; basket risk <b>$${Math.round(basketRisk).toLocaleString()}</b>${acct > 0 ? ' (' + fmt(basketRisk / acct * 100, 1) + '%)' : ''}
         &nbsp;·&nbsp; hold ${st.holdDays || 5} trading days
         &nbsp;·&nbsp; sell remainder by <b>${st.sellBy || '—'}</b></div>`;
     }
@@ -1077,7 +1141,8 @@ function renderRisk() {
   const acct = +document.getElementById('acct').value || 0;
   const rp = +document.getElementById('riskPct').value || 0;
   const budget = +document.getElementById('budget').value || 0;
-  let note = `= $${(acct * rp / 100).toLocaleString()} risked per trade if stopped out (positions capped at 20% of account`;
+  const maxPos = +document.getElementById('maxPos').value || 20;
+  let note = `= $${(acct * rp / 100).toLocaleString()} risked per trade if stopped out, i.e. sized so one ATR-stop distance = ${rp}% of account (positions capped at ${maxPos}% of account`;
   note += budget > 0
     ? `; budget of $${budget.toLocaleString()} split equally across each strategy's basket)`
     : `; no budget cap — set one to limit total outlay)`;
@@ -1134,8 +1199,14 @@ document.querySelectorAll('thead th[data-k]').forEach(th =>
   }));
 ['search', 'sector', 'view'].forEach(id =>
   document.getElementById(id).addEventListener('input', renderTable));
-['acct', 'riskPct', 'budget'].forEach(id =>
-  document.getElementById(id).addEventListener('input', () => { renderRisk(); renderStrategies(); renderCards(); renderTable(); }));
+['acct', 'riskPct', 'budget', 'maxHeat', 'maxSector', 'maxPos', 'regimeScale'].forEach(id => {
+  const el = document.getElementById(id);
+  try { const v = localStorage.getItem('sz_' + id); if (v !== null) { if (el.type === 'checkbox') el.checked = v === '1'; else el.value = v; } } catch (e) {}
+  el.addEventListener('input', () => {
+    try { localStorage.setItem('sz_' + id, el.type === 'checkbox' ? (el.checked ? '1' : '0') : el.value); } catch (e) {}
+    renderRisk(); renderStrategies(); renderCards(); renderTable();
+  });
+});
 
 applyData();
 checkForNewData();

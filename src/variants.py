@@ -4,7 +4,17 @@
 # Caches raw 10y data in state/px10y_cache.json so re-runs are instant (refetched when
 # >24h old, when the universe has gained names, or with --refetch).
 #
-# Usage:  python variants.py [--refetch]
+# Shared by ALL rounds (variants2-5.py import from here):
+#   load_data()  - cache + point-in-time mask (S&P names eligible only from their index
+#                  add date; --nopit / BT_PIT=0 disables)
+#   align(data)  - calendar-aligned (closes, highs, vols, first, opens) per symbol
+#   hold_ret()   - one-hold return under the ENTRY convention:
+#                  "nextopen" (default): buy next session's open, sell the open HOLD
+#                  sessions later - what a trader acting on the after-close picks gets;
+#                  "close" (--closeentry / BT_ENTRY=close): the old same-close fill.
+#   BT_RESULTS env var overrides the results file (for side-by-side comparison runs).
+#
+# Usage:  python variants.py [--refetch] [--closeentry] [--nopit]
 
 import json
 import math
@@ -14,16 +24,50 @@ import time
 import concurrent.futures
 
 from backtest import fetch5y, features, stats, UNIVERSE, TOP_N, HOLD, LOOKBACK, COST, NONSTOCK
+from screener import UNIVERSE_INFO
 
 # Repo layout: scripts live in src/, mutable state (caches, results) in state/.
 # VR is imported by variants2-5.py so all rounds share the same results file.
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATE = os.path.join(ROOT, "state")
-VR = os.path.join(STATE, "variants_results.json")
+VR = os.environ.get("BT_RESULTS") or os.path.join(STATE, "variants_results.json")
 CACHE = os.path.join(STATE, "px10y_cache.json")
 # Sidecar recording which symbols the cache ATTEMPTED (not which succeeded), so names that
 # legitimately return nothing (delisted, non-NYSE/Nasdaq) don't force a refetch every run.
 CACHE_META = os.path.join(STATE, "px10y_cache.meta.json")
+
+ENTRY = "close" if ("--closeentry" in sys.argv or os.environ.get("BT_ENTRY") == "close") \
+    else "nextopen"
+PIT = not ("--nopit" in sys.argv or os.environ.get("BT_PIT") == "0")
+_EPOCH = 719163  # datetime.date(1970, 1, 1).toordinal()
+
+
+def _mask_pit(data):
+    """Drop each S&P name's bars before its index add date, so a backtest only sees a
+    name once it was actually a constituent (partial survivorship fix: additions only;
+    deletions can't be recovered from the current list). Nasdaq-100-only names and
+    pinned extras have no add date and keep full history."""
+    import datetime
+    n = 0
+    for sym, series in data.items():
+        added = UNIVERSE_INFO.get(sym.replace("-", "."), {}).get("added")
+        if not added:
+            continue
+        try:
+            cut = datetime.date.fromisoformat(added).toordinal() - _EPOCH
+        except ValueError:
+            continue
+        if cut > min(series, default=cut):
+            for d in [d for d in series if d < cut]:
+                del series[d]
+            n += 1
+    if n:
+        print(f"Point-in-time: masked pre-add-date history for {n} S&P names.")
+    return data
+
+
+def _finish(data):
+    return _mask_pit(data) if PIT else data
 
 
 def load_data(force=None):
@@ -40,9 +84,14 @@ def load_data(force=None):
         if not missing:
             with open(CACHE, encoding="utf-8") as f:
                 raw = json.load(f)
-            return {s: {int(k): tuple(v) for k, v in d.items()} for s, d in raw.items()}
-        print(f"px10y cache lacks {len(missing)} universe names "
-              f"({', '.join(missing[:8])}{'...' if len(missing) > 8 else ''}); refetching all.")
+            probe = next((v for d in raw.values() for v in d.values()), None)
+            if probe is not None and len(probe) >= 4:
+                return _finish({s: {int(k): tuple(v) for k, v in d.items()}
+                                for s, d in raw.items()})
+            print("px10y cache predates open prices; refetching all.")
+        else:
+            print(f"px10y cache lacks {len(missing)} universe names "
+                  f"({', '.join(missing[:8])}{'...' if len(missing) > 8 else ''}); refetching all.")
     print(f"Fetching 10y history for {len(syms)} symbols...")
     data = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
@@ -53,7 +102,43 @@ def load_data(force=None):
         json.dump(data, f)
     with open(CACHE_META, "w", encoding="utf-8") as f:
         json.dump({"ts": time.time(), "universe": sorted(syms)}, f)
-    return data
+    return _finish(data)
+
+
+def align(data):
+    """-> (cal, aligned) where aligned[sym] = (closes, highs, vols, first, opens), each
+    list on SPY's calendar and forward-filled after the first observation."""
+    cal = sorted(data["SPY"].keys())
+    aligned = {}
+    for sym, series in data.items():
+        closes = [None] * len(cal)
+        highs = [None] * len(cal)
+        vols = [None] * len(cal)
+        opens = [None] * len(cal)
+        last = None
+        for i, d in enumerate(cal):
+            if d in series:
+                last = series[d]
+            if last:
+                closes[i], highs[i], vols[i] = last[:3]
+                opens[i] = last[3] if len(last) > 3 and last[3] else last[0]
+        first = next((i for i, c in enumerate(closes) if c is not None), None)
+        if first is not None:
+            aligned[sym] = (closes, highs, vols, first, opens)
+    return cal, aligned
+
+
+def hold_ret(aligned, sym, t, hold):
+    """Gross return of holding `sym` for one rebalance period signalled at close t.
+    nextopen: open[t+1] -> open[t+1+hold] (falls back to close[t+hold] at the end of the
+    sample); close: close[t] -> close[t+hold]."""
+    cl, _, _, _, op = aligned[sym]
+    if ENTRY == "close":
+        return cl[t + hold] / cl[t] - 1
+    entry = op[t + 1] if t + 1 < len(op) and op[t + 1] else cl[t]
+    j = t + 1 + hold
+    exit_ = op[j] if j < len(op) and op[j] else cl[t + hold]
+    return exit_ / entry - 1
 
 
 def rank_uptrend(feats, key, n):
@@ -86,24 +171,10 @@ VARIANTS = {
 
 def main():
     data = load_data()
-    print(f"Universe: {len(data) - 1} names + SPY (cached).")
+    print(f"Universe: {len(data) - 1} names + SPY (cached). Entry: {ENTRY}; "
+          f"point-in-time: {'on' if PIT else 'off'}.")
 
-    cal = sorted(data["SPY"].keys())
-    aligned = {}
-    for sym, series in data.items():
-        closes = [None] * len(cal)
-        highs = [None] * len(cal)
-        vols = [None] * len(cal)
-        last = None
-        for i, d in enumerate(cal):
-            if d in series:
-                last = series[d]
-            if last:
-                closes[i], highs[i], vols[i] = last
-        first = next((i for i, c in enumerate(closes) if c is not None), None)
-        if first is not None:
-            aligned[sym] = (closes, highs, vols, first)
-
+    cal, aligned = align(data)
     spy_closes = aligned["SPY"][0]
     rebalances = list(range(LOOKBACK, len(cal) - HOLD, HOLD))
 
@@ -113,7 +184,7 @@ def main():
 
     for t in rebalances:
         feats = {}
-        for sym, (cl, hi, vo, first) in aligned.items():
+        for sym, (cl, hi, vo, first, _op) in aligned.items():
             if sym in NONSTOCK or first > t - LOOKBACK:
                 continue
             feats[sym] = features(cl[t - LOOKBACK + 1: t + 1],
@@ -122,7 +193,7 @@ def main():
         spy_win = spy_closes[t - LOOKBACK + 1: t + 1]
         spyf = features(spy_win, spy_win, [0] * LOOKBACK)
         spy_regime_on = spyf["px"] > spyf["sma50"]
-        spy_weekly.append(spy_closes[t + HOLD] / spy_closes[t] - 1)
+        spy_weekly.append(hold_ret(aligned, "SPY", t, HOLD))
 
         for key, (fn, regime) in VARIANTS.items():
             if regime and not spy_regime_on:
@@ -130,7 +201,7 @@ def main():
                 continue
             picks = fn(feats, spyf)
             if picks:
-                rets = [aligned[s][0][t + HOLD] / aligned[s][0][t] - 1 - COST for s in picks]
+                rets = [hold_ret(aligned, s, t, HOLD) - COST for s in picks]
                 weekly[key].append(sum(rets) / len(rets))
                 exposure[key] += 1
             else:
@@ -178,6 +249,8 @@ def main():
     merged["spy"] = spy_stats
     merged["variants"] = results
     merged["curves"] = curves
+    merged["meta"] = {"entry": ENTRY, "pointInTime": PIT, "universe": len(data) - 1,
+                      "cost": COST, "run": time.strftime("%Y-%m-%d %H:%M")}
     with open(VR, "w", encoding="utf-8") as f:
         json.dump(merged, f, indent=1)
     print("\nWrote variants_results.json (merged)")

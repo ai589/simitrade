@@ -413,6 +413,7 @@ def update_paper_log(datamap, strategies, results, today_str):
 
     # aggregate closed-trade stats per strategy
     agg = {}
+    closed_rets = {}  # strategy -> [(date, retPct)] for the recent-window stats
     for e in log["entries"]:
         a = agg.setdefault(e["strategy"], {"open": 0, "closed": 0, "wins": 0,
                                            "sumRet": 0.0, "trades": []})
@@ -422,11 +423,17 @@ def update_paper_log(datamap, strategies, results, today_str):
             a["closed"] += 1
             a["wins"] += 1 if e.get("retPct", 0) > 0 else 0
             a["sumRet"] += e.get("retPct", 0)
+            closed_rets.setdefault(e["strategy"], []).append((e["date"], e.get("retPct", 0)))
         a["trades"].append(e)
-    for a in agg.values():
+    for key, a in agg.items():
         a["hitRate"] = round(a["wins"] / a["closed"] * 100, 1) if a["closed"] else None
         a["avgRet"] = round(a["sumRet"] / a["closed"], 2) if a["closed"] else None
         a["trades"] = sorted(a["trades"], key=lambda x: x["date"], reverse=True)[:40]
+        # last RECENT_N closed trades - the early-warning window for the health check
+        rec = [r for _, r in sorted(closed_rets.get(key, []))[-RECENT_N:]]
+        a["recent"] = {"n": len(rec),
+                       "avgRet": round(sum(rec) / len(rec), 2) if rec else None,
+                       "hitRate": round(sum(1 for r in rec if r > 0) / len(rec) * 100, 1) if rec else None}
     # names still open from an earlier session, per strategy — powers the
     # hold / new / rotate-out view on the strategy cards (earliest entry wins,
     # since that is when the human actually bought)
@@ -438,6 +445,49 @@ def update_paper_log(datamap, strategies, results, today_str):
         if cur is None or e["date"] < cur["since"]:
             ho[e["sym"]] = {"since": e["date"], "sellBy": e.get("sellBy")}
     return agg
+
+
+RECENT_N = 60      # closed trades in the "recent" live window
+MIN_LIVE = 30      # closed trades before the live record is judged at all
+
+
+def strategy_health(st, paper_agg):
+    """Live paper-trade record vs backtest expectation - the kill switch.
+    Compares avg % per trade in the paper log (real fills incl. stops/targets) with the
+    backtest's avg % per hold. Rules, deliberately simple and transparent:
+      research - backtest itself is <= 0 (the shorts): not for live use, whatever live says
+      young    - fewer than MIN_LIVE closed live trades: no verdict yet
+      demoted  - >= MIN_LIVE closed and live avg < 0, or the recent window (>= MIN_LIVE
+                 trades) is negative while the backtest is positive
+      watch    - live avg < 50% of the backtest avg
+      ok       - otherwise"""
+    a = paper_agg.get(st["key"]) or {}
+    bt = st.get("stats") or {}
+    bt_avg = bt.get("avgWeek")
+    closed = a.get("closed", 0)
+    live_avg = a.get("avgRet")
+    rec = a.get("recent") or {}
+    h = {"liveN": closed, "liveAvg": live_avg, "liveHit": a.get("hitRate"),
+         "recentN": rec.get("n", 0), "recentAvg": rec.get("avgRet"), "btAvg": bt_avg,
+         "ratio": (round(live_avg / bt_avg, 2) if live_avg is not None and bt_avg else None)}
+    if bt_avg is None:
+        h.update(status="young", note="No backtest stats.")
+    elif bt_avg <= 0:
+        h.update(status="research", note="Backtest is negative - research only, not for live money.")
+    elif closed < MIN_LIVE:
+        h.update(status="young", note=f"{closed}/{MIN_LIVE} closed live trades - no verdict yet.")
+    elif live_avg < 0 or (rec.get("n", 0) >= MIN_LIVE and (rec.get("avgRet") or 0) < 0):
+        h.update(status="demoted",
+                 note=f"Live {live_avg:+.2f}%/trade (last {rec.get('n')}: {rec.get('avgRet'):+.2f}%) "
+                      f"vs backtest {bt_avg:+.2f}% - losing live; stop trading it until it recovers.")
+    elif live_avg < 0.5 * bt_avg:
+        h.update(status="watch",
+                 note=f"Live {live_avg:+.2f}%/trade is under half the backtest {bt_avg:+.2f}% - "
+                      "size down; demote if it turns negative.")
+    else:
+        h.update(status="ok",
+                 note=f"Live {live_avg:+.2f}%/trade vs backtest {bt_avg:+.2f}% - tracking.")
+    return h
 
 
 def strategy_picks(results, regime_on, last_session):
@@ -787,6 +837,16 @@ def main():
         st["rotateOut"] = [
             {"sym": s, "since": v["since"], "sellBy": v.get("sellBy")}
             for s, v in sorted(ho.items()) if s not in st["picks"]]
+        st["health"] = strategy_health(st, paper)
+    flagged = [f'{st["key"]}={st["health"]["status"]}' for st in strategies
+               if st["health"]["status"] in ("watch", "demoted")]
+    print("Strategy health: " + (", ".join(flagged) if flagged else "no live-vs-backtest flags."))
+    bt_meta = {}
+    try:
+        with open(os.path.join(STATE, "variants_results.json"), encoding="utf-8") as f:
+            bt_meta = json.load(f).get("meta") or {}
+    except Exception:
+        pass
 
     payload = {
         "generated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
@@ -798,6 +858,7 @@ def main():
         "spyPx": round(spy_px, 2) if spy_px else None,
         "spySma50": round(spy_sma50, 2) if spy_sma50 else None,
         "strategies": strategies,
+        "btMeta": bt_meta,
         "spyStats": spy_stats,
         "curves": curves,
         "paper": paper,

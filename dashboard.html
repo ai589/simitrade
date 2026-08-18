@@ -153,7 +153,7 @@
 
 <header id="topnav">
   <h1>US Swing Screener · NYSE + Nasdaq</h1>
-  <span class="ver" title="Dashboard version — bumped on every publish. Data freshness is shown separately below.">v2026.08.18-0415 (SGT)</span>
+  <span class="ver" title="Dashboard version — bumped on every publish. Data freshness is shown separately below.">v2026.08.18-0800 (SGT)</span>
   <nav>
     <a href="#calc">tools</a>
     <a href="#strategies">strategies</a>
@@ -268,7 +268,16 @@
     new week's stop/target to the held position. Names still open that <i>dropped out</i> of the picks appear as
     <span style="color:var(--sell)">orange ✕ sell rows</span> in the same table — those are the ones to actually
     close this week. The paper-trade record still scores each week independently (backtest-consistent), so its
-    stats stay comparable.
+    stats stay comparable.<br><br>
+    <b>8. Backtest honesty.</b> Stats and curves assume you act on the after-close picks at the <b>next
+    session's open</b> and exit at the open one hold later (real fills, not the signal close); each S&amp;P name
+    only enters the sample from the date it joined the index (point-in-time membership — Nasdaq-100-only names
+    and pinned extras keep full history, so a little survivorship bias remains). The <b>By year</b> strip on
+    each card is the walk-forward view: an edge that lives in two or three years is curve-fit.
+    The <b>LIVE</b> badge is the kill switch: it compares the paper-trade record with the backtest —
+    <span style="color:var(--green)">OK</span> tracking, <span style="color:var(--amber)">WATCH</span> under
+    half the backtest average, <span style="color:var(--red)">DEMOTED</span> losing live (stop trading it),
+    judged only after 30 closed trades; shorts with a negative backtest are marked RESEARCH ONLY.
   </div>
 </details>
 
@@ -537,6 +546,24 @@ function windowStats(key) {
     maxDD: mdd * 100, total: (eq - 1) * 100 };
 }
 
+// Per-calendar-year total return from the weekly series - the walk-forward view:
+// a rule that only worked in 2-3 years out of 10 is curve-fit, not an edge.
+function yearStats(key) {
+  const C = D.curves || {};
+  const w = C[key], dates = C[CURVE_DATES[key]];
+  if (!w || !dates || w.length !== dates.length) return null;
+  const by = {};
+  w.forEach((x, i) => { const y = dates[i].slice(0, 4); by[y] = (by[y] || 1) * (1 + x); });
+  return Object.keys(by).sort().map(y => ({ y, tot: (by[y] - 1) * 100 }));
+}
+const HEALTH_UI = {
+  ok:       ['LIVE OK',       'var(--green)'],
+  watch:    ['LIVE: WATCH',   'var(--amber)'],
+  demoted:  ['LIVE: DEMOTED', 'var(--red)'],
+  young:    ['LIVE: too few', 'var(--dim)'],
+  research: ['RESEARCH ONLY', 'var(--dim)'],
+};
+
 // Shorts' fair horizon: same stats but over SPY<50-day-MA weeks only (the
 // regime shorting is supposed to work in), within the selected stats window.
 // bearFlags is aligned to the datesExtra grid, where all short curves live.
@@ -591,7 +618,7 @@ function renderStrategies() {
       Regime-gated strategies are in <b>cash</b> this week — historically, skipping these weeks cut drawdowns roughly in half.`;
   } else {
     banner.innerHTML = `<b class="green">Regime ON:</b> SPY ($${fmt(D.spyPx)}) is above its 50-day MA ($${fmt(D.spySma50)}) — strategies are active.
-      <span class="sub">Backtest verdict (5y, weekly, costs included): these are the best of 15 rule sets tested, but <b>none beat simply holding SPY</b> (+${D.spyStats ? fmt(D.spyStats.total,1) : '—'}% total, Sharpe ${D.spyStats ? D.spyStats.sharpe : '—'}). Trade them as a satellite around a core holding, not as the whole portfolio.</span>`;
+      <span class="sub">Backtest verdict (10y, weekly, ${(D.btMeta && D.btMeta.entry === 'nextopen') ? 'next-open fills, ' : ''}${(D.btMeta && D.btMeta.pointInTime) ? 'point-in-time S&amp;P membership, ' : ''}costs included): these are the best of the rule sets tested, but <b>none beat simply holding SPY</b> (+${D.spyStats ? fmt(D.spyStats.total,1) : '—'}% total, Sharpe ${D.spyStats ? D.spyStats.sharpe : '—'}). Trade them as a satellite around a core holding, not as the whole portfolio.</span>`;
   }
   renderStratToggles();
   const el = document.getElementById('strats'); el.innerHTML = '';
@@ -696,14 +723,21 @@ function renderStrategies() {
         &nbsp;·&nbsp; sell remainder by <b>${st.sellBy || '—'}</b></div>`;
     }
     const shortTag = st.side === 'short' ? ' <span class="tag hot">SHORT</span>' : '';
+    // Live-vs-backtest health badge (kill switch computed in screener.py strategy_health)
+    const h = st.health || {};
+    const hu = HEALTH_UI[h.status];
+    const healthTag = hu ? ` <span class="tag" style="color:${hu[1]};border-color:${hu[1]}" title="${(h.note || '').replace(/"/g, '&quot;')}">${hu[0]}</span>` : '';
+    const ys = yearStats(st.key);
+    const yearHtml = ys && ys.length ? `<div class="sub" style="margin-top:6px;font-size:10.5px;letter-spacing:.2px">By year: ${
+      ys.map(o => `<span title="${o.y}: ${o.tot >= 0 ? '+' : ''}${fmt(o.tot, 1)}%" style="color:${o.tot >= 0 ? 'var(--green)' : 'var(--red)'}">${o.y.slice(2)}&nbsp;${o.tot >= 0 ? '+' : ''}${fmt(o.tot, 0)}%</span>`).join(' · ')}</div>` : '';
     const yrs = st.stats && st.stats.weeks
       ? fmt(st.stats.weeks * (st.holdDays === 10 ? 14 : 7) / 365, 1) + 'y' : 'full sample';
     const warn = (st.stats && st.stats.total < 0)
       ? `<div style="margin-top:6px;padding:6px 8px;border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:11px">
            ⚠ Backtest LOST money (${fmt(st.stats.total, 1)}% over ${yrs})${st.side === 'short' ? ' — judge a short on the bear-weeks row above' : ''} — informational tool, not a recommendation</div>`
       : '';
-    c.innerHTML = `<div class="sym" style="font-size:15px">${st.label}${shortTag}</div>
-      <div class="nm" style="white-space:normal">${st.desc}</div>${statHtml}${bearHtml}${warn}${picksHtml}`;
+    c.innerHTML = `<div class="sym" style="font-size:15px">${st.label}${shortTag}${healthTag}</div>
+      <div class="nm" style="white-space:normal">${st.desc}</div>${statHtml}${yearHtml}${bearHtml}${warn}${picksHtml}`;
     el.appendChild(c);
   });
   if (!el.children.length)

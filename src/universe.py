@@ -24,6 +24,7 @@ STATE = os.path.join(ROOT, "state")
 CACHE = os.path.join(STATE, "universe.json")
 EARN_CACHE = os.path.join(STATE, "earnings_cache.json")  # read-only here (sector fallback)
 TTL_DAYS = 7
+SCHEMA = 2  # bump when the cached info shape changes; older caches are rebuilt
 
 # Wikipedia returns 403 to the default python User-Agent; a descriptive UA is required.
 WIKI_HEADERS = {"User-Agent": "ECLScreener/1.0 (ai@bepc.com.sg)"}
@@ -151,14 +152,22 @@ def _plain(cell):
     return re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", cell).strip()
 
 
+_DATE = re.compile(r"(\d{4}-\d{2}-\d{2})")
+
+
 def parse_spx(text):
-    """S&P 500 table -> {dot_sym: {"name", "gics"}}. Rows are one cell per line."""
+    """S&P 500 table -> {dot_sym: {"name", "gics", "added"}}. Rows are one cell per line:
+    Symbol | Security | GICS Sector | GICS Sub-Industry | HQ | Date added | CIK | Founded.
+    `added` (ISO date or None) lets the backtests treat a name as eligible only from the
+    day it joined the index - a partial fix for survivorship bias."""
     out = {}
     for ch in _table(text).split("\n|-"):
         c = _cells(ch)
         if len(c) < 3 or c[0].startswith("!") or c[0].startswith("{|"):
             continue
-        out[_ticker(c[0])] = {"name": _plain(c[1]), "gics": _plain(c[2])}
+        m = _DATE.search(c[5]) if len(c) > 5 else None
+        out[_ticker(c[0])] = {"name": _plain(c[1]), "gics": _plain(c[2]),
+                              "added": m.group(1) if m else None}
     return out
 
 
@@ -217,9 +226,10 @@ def build_universe():
                    or fold_sector(earn_sec.get(t)) or "Other")
         ix = [k for k, m in (("SPX", spx), ("NDX", ndx), ("DJI", dji)) if t in m]
         info[t] = {"name": (spx.get(t) or ndx.get(t) or {}).get("name"),
-                   "gics": gics, "sector7": sector7, "ix": ix or ["XTRA"]}
+                   "gics": gics, "sector7": sector7, "ix": ix or ["XTRA"],
+                   "added": spx.get(t, {}).get("added")}
     symbols = sorted(t.replace(".", "-") for t in info)  # Yahoo form, deterministic order
-    meta = {"ts": time.time(), "date": datetime.date.today().isoformat(),
+    meta = {"schema": SCHEMA, "ts": time.time(), "date": datetime.date.today().isoformat(),
             "counts": {"spx": len(spx), "ndx": len(ndx), "dji": len(dji),
                        "extras": len(EXTRAS), "total": len(symbols)}}
     return symbols, info, meta
@@ -233,6 +243,8 @@ def load_universe(force=False):
     cache = _read_json(CACHE)
     if cache and not {"symbols", "info", "meta"} <= set(cache):
         cache = None
+    if cache and cache["meta"].get("schema", 1) < SCHEMA:
+        force = True  # old shape: rebuild now, but keep it as the failure fallback
     if cache and not force and time.time() - cache["meta"].get("ts", 0) < TTL_DAYS * 86400:
         return cache["symbols"], cache["info"], cache["meta"]
     try:

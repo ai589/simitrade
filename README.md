@@ -8,7 +8,8 @@ A self-contained swing-trading research dashboard for liquid NYSE and Nasdaq lar
 
 - **Auto-refresh 3× per trading day** — 8:00 AM SGT plus ~10-15 min after the US open and close via Windows scheduled tasks; `market_guard.py` converts to America/New_York time so the schedule survives US daylight-saving flips and skips weekends
 - **Daily screen** of ~540 liquid NYSE and Nasdaq names — S&P 500 + Nasdaq-100 + Dow 30, list auto-refreshed weekly from Wikipedia (>$50M/day traded) on momentum, trend, RSI, volume, volatility and 52-week value signals
-- **13 strategies, all backtested 10 years** (2016–2026, weekly rebalance, trading costs included) with honest stats: hit rate, Sharpe, max drawdown, growth of $10,000
+- **13 strategies, all backtested 10 years** (2016–2026, weekly rebalance, next-open fills, point-in-time S&P membership, trading costs included) with honest stats: hit rate, Sharpe, max drawdown, growth of $10,000, per-year returns
+- **Live-vs-backtest kill switch** — every strategy card carries a LIVE OK / WATCH / DEMOTED badge computed from its own paper-trade record
 - **Regime filter** — strategies sit in cash when SPY is below its 50-day MA (shorts activate only *below* it)
 - **Earnings filter** — names reporting within the hold window are excluded from picks
 - **ATR-based levels** — every pick gets a stop and target scaled to its own volatility, with % distances
@@ -52,7 +53,8 @@ Then open `dashboard.html` in a browser. `refresh.bat` opens the dashboard and r
 - **Every short strategy tested lost money** — five configurations, all negative, before borrow fees
 - Buying dips works at a 5-day horizon and **fails at 14 days**; momentum survives longer holds
 - The regime filter's entire value is concentrated in bear markets (2020, 2022) — it costs return the rest of the time
-- Survivorship bias: the universe is the index constituents as of the run date, so absolute returns are flattered; treat rankings as the reliable output
+- Survivorship bias: S&P names enter the backtest only from their index add date (partial fix — deletions can't be recovered from the current list; Nasdaq-100-only names and pinned extras keep full history), so absolute returns are still somewhat flattered; treat rankings as the reliable output
+- Fills: backtests buy the open after the signal close and sell the open one hold later (`--closeentry` reproduces the older same-close convention, which is optimistic)
 
 ## Disclaimer
 

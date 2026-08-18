@@ -11,7 +11,7 @@ import math
 import time
 
 from backtest import features, stats, TOP_N, COST, NONSTOCK
-from variants import load_data, VR
+from variants import load_data, align, hold_ret, VR
 
 HOLD = 5
 LOOKBACK = 70
@@ -22,21 +22,7 @@ def main():
     data = load_data()
     print(f"Universe: {len(data) - 1} names + SPY (cached).")
 
-    cal = sorted(data["SPY"].keys())
-    aligned = {}
-    for sym, series in data.items():
-        closes = [None] * len(cal)
-        highs = [None] * len(cal)
-        vols = [None] * len(cal)
-        last = None
-        for i, d in enumerate(cal):
-            if d in series:
-                last = series[d]
-            if last:
-                closes[i], highs[i], vols[i] = last
-        first = next((i for i, c in enumerate(closes) if c is not None), None)
-        if first is not None:
-            aligned[sym] = (closes, highs, vols, first)
+    cal, aligned = align(data)
 
     spy_closes = aligned["SPY"][0]
     rebalances = list(range(LONG_LB, len(cal) - HOLD, HOLD))
@@ -122,7 +108,7 @@ def main():
 
     for t in rebalances:
         feats = {}
-        for sym, (cl, hi, vo, first) in aligned.items():
+        for sym, (cl, hi, vo, first, _op) in aligned.items():
             if sym in NONSTOCK or first > t - LOOKBACK:
                 continue
             f = features(cl[t - LOOKBACK + 1: t + 1],
@@ -138,7 +124,7 @@ def main():
         spyf = features(spy_win, spy_win, [0] * LOOKBACK)
         bear = spyf["px"] < spyf["sma50"]
         bear_flags.append(1 if bear else 0)
-        spy_weekly.append(spy_closes[t + HOLD] / spy_closes[t] - 1)
+        spy_weekly.append(hold_ret(aligned, "SPY", t, HOLD))
 
         for key, (fn, gated) in SHORTS.items():
             if gated and not bear:
@@ -146,7 +132,7 @@ def main():
                 continue
             picks = fn(feats)
             if picks:
-                rets = [-(aligned[s][0][t + HOLD] / aligned[s][0][t] - 1) - COST
+                rets = [-hold_ret(aligned, s, t, HOLD) - COST
                         for s in picks]
                 weekly[key].append(sum(rets) / len(rets))
             else:
@@ -155,7 +141,7 @@ def main():
         for key, fn in VALUE.items():
             picks = fn(feats)
             if picks:
-                rets = [aligned[s][0][t + HOLD] / aligned[s][0][t] - 1 - COST
+                rets = [hold_ret(aligned, s, t, HOLD) - COST
                         for s in picks]
                 weekly[key].append(sum(rets) / len(rets))
             else:

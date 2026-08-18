@@ -1,5 +1,6 @@
 # 5-year weekly backtest of candidate 1-week NYSE/Nasdaq strategies.
-# Rebalance every 5 trading days: rank at close t, enter at close t, exit at close t+5.
+# Rebalance every 5 trading days: rank at close t, enter at close t, exit at close t+5
+# (this legacy script; the production rounds in variants*.py default to next-open entry).
 # Top 5 picks, equal weight, 0.10% round-trip cost per position.
 # Writes strategies.json (stats consumed by screener.py / dashboard.html).
 #
@@ -46,9 +47,11 @@ def fetch5y(sym):
             out = {}
             for i, ts in enumerate(j["timestamp"]):
                 c, h, v = q["close"][i], q["high"][i], q["volume"][i]
+                o = (q.get("open") or [None] * len(q["close"]))[i]
                 if c is None:
                     continue
-                out[ts // 86400] = (c, h if h is not None else c, v or 0)
+                # (close, high, volume, open) - open added 2026-08 for next-open entry tests
+                out[ts // 86400] = (c, h if h is not None else c, v or 0, o if o is not None else c)
             return sym, out
         except Exception:
             if attempt == 2:

@@ -30361,6 +30361,18 @@
    "holdDays": 5,
    "sellBy": "2026-08-28",
    "status": "open"
+  },
+  {
+   "date": "2026-08-21",
+   "strategy": "valueDD",
+   "sym": "AVB",
+   "entry": 65.9,
+   "stop": 54.98,
+   "target": 80.46,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-08-28",
+   "status": "open"
   }
  ]
 }

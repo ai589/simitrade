@@ -33644,7 +33644,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-09-08",
-   "status": "open"
+   "status": "target",
+   "exitDate": "2026-08-28",
+   "exitPx": 192.08,
+   "days": 3,
+   "retPct": 15.37
   },
   {
    "date": "2026-08-25",
@@ -33656,7 +33660,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-09-08",
-   "status": "open"
+   "status": "target",
+   "exitDate": "2026-08-28",
+   "exitPx": 192.08,
+   "days": 3,
+   "retPct": 15.37
   },
   {
    "date": "2026-08-25",
@@ -33712,7 +33720,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-09-01",
-   "status": "open"
+   "status": "stopped",
+   "exitDate": "2026-08-28",
+   "exitPx": 128.18,
+   "days": 3,
+   "retPct": -5.15
   },
   {
    "date": "2026-08-25",
@@ -34176,7 +34188,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-09-09",
-   "status": "open"
+   "status": "target",
+   "exitDate": "2026-08-28",
+   "exitPx": 192.88,
+   "days": 2,
+   "retPct": 15.23
   },
   {
    "date": "2026-08-26",
@@ -34236,7 +34252,11 @@
    "side": "long",
    "holdDays": 10,
    "sellBy": "2026-09-09",
-   "status": "open"
+   "status": "target",
+   "exitDate": "2026-08-28",
+   "exitPx": 192.88,
+   "days": 2,
+   "retPct": 15.23
   },
   {
    "date": "2026-08-26",
@@ -36389,6 +36409,126 @@
    "entry": 772.2,
    "stop": 0.0,
    "target": 9000000000.0,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-09-04",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-28",
+   "strategy": "momTop10",
+   "sym": "VEEV",
+   "entry": 276.69,
+   "stop": 260.14,
+   "target": 298.75,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-09-04",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-28",
+   "strategy": "momTop10",
+   "sym": "WDAY",
+   "entry": 204.72,
+   "stop": 189.07,
+   "target": 225.58,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-09-04",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-28",
+   "strategy": "momTop10",
+   "sym": "EXPE",
+   "entry": 329.44,
+   "stop": 310.92,
+   "target": 354.14,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-09-04",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-28",
+   "strategy": "momTop5",
+   "sym": "VEEV",
+   "entry": 276.69,
+   "stop": 260.14,
+   "target": 298.75,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-09-04",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-28",
+   "strategy": "sectorNeutral",
+   "sym": "BR",
+   "entry": 183.65,
+   "stop": 176.05,
+   "target": 193.79,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-09-04",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-28",
+   "strategy": "weeklyDip",
+   "sym": "FANG",
+   "entry": 197.67,
+   "stop": 188.89,
+   "target": 209.37,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-09-04",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-28",
+   "strategy": "weeklyDip",
+   "sym": "LYB",
+   "entry": 63.67,
+   "stop": 60.48,
+   "target": 67.93,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-09-04",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-28",
+   "strategy": "mom14",
+   "sym": "VEEV",
+   "entry": 276.69,
+   "stop": 254.63,
+   "target": 309.78,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-09-11",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-28",
+   "strategy": "sector14",
+   "sym": "BR",
+   "entry": 183.65,
+   "stop": 173.51,
+   "target": 198.86,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-09-11",
+   "status": "open"
+  },
+  {
+   "date": "2026-08-28",
+   "strategy": "value200",
+   "sym": "CHTR",
+   "entry": 153.62,
+   "stop": 142.61,
+   "target": 168.3,
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-09-04",

@@ -35,7 +35,16 @@ DEFAULTS = {
     "mode_note": "dry | paper | live is chosen on the command line, never here",
     "tiger_id": "", "private_key_path": "", "paper_account": "", "live_account": "",
     "allow_live": False,
-    "strategies": ["mom14", "sector14", "valueDD"],   # which cards to trade (dashboard keys)
+    # Which cards to trade (dashboard keys). The mean-reversion trio: the only three the
+    # kill switch rates "ok", and the only three whose live record beats the like-for-like
+    # backtest (state/stop_test.json) rather than trailing it. Was
+    # ["mom14", "sector14", "valueDD"] until 2026-09; mom14 is the worst performer in the
+    # paper log (-0.54%/trade over 191 trades) and both it and sector14 have been demoted.
+    "strategies": ["valueDD", "weeklyDip", "value200"],
+    # Hard block, independent of the health status: every short basket loses in both the
+    # backtest and the paper log (-0.77% to -3.15%/trade), and borrow fees are not even
+    # modelled. Research only.
+    "never_trade": ["shortSpike", "shortBlowoff", "shortOverext", "shortRally"],
     "account_size": 100000, "risk_pct": 1.0, "max_heat_pct": 6.0, "max_per_sector": 2,
     "max_pos_pct": 20, "regime_scale": True, "budget": 0,
     "entry_limit_slip_pct": 0.5,   # limit = entry x (1 + slip) for longs: marketable at the open
@@ -77,15 +86,23 @@ def regime_mult(D, cfg):
 
 
 def shares(r, stop, basket, cfg, rm, scale=1.0):
+    """Volatility-target the position, clamp it to the per-name caps, THEN apply the
+    de-risking multipliers.
+
+    Order matters. Applying rm/scale before the max_pos_pct clamp let the clamp put the
+    size straight back up to the cap, so a 6% portfolio heat cap or a x0.5 risk-off
+    multiplier could be computed, reported, and then have no effect at all whenever the
+    position cap was the binding constraint (found 2026-09 by tests/test_sizing.py:
+    6 names at a 3% cap still risked 3.6%). Multipliers now always reduce."""
     acct = cfg["account_size"]
     per_share = abs(r["entry"] - stop)
     if per_share <= 0:
         return 0
-    n = int(acct * cfg["risk_pct"] / 100 * rm * scale / per_share)
+    n = int(acct * cfg["risk_pct"] / 100 / per_share)
     n = min(n, int(acct * cfg["max_pos_pct"] / 100 / r["entry"]))
     if cfg.get("budget"):
         n = min(n, int(cfg["budget"] / max(basket, 1) / r["entry"]))
-    return max(n, 0)
+    return max(int(n * rm * scale), 0)
 
 
 def build_orders(D, cfg):
@@ -93,6 +110,12 @@ def build_orders(D, cfg):
     heat cap across the selected strategies (deduped by symbol), regime multiplier."""
     by_sym = {r["sym"]: r for r in D["rows"]}
     rm = regime_mult(D, cfg)
+    never = set(cfg.get("never_trade") or [])
+    blocked = [k for k in cfg["strategies"] if k in never]
+    if blocked:
+        raise SystemExit("Refusing to trade %s - listed in never_trade. Remove it from "
+                         "never_trade in tiger_config.json if you really mean it."
+                         % ", ".join(blocked))
     chosen = [st for st in D["strategies"] if st["key"] in cfg["strategies"]]
     skipped_health = [st["key"] for st in chosen
                       if (st.get("health") or {}).get("status") in cfg["skip_health"]]

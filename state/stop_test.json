@@ -1,0 +1,162 @@
+{
+ "meta": {
+  "run": "2026-09-06 23:30",
+  "weeks": 449,
+  "gross": true,
+  "atrN": 14,
+  "mults": {
+   "5": [
+    1.5,
+    2.0
+   ],
+   "10": [
+    2.0,
+    3.0
+   ]
+  },
+  "pointInTime": true,
+  "note": "close+stops is the apples-to-apples expectation for picks_log.json; nextopen (no stops) is what variants_results.json reports"
+ },
+ "strategies": {
+  "momTop10": {
+   "close+stops": 0.204,
+   "close": 0.469,
+   "nextopen+stops": 0.225,
+   "nextopen": 0.5,
+   "n": 3290,
+   "livePaperAvgPct": 0.027,
+   "liveMinusModel": -0.177,
+   "exitMix": {
+    "stopped": 1010,
+    "target": 604,
+    "time-exit": 1676
+   }
+  },
+  "momTop5": {
+   "close+stops": 0.336,
+   "close": 0.606,
+   "nextopen+stops": 0.327,
+   "nextopen": 0.61,
+   "n": 2238,
+   "livePaperAvgPct": -0.399,
+   "liveMinusModel": -0.735,
+   "exitMix": {
+    "stopped": 690,
+    "target": 449,
+    "time-exit": 1099
+   }
+  },
+  "lowvol": {
+   "close+stops": 0.086,
+   "close": 0.053,
+   "nextopen+stops": 0.077,
+   "nextopen": 0.09,
+   "n": 1645,
+   "livePaperAvgPct": -0.464,
+   "liveMinusModel": -0.55,
+   "exitMix": {
+    "stopped": 528,
+    "target": 321,
+    "time-exit": 796
+   }
+  },
+  "sectorNeutral": {
+   "close+stops": 0.139,
+   "close": 0.318,
+   "nextopen+stops": 0.169,
+   "nextopen": 0.363,
+   "n": 2280,
+   "livePaperAvgPct": 0.063,
+   "liveMinusModel": -0.076,
+   "exitMix": {
+    "stopped": 681,
+    "target": 409,
+    "time-exit": 1190
+   }
+  },
+  "weeklyDip": {
+   "close+stops": 0.283,
+   "close": 0.43,
+   "nextopen+stops": 0.321,
+   "nextopen": 0.366,
+   "n": 2245,
+   "livePaperAvgPct": 1.576,
+   "liveMinusModel": 1.293,
+   "exitMix": {
+    "stopped": 605,
+    "target": 364,
+    "time-exit": 1276
+   }
+  },
+  "valueDD": {
+   "close+stops": 0.696,
+   "close": 0.753,
+   "nextopen+stops": 0.738,
+   "nextopen": 0.755,
+   "n": 2245,
+   "livePaperAvgPct": 2.081,
+   "liveMinusModel": 1.385,
+   "exitMix": {
+    "stopped": 596,
+    "target": 443,
+    "time-exit": 1206
+   }
+  },
+  "value200": {
+   "close+stops": 0.333,
+   "close": 0.37,
+   "nextopen+stops": 0.374,
+   "nextopen": 0.429,
+   "n": 2224,
+   "livePaperAvgPct": 1.413,
+   "liveMinusModel": 1.08,
+   "exitMix": {
+    "stopped": 597,
+    "target": 436,
+    "time-exit": 1191
+   }
+  },
+  "zblend": {
+   "close+stops": 0.143,
+   "close": 0.354,
+   "nextopen+stops": 0.167,
+   "nextopen": 0.414,
+   "n": 1645,
+   "livePaperAvgPct": -0.384,
+   "liveMinusModel": -0.527,
+   "exitMix": {
+    "stopped": 560,
+    "target": 325,
+    "time-exit": 760
+   }
+  },
+  "mom14": {
+   "close+stops": 0.69,
+   "close": 1.146,
+   "nextopen+stops": 0.687,
+   "nextopen": 1.189,
+   "n": 2238,
+   "livePaperAvgPct": -0.535,
+   "liveMinusModel": -1.225,
+   "exitMix": {
+    "stopped": 746,
+    "target": 440,
+    "time-exit": 1052
+   }
+  },
+  "sector14": {
+   "close+stops": 0.446,
+   "close": 0.757,
+   "nextopen+stops": 0.364,
+   "nextopen": 0.814,
+   "n": 2280,
+   "livePaperAvgPct": 0.114,
+   "liveMinusModel": -0.332,
+   "exitMix": {
+    "stopped": 752,
+    "target": 403,
+    "time-exit": 1125
+   }
+  }
+ }
+}

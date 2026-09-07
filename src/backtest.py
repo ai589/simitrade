@@ -48,10 +48,15 @@ def fetch5y(sym):
             for i, ts in enumerate(j["timestamp"]):
                 c, h, v = q["close"][i], q["high"][i], q["volume"][i]
                 o = (q.get("open") or [None] * len(q["close"]))[i]
+                lo = (q.get("low") or [None] * len(q["close"]))[i]
                 if c is None:
                     continue
-                # (close, high, volume, open) - open added 2026-08 for next-open entry tests
-                out[ts // 86400] = (c, h if h is not None else c, v or 0, o if o is not None else c)
+                # (close, high, volume, open, low)
+                #   open added 2026-08 for next-open entry tests
+                #   low  added 2026-09 so the backtest can model the same stop-loss the
+                #        live paper log applies (see variants.align_lows)
+                out[ts // 86400] = (c, h if h is not None else c, v or 0,
+                                    o if o is not None else c, lo if lo is not None else c)
             return sym, out
         except Exception:
             if attempt == 2:

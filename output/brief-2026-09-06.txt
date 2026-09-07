@@ -1,0 +1,22 @@
+ECL morning brief - Sun 06 Sep 2026, 23:32 SGT
+Data: 2026-09-06 23:31 (2 min old) - ok
+Regime: ON (SPY 770.19 vs 50d 756.86) | breadth 36.7% above 20d | size x0.50
+
+BUY / SELL SHORT - limit orders, they rest until the 21:30 SGT open
+  weeklyDip  DASH   BUY     41 @   212.79   stop   199.62  target   227.87   risk $497
+  weeklyDip  PTC    BUY     62 @   141.73   stop   133.04  target   151.66   risk $495
+  weeklyDip  ZS     BUY     36 @   170.65   stop   156.27  target   187.84   risk $487
+  value200   APP    BUY     19 @   322.16   stop   294.60  target   355.18   risk $493
+  value200   APTV   BUY    193 @    48.19   stop    45.37  target    51.39   risk $498
+  value200   NRG    BUY     63 @   119.62   stop   111.19  target   129.46   risk $493
+  6 orders | risk $2,963 (3.0% of $100,000) | notional $46,380
+
+CLOSE if held (dropped out of every traded basket):
+  ABT, ALNY, AMCR, AVB, AVY, BKNG, BSX, DLTR, DOW, FCX, GEHC, INTU, LITE, MRNA, NEM, NET, PYPL, RKLB, TSCO, ZTS
+
+Notes
+  - regime multiplier x0.50 (SPY below its 50d MA and/or breadth < 50%)
+
+Trading: valueDD, weeklyDip, value200
+Next:  python src/push_orders.py           (dry run - check sizes)
+       python src/push_orders.py --paper   (send to the Tiger paper account)

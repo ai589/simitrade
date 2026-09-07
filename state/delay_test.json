@@ -1,0 +1,1200 @@
+{
+ "meta": {
+  "run": "2026-09-06 23:27",
+  "weeks": 448,
+  "from": "2017-09-18",
+  "to": "2026-08-11",
+  "maxDelay": 3,
+  "cost": 0.001,
+  "entry": "nextopen",
+  "pointInTime": true,
+  "hold": 5,
+  "hold14": 10,
+  "comparableTo": "variants_results.json"
+ },
+ "spy": {
+  "weeks": 448,
+  "hitRate": 62.3,
+  "avgWeek": 0.279,
+  "sharpe": 0.86,
+  "maxDD": -32.4,
+  "total": 208.1,
+  "worstWeek": -12.39,
+  "bestWeek": 12.06,
+  "beatSpyPct": 0.0,
+  "avgWeekH1": 0.276,
+  "avgWeekH2": 0.283
+ },
+ "strategies": {
+  "momTop10": {
+   "shift": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 39.5,
+     "avgWeek": 0.299,
+     "sharpe": 0.68,
+     "maxDD": -26.6,
+     "total": 205.0,
+     "worstWeek": -16.6,
+     "bestWeek": 13.43,
+     "beatSpyPct": 47.1,
+     "avgWeekH1": 0.142,
+     "avgWeekH2": 0.455
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 41.1,
+     "avgWeek": 0.321,
+     "sharpe": 0.74,
+     "maxDD": -23.6,
+     "total": 238.2,
+     "worstWeek": -12.47,
+     "bestWeek": 13.61,
+     "beatSpyPct": 47.3,
+     "avgWeekH1": 0.172,
+     "avgWeekH2": 0.469
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 41.3,
+     "avgWeek": 0.345,
+     "sharpe": 0.74,
+     "maxDD": -23.5,
+     "total": 265.5,
+     "worstWeek": -10.97,
+     "bestWeek": 24.81,
+     "beatSpyPct": 47.8,
+     "avgWeekH1": 0.261,
+     "avgWeekH2": 0.429
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 42.2,
+     "avgWeek": 0.416,
+     "sharpe": 0.9,
+     "maxDD": -27.9,
+     "total": 405.1,
+     "worstWeek": -14.18,
+     "bestWeek": 20.56,
+     "beatSpyPct": 47.5,
+     "avgWeekH1": 0.348,
+     "avgWeekH2": 0.485
+    }
+   },
+   "fixed": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 39.5,
+     "avgWeek": 0.299,
+     "sharpe": 0.68,
+     "maxDD": -26.6,
+     "total": 205.0,
+     "worstWeek": -16.6,
+     "bestWeek": 13.43,
+     "beatSpyPct": 47.1,
+     "avgWeekH1": 0.142,
+     "avgWeekH2": 0.455
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 40.6,
+     "avgWeek": 0.28,
+     "sharpe": 0.74,
+     "maxDD": -21.7,
+     "total": 195.7,
+     "worstWeek": -14.84,
+     "bestWeek": 10.81,
+     "beatSpyPct": 45.3,
+     "avgWeekH1": 0.252,
+     "avgWeekH2": 0.307
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 40.0,
+     "avgWeek": 0.212,
+     "sharpe": 0.59,
+     "maxDD": -29.1,
+     "total": 122.8,
+     "worstWeek": -12.47,
+     "bestWeek": 16.0,
+     "beatSpyPct": 46.7,
+     "avgWeekH1": 0.241,
+     "avgWeekH2": 0.184
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 40.6,
+     "avgWeek": 0.259,
+     "sharpe": 0.83,
+     "maxDD": -23.4,
+     "total": 185.2,
+     "worstWeek": -9.33,
+     "bestWeek": 15.55,
+     "beatSpyPct": 46.4,
+     "avgWeekH1": 0.219,
+     "avgWeekH2": 0.299
+    }
+   },
+   "parts": {
+    "gapPct": 0.0419,
+    "restPct": 0.5082,
+    "fullPct": 0.5546,
+    "gapSharePct": 7.6,
+    "n": 3280
+   }
+  },
+  "momTop5": {
+   "shift": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 54.7,
+     "avgWeek": 0.523,
+     "sharpe": 0.79,
+     "maxDD": -41.6,
+     "total": 526.0,
+     "worstWeek": -21.29,
+     "bestWeek": 21.87,
+     "beatSpyPct": 51.8,
+     "avgWeekH1": 0.259,
+     "avgWeekH2": 0.787
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 54.0,
+     "avgWeek": 0.502,
+     "sharpe": 0.8,
+     "maxDD": -40.1,
+     "total": 498.1,
+     "worstWeek": -16.62,
+     "bestWeek": 24.19,
+     "beatSpyPct": 50.9,
+     "avgWeekH1": 0.273,
+     "avgWeekH2": 0.731
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 54.2,
+     "avgWeek": 0.471,
+     "sharpe": 0.72,
+     "maxDD": -46.2,
+     "total": 405.1,
+     "worstWeek": -13.91,
+     "bestWeek": 35.88,
+     "beatSpyPct": 48.9,
+     "avgWeekH1": 0.301,
+     "avgWeekH2": 0.641
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 56.0,
+     "avgWeek": 0.446,
+     "sharpe": 0.69,
+     "maxDD": -47.9,
+     "total": 352.9,
+     "worstWeek": -16.31,
+     "bestWeek": 23.42,
+     "beatSpyPct": 48.4,
+     "avgWeekH1": 0.302,
+     "avgWeekH2": 0.59
+    }
+   },
+   "fixed": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 54.7,
+     "avgWeek": 0.523,
+     "sharpe": 0.79,
+     "maxDD": -41.6,
+     "total": 526.0,
+     "worstWeek": -21.29,
+     "bestWeek": 21.87,
+     "beatSpyPct": 51.8,
+     "avgWeekH1": 0.259,
+     "avgWeekH2": 0.787
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 54.7,
+     "avgWeek": 0.397,
+     "sharpe": 0.71,
+     "maxDD": -40.2,
+     "total": 309.6,
+     "worstWeek": -19.8,
+     "bestWeek": 17.33,
+     "beatSpyPct": 50.0,
+     "avgWeekH1": 0.288,
+     "avgWeekH2": 0.507
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 53.8,
+     "avgWeek": 0.28,
+     "sharpe": 0.53,
+     "maxDD": -51.8,
+     "total": 154.2,
+     "worstWeek": -17.93,
+     "bestWeek": 24.7,
+     "beatSpyPct": 48.2,
+     "avgWeekH1": 0.163,
+     "avgWeekH2": 0.397
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 52.9,
+     "avgWeek": 0.286,
+     "sharpe": 0.66,
+     "maxDD": -45.8,
+     "total": 190.2,
+     "worstWeek": -11.03,
+     "bestWeek": 16.68,
+     "beatSpyPct": 46.9,
+     "avgWeekH1": 0.156,
+     "avgWeekH2": 0.416
+    }
+   },
+   "parts": {
+    "gapPct": 0.0365,
+    "restPct": 0.6155,
+    "fullPct": 0.6611,
+    "gapSharePct": 5.5,
+    "n": 2233
+   }
+  },
+  "lowvol": {
+   "shift": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 39.1,
+     "avgWeek": -0.001,
+     "sharpe": -0.0,
+     "maxDD": -22.2,
+     "total": -5.3,
+     "worstWeek": -10.76,
+     "bestWeek": 4.28,
+     "beatSpyPct": 42.9,
+     "avgWeekH1": 0.026,
+     "avgWeekH2": -0.028
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 38.8,
+     "avgWeek": 0.015,
+     "sharpe": 0.08,
+     "maxDD": -25.7,
+     "total": 2.3,
+     "worstWeek": -9.89,
+     "bestWeek": 4.58,
+     "beatSpyPct": 42.6,
+     "avgWeekH1": 0.082,
+     "avgWeekH2": -0.051
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 39.3,
+     "avgWeek": 0.016,
+     "sharpe": 0.08,
+     "maxDD": -22.2,
+     "total": 2.2,
+     "worstWeek": -7.45,
+     "bestWeek": 5.74,
+     "beatSpyPct": 41.5,
+     "avgWeekH1": 0.095,
+     "avgWeekH2": -0.064
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 38.8,
+     "avgWeek": 0.042,
+     "sharpe": 0.2,
+     "maxDD": -20.4,
+     "total": 14.8,
+     "worstWeek": -6.61,
+     "bestWeek": 5.84,
+     "beatSpyPct": 41.7,
+     "avgWeekH1": 0.145,
+     "avgWeekH2": -0.06
+    }
+   },
+   "fixed": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 39.1,
+     "avgWeek": -0.001,
+     "sharpe": -0.0,
+     "maxDD": -22.2,
+     "total": -5.3,
+     "worstWeek": -10.76,
+     "bestWeek": 4.28,
+     "beatSpyPct": 42.9,
+     "avgWeekH1": 0.026,
+     "avgWeekH2": -0.028
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 38.2,
+     "avgWeek": 0.007,
+     "sharpe": 0.04,
+     "maxDD": -21.6,
+     "total": -0.7,
+     "worstWeek": -10.46,
+     "bestWeek": 4.4,
+     "beatSpyPct": 40.8,
+     "avgWeekH1": 0.078,
+     "avgWeekH2": -0.063
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 35.9,
+     "avgWeek": -0.025,
+     "sharpe": -0.15,
+     "maxDD": -25.0,
+     "total": -13.2,
+     "worstWeek": -8.5,
+     "bestWeek": 4.79,
+     "beatSpyPct": 40.2,
+     "avgWeekH1": 0.03,
+     "avgWeekH2": -0.08
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 36.6,
+     "avgWeek": 0.02,
+     "sharpe": 0.15,
+     "maxDD": -15.5,
+     "total": 7.0,
+     "worstWeek": -7.15,
+     "bestWeek": 3.96,
+     "beatSpyPct": 39.3,
+     "avgWeekH1": 0.091,
+     "avgWeekH2": -0.051
+    }
+   },
+   "parts": {
+    "gapPct": 0.0098,
+    "restPct": 0.0988,
+    "fullPct": 0.1085,
+    "gapSharePct": 9.0,
+    "n": 1640
+   }
+  },
+  "sectorNeutral": {
+   "shift": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 40.6,
+     "avgWeek": 0.194,
+     "sharpe": 0.53,
+     "maxDD": -27.9,
+     "total": 104.9,
+     "worstWeek": -9.19,
+     "bestWeek": 14.92,
+     "beatSpyPct": 47.5,
+     "avgWeekH1": 0.126,
+     "avgWeekH2": 0.263
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 40.8,
+     "avgWeek": 0.23,
+     "sharpe": 0.65,
+     "maxDD": -26.4,
+     "total": 141.8,
+     "worstWeek": -10.47,
+     "bestWeek": 11.33,
+     "beatSpyPct": 48.2,
+     "avgWeekH1": 0.228,
+     "avgWeekH2": 0.232
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 39.1,
+     "avgWeek": 0.311,
+     "sharpe": 0.85,
+     "maxDD": -21.5,
+     "total": 245.1,
+     "worstWeek": -9.72,
+     "bestWeek": 10.91,
+     "beatSpyPct": 46.7,
+     "avgWeekH1": 0.297,
+     "avgWeekH2": 0.325
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 42.2,
+     "avgWeek": 0.363,
+     "sharpe": 0.96,
+     "maxDD": -15.5,
+     "total": 330.1,
+     "worstWeek": -12.57,
+     "bestWeek": 15.45,
+     "beatSpyPct": 48.4,
+     "avgWeekH1": 0.345,
+     "avgWeekH2": 0.38
+    }
+   },
+   "fixed": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 40.6,
+     "avgWeek": 0.194,
+     "sharpe": 0.53,
+     "maxDD": -27.9,
+     "total": 104.9,
+     "worstWeek": -9.19,
+     "bestWeek": 14.92,
+     "beatSpyPct": 47.5,
+     "avgWeekH1": 0.126,
+     "avgWeekH2": 0.263
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 40.2,
+     "avgWeek": 0.208,
+     "sharpe": 0.66,
+     "maxDD": -28.5,
+     "total": 125.6,
+     "worstWeek": -7.18,
+     "bestWeek": 13.18,
+     "beatSpyPct": 47.8,
+     "avgWeekH1": 0.218,
+     "avgWeekH2": 0.197
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 40.8,
+     "avgWeek": 0.216,
+     "sharpe": 0.73,
+     "maxDD": -26.6,
+     "total": 137.5,
+     "worstWeek": -6.65,
+     "bestWeek": 11.45,
+     "beatSpyPct": 47.3,
+     "avgWeekH1": 0.205,
+     "avgWeekH2": 0.228
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 40.4,
+     "avgWeek": 0.262,
+     "sharpe": 1.01,
+     "maxDD": -22.4,
+     "total": 199.0,
+     "worstWeek": -6.06,
+     "bestWeek": 8.81,
+     "beatSpyPct": 44.2,
+     "avgWeekH1": 0.222,
+     "avgWeekH2": 0.302
+    }
+   },
+   "parts": {
+    "gapPct": 0.0327,
+    "restPct": 0.3616,
+    "fullPct": 0.398,
+    "gapSharePct": 8.2,
+    "n": 2273
+   }
+  },
+  "weeklyDip": {
+   "shift": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 56.0,
+     "avgWeek": 0.256,
+     "sharpe": 0.47,
+     "maxDD": -37.9,
+     "total": 122.3,
+     "worstWeek": -16.92,
+     "bestWeek": 12.24,
+     "beatSpyPct": 48.4,
+     "avgWeekH1": 0.198,
+     "avgWeekH2": 0.314
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 55.6,
+     "avgWeek": 0.14,
+     "sharpe": 0.27,
+     "maxDD": -40.9,
+     "total": 35.9,
+     "worstWeek": -16.31,
+     "bestWeek": 14.62,
+     "beatSpyPct": 51.8,
+     "avgWeekH1": 0.213,
+     "avgWeekH2": 0.068
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 52.7,
+     "avgWeek": 0.168,
+     "sharpe": 0.3,
+     "maxDD": -46.4,
+     "total": 47.9,
+     "worstWeek": -18.04,
+     "bestWeek": 16.18,
+     "beatSpyPct": 46.9,
+     "avgWeekH1": 0.256,
+     "avgWeekH2": 0.08
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 54.5,
+     "avgWeek": 0.229,
+     "sharpe": 0.41,
+     "maxDD": -39.3,
+     "total": 92.3,
+     "worstWeek": -19.16,
+     "bestWeek": 12.42,
+     "beatSpyPct": 45.5,
+     "avgWeekH1": 0.268,
+     "avgWeekH2": 0.191
+    }
+   },
+   "fixed": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 56.0,
+     "avgWeek": 0.256,
+     "sharpe": 0.47,
+     "maxDD": -37.9,
+     "total": 122.3,
+     "worstWeek": -16.92,
+     "bestWeek": 12.24,
+     "beatSpyPct": 48.4,
+     "avgWeekH1": 0.198,
+     "avgWeekH2": 0.314
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 54.9,
+     "avgWeek": 0.242,
+     "sharpe": 0.52,
+     "maxDD": -36.2,
+     "total": 129.0,
+     "worstWeek": -15.92,
+     "bestWeek": 12.6,
+     "beatSpyPct": 48.9,
+     "avgWeekH1": 0.261,
+     "avgWeekH2": 0.224
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 55.1,
+     "avgWeek": 0.166,
+     "sharpe": 0.38,
+     "maxDD": -31.0,
+     "total": 67.2,
+     "worstWeek": -15.66,
+     "bestWeek": 13.32,
+     "beatSpyPct": 45.3,
+     "avgWeekH1": 0.172,
+     "avgWeekH2": 0.159
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 55.1,
+     "avgWeek": 0.211,
+     "sharpe": 0.58,
+     "maxDD": -27.2,
+     "total": 120.6,
+     "worstWeek": -10.28,
+     "bestWeek": 10.09,
+     "beatSpyPct": 43.8,
+     "avgWeekH1": 0.174,
+     "avgWeekH2": 0.248
+    }
+   },
+   "parts": {
+    "gapPct": 0.0629,
+    "restPct": 0.356,
+    "fullPct": 0.4236,
+    "gapSharePct": 14.9,
+    "n": 2240
+   }
+  },
+  "valueDD": {
+   "shift": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 56.5,
+     "avgWeek": 0.631,
+     "sharpe": 0.67,
+     "maxDD": -64.0,
+     "total": 505.4,
+     "worstWeek": -29.0,
+     "bestWeek": 36.72,
+     "beatSpyPct": 51.6,
+     "avgWeekH1": 0.511,
+     "avgWeekH2": 0.752
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 54.5,
+     "avgWeek": 0.57,
+     "sharpe": 0.65,
+     "maxDD": -62.6,
+     "total": 422.6,
+     "worstWeek": -28.84,
+     "bestWeek": 31.59,
+     "beatSpyPct": 51.6,
+     "avgWeekH1": 0.493,
+     "avgWeekH2": 0.647
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 53.1,
+     "avgWeek": 0.701,
+     "sharpe": 0.69,
+     "maxDD": -61.1,
+     "total": 616.7,
+     "worstWeek": -32.23,
+     "bestWeek": 52.34,
+     "beatSpyPct": 50.2,
+     "avgWeekH1": 0.679,
+     "avgWeekH2": 0.723
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 53.8,
+     "avgWeek": 0.751,
+     "sharpe": 0.66,
+     "maxDD": -64.3,
+     "total": 616.8,
+     "worstWeek": -38.08,
+     "bestWeek": 64.62,
+     "beatSpyPct": 51.1,
+     "avgWeekH1": 0.687,
+     "avgWeekH2": 0.816
+    }
+   },
+   "fixed": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 56.5,
+     "avgWeek": 0.631,
+     "sharpe": 0.67,
+     "maxDD": -64.0,
+     "total": 505.4,
+     "worstWeek": -29.0,
+     "bestWeek": 36.72,
+     "beatSpyPct": 51.6,
+     "avgWeekH1": 0.511,
+     "avgWeekH2": 0.752
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 54.0,
+     "avgWeek": 0.498,
+     "sharpe": 0.63,
+     "maxDD": -64.0,
+     "total": 344.1,
+     "worstWeek": -29.51,
+     "bestWeek": 28.83,
+     "beatSpyPct": 50.2,
+     "avgWeekH1": 0.508,
+     "avgWeekH2": 0.487
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 52.2,
+     "avgWeek": 0.255,
+     "sharpe": 0.37,
+     "maxDD": -57.6,
+     "total": 80.0,
+     "worstWeek": -28.68,
+     "bestWeek": 26.54,
+     "beatSpyPct": 48.4,
+     "avgWeekH1": 0.278,
+     "avgWeekH2": 0.231
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 51.6,
+     "avgWeek": 0.215,
+     "sharpe": 0.37,
+     "maxDD": -48.7,
+     "total": 75.4,
+     "worstWeek": -26.89,
+     "bestWeek": 22.23,
+     "beatSpyPct": 47.3,
+     "avgWeekH1": 0.274,
+     "avgWeekH2": 0.156
+    }
+   },
+   "parts": {
+    "gapPct": -0.0577,
+    "restPct": 0.7313,
+    "fullPct": 0.7058,
+    "gapSharePct": -8.2,
+    "n": 2240
+   }
+  },
+  "value200": {
+   "shift": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 52.2,
+     "avgWeek": 0.343,
+     "sharpe": 0.52,
+     "maxDD": -51.9,
+     "total": 185.8,
+     "worstWeek": -18.94,
+     "bestWeek": 36.21,
+     "beatSpyPct": 46.0,
+     "avgWeekH1": 0.595,
+     "avgWeekH2": 0.091
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 53.1,
+     "avgWeek": 0.388,
+     "sharpe": 0.62,
+     "maxDD": -50.0,
+     "total": 260.5,
+     "worstWeek": -19.28,
+     "bestWeek": 26.62,
+     "beatSpyPct": 48.4,
+     "avgWeekH1": 0.453,
+     "avgWeekH2": 0.323
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 52.9,
+     "avgWeek": 0.446,
+     "sharpe": 0.6,
+     "maxDD": -32.3,
+     "total": 304.6,
+     "worstWeek": -21.47,
+     "bestWeek": 54.12,
+     "beatSpyPct": 45.5,
+     "avgWeekH1": 0.459,
+     "avgWeekH2": 0.434
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 54.9,
+     "avgWeek": 0.42,
+     "sharpe": 0.55,
+     "maxDD": -34.3,
+     "total": 242.9,
+     "worstWeek": -25.2,
+     "bestWeek": 58.79,
+     "beatSpyPct": 48.7,
+     "avgWeekH1": 0.421,
+     "avgWeekH2": 0.42
+    }
+   },
+   "fixed": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 52.2,
+     "avgWeek": 0.343,
+     "sharpe": 0.52,
+     "maxDD": -51.9,
+     "total": 185.8,
+     "worstWeek": -18.94,
+     "bestWeek": 36.21,
+     "beatSpyPct": 46.0,
+     "avgWeekH1": 0.595,
+     "avgWeekH2": 0.091
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 50.9,
+     "avgWeek": 0.287,
+     "sharpe": 0.52,
+     "maxDD": -51.4,
+     "total": 154.8,
+     "worstWeek": -15.62,
+     "bestWeek": 26.51,
+     "beatSpyPct": 45.5,
+     "avgWeekH1": 0.451,
+     "avgWeekH2": 0.122
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 49.1,
+     "avgWeek": 0.025,
+     "sharpe": 0.05,
+     "maxDD": -57.2,
+     "total": -13.4,
+     "worstWeek": -12.42,
+     "bestWeek": 21.09,
+     "beatSpyPct": 44.6,
+     "avgWeekH1": 0.175,
+     "avgWeekH2": -0.125
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 49.6,
+     "avgWeek": 0.0,
+     "sharpe": 0.0,
+     "maxDD": -59.1,
+     "total": -15.5,
+     "worstWeek": -12.0,
+     "bestWeek": 14.78,
+     "beatSpyPct": 45.3,
+     "avgWeekH1": 0.146,
+     "avgWeekH2": -0.146
+    }
+   },
+   "parts": {
+    "gapPct": -0.0271,
+    "restPct": 0.4328,
+    "fullPct": 0.4072,
+    "gapSharePct": -6.7,
+    "n": 2219
+   }
+  },
+  "zblend": {
+   "shift": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 38.6,
+     "avgWeek": 0.236,
+     "sharpe": 0.55,
+     "maxDD": -27.8,
+     "total": 133.6,
+     "worstWeek": -11.52,
+     "bestWeek": 14.34,
+     "beatSpyPct": 44.6,
+     "avgWeekH1": 0.213,
+     "avgWeekH2": 0.259
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 39.1,
+     "avgWeek": 0.264,
+     "sharpe": 0.6,
+     "maxDD": -25.8,
+     "total": 161.2,
+     "worstWeek": -15.31,
+     "bestWeek": 17.94,
+     "beatSpyPct": 44.0,
+     "avgWeekH1": 0.309,
+     "avgWeekH2": 0.219
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 39.5,
+     "avgWeek": 0.203,
+     "sharpe": 0.47,
+     "maxDD": -33.1,
+     "total": 99.2,
+     "worstWeek": -14.12,
+     "bestWeek": 14.92,
+     "beatSpyPct": 44.6,
+     "avgWeekH1": 0.347,
+     "avgWeekH2": 0.059
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 40.4,
+     "avgWeek": 0.317,
+     "sharpe": 0.7,
+     "maxDD": -39.8,
+     "total": 226.0,
+     "worstWeek": -12.74,
+     "bestWeek": 22.79,
+     "beatSpyPct": 45.8,
+     "avgWeekH1": 0.424,
+     "avgWeekH2": 0.209
+    }
+   },
+   "fixed": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 38.6,
+     "avgWeek": 0.236,
+     "sharpe": 0.55,
+     "maxDD": -27.8,
+     "total": 133.6,
+     "worstWeek": -11.52,
+     "bestWeek": 14.34,
+     "beatSpyPct": 44.6,
+     "avgWeekH1": 0.213,
+     "avgWeekH2": 0.259
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 40.4,
+     "avgWeek": 0.189,
+     "sharpe": 0.49,
+     "maxDD": -24.7,
+     "total": 96.0,
+     "worstWeek": -9.71,
+     "bestWeek": 15.64,
+     "beatSpyPct": 44.4,
+     "avgWeekH1": 0.254,
+     "avgWeekH2": 0.124
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 40.0,
+     "avgWeek": 0.131,
+     "sharpe": 0.38,
+     "maxDD": -34.2,
+     "total": 56.4,
+     "worstWeek": -8.97,
+     "bestWeek": 12.88,
+     "beatSpyPct": 46.0,
+     "avgWeekH1": 0.272,
+     "avgWeekH2": -0.01
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 40.0,
+     "avgWeek": 0.152,
+     "sharpe": 0.52,
+     "maxDD": -22.9,
+     "total": 78.8,
+     "worstWeek": -9.57,
+     "bestWeek": 10.27,
+     "beatSpyPct": 44.2,
+     "avgWeekH1": 0.227,
+     "avgWeekH2": 0.077
+    }
+   },
+   "parts": {
+    "gapPct": 0.063,
+    "restPct": 0.4229,
+    "fullPct": 0.4799,
+    "gapSharePct": 13.1,
+    "n": 1640
+   }
+  },
+  "mom14": {
+   "shift": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 57.6,
+     "avgWeek": 1.105,
+     "sharpe": 1.18,
+     "maxDD": -66.0,
+     "total": 5092.7,
+     "worstWeek": -18.7,
+     "bestWeek": 48.12,
+     "beatSpyPct": 52.7,
+     "avgWeekH1": 0.869,
+     "avgWeekH2": 1.34
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 56.9,
+     "avgWeek": 1.116,
+     "sharpe": 1.17,
+     "maxDD": -63.8,
+     "total": 5161.5,
+     "worstWeek": -24.19,
+     "bestWeek": 47.12,
+     "beatSpyPct": 51.8,
+     "avgWeekH1": 0.939,
+     "avgWeekH2": 1.294
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 59.6,
+     "avgWeek": 1.118,
+     "sharpe": 1.11,
+     "maxDD": -66.4,
+     "total": 4686.0,
+     "worstWeek": -28.43,
+     "bestWeek": 58.62,
+     "beatSpyPct": 53.3,
+     "avgWeekH1": 0.913,
+     "avgWeekH2": 1.323
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 56.0,
+     "avgWeek": 1.128,
+     "sharpe": 1.18,
+     "maxDD": -66.8,
+     "total": 5302.7,
+     "worstWeek": -21.92,
+     "bestWeek": 37.61,
+     "beatSpyPct": 54.0,
+     "avgWeekH1": 0.949,
+     "avgWeekH2": 1.306
+    }
+   },
+   "fixed": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 57.6,
+     "avgWeek": 1.105,
+     "sharpe": 1.18,
+     "maxDD": -66.0,
+     "total": 5092.7,
+     "worstWeek": -18.7,
+     "bestWeek": 48.12,
+     "beatSpyPct": 52.7,
+     "avgWeekH1": 0.869,
+     "avgWeekH2": 1.34
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 57.1,
+     "avgWeek": 0.986,
+     "sharpe": 1.13,
+     "maxDD": -64.3,
+     "total": 3345.8,
+     "worstWeek": -18.74,
+     "bestWeek": 43.17,
+     "beatSpyPct": 53.1,
+     "avgWeekH1": 0.894,
+     "avgWeekH2": 1.079
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 56.7,
+     "avgWeek": 0.875,
+     "sharpe": 1.0,
+     "maxDD": -69.8,
+     "total": 2007.5,
+     "worstWeek": -23.11,
+     "bestWeek": 51.58,
+     "beatSpyPct": 52.5,
+     "avgWeekH1": 0.769,
+     "avgWeekH2": 0.98
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 58.0,
+     "avgWeek": 0.856,
+     "sharpe": 1.09,
+     "maxDD": -66.5,
+     "total": 2183.7,
+     "worstWeek": -19.82,
+     "bestWeek": 38.93,
+     "beatSpyPct": 50.0,
+     "avgWeekH1": 0.752,
+     "avgWeekH2": 0.96
+    }
+   },
+   "parts": {
+    "gapPct": 0.0365,
+    "restPct": 1.1953,
+    "fullPct": 1.2467,
+    "gapSharePct": 2.9,
+    "n": 2233
+   }
+  },
+  "sector14": {
+   "shift": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 44.0,
+     "avgWeek": 0.534,
+     "sharpe": 0.97,
+     "maxDD": -33.6,
+     "total": 669.7,
+     "worstWeek": -19.32,
+     "bestWeek": 20.66,
+     "beatSpyPct": 50.2,
+     "avgWeekH1": 0.498,
+     "avgWeekH2": 0.571
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 42.4,
+     "avgWeek": 0.592,
+     "sharpe": 1.04,
+     "maxDD": -31.6,
+     "total": 870.1,
+     "worstWeek": -19.54,
+     "bestWeek": 23.14,
+     "beatSpyPct": 50.2,
+     "avgWeekH1": 0.592,
+     "avgWeekH2": 0.592
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 45.5,
+     "avgWeek": 0.621,
+     "sharpe": 1.11,
+     "maxDD": -40.4,
+     "total": 1015.9,
+     "worstWeek": -17.07,
+     "bestWeek": 23.2,
+     "beatSpyPct": 52.0,
+     "avgWeekH1": 0.621,
+     "avgWeekH2": 0.621
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 43.1,
+     "avgWeek": 0.611,
+     "sharpe": 1.07,
+     "maxDD": -44.9,
+     "total": 949.3,
+     "worstWeek": -26.22,
+     "bestWeek": 18.35,
+     "beatSpyPct": 51.3,
+     "avgWeekH1": 0.564,
+     "avgWeekH2": 0.657
+    }
+   },
+   "fixed": {
+    "0": {
+     "weeks": 448,
+     "hitRate": 44.0,
+     "avgWeek": 0.534,
+     "sharpe": 0.97,
+     "maxDD": -33.6,
+     "total": 669.7,
+     "worstWeek": -19.32,
+     "bestWeek": 20.66,
+     "beatSpyPct": 50.2,
+     "avgWeekH1": 0.498,
+     "avgWeekH2": 0.571
+    },
+    "1": {
+     "weeks": 448,
+     "hitRate": 43.5,
+     "avgWeek": 0.545,
+     "sharpe": 1.05,
+     "maxDD": -30.3,
+     "total": 737.9,
+     "worstWeek": -20.42,
+     "bestWeek": 18.85,
+     "beatSpyPct": 48.7,
+     "avgWeekH1": 0.578,
+     "avgWeekH2": 0.513
+    },
+    "2": {
+     "weeks": 448,
+     "hitRate": 43.3,
+     "avgWeek": 0.548,
+     "sharpe": 1.12,
+     "maxDD": -27.5,
+     "total": 778.5,
+     "worstWeek": -15.79,
+     "bestWeek": 17.33,
+     "beatSpyPct": 48.7,
+     "avgWeekH1": 0.565,
+     "avgWeekH2": 0.532
+    },
+    "3": {
+     "weeks": 448,
+     "hitRate": 43.3,
+     "avgWeek": 0.581,
+     "sharpe": 1.3,
+     "maxDD": -32.6,
+     "total": 964.3,
+     "worstWeek": -13.67,
+     "bestWeek": 17.21,
+     "beatSpyPct": 50.7,
+     "avgWeekH1": 0.569,
+     "avgWeekH2": 0.593
+    }
+   },
+   "parts": {
+    "gapPct": 0.0327,
+    "restPct": 0.8239,
+    "fullPct": 0.8649,
+    "gapSharePct": 3.8,
+    "n": 2273
+   }
+  }
+ }
+}

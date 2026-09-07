@@ -85,10 +85,10 @@ def load_data(force=None):
             with open(CACHE, encoding="utf-8") as f:
                 raw = json.load(f)
             probe = next((v for d in raw.values() for v in d.values()), None)
-            if probe is not None and len(probe) >= 4:
+            if probe is not None and len(probe) >= 5:
                 return _finish({s: {int(k): tuple(v) for k, v in d.items()}
                                 for s, d in raw.items()})
-            print("px10y cache predates open prices; refetching all.")
+            print("px10y cache predates open/low prices; refetching all.")
         else:
             print(f"px10y cache lacks {len(missing)} universe names "
                   f"({', '.join(missing[:8])}{'...' if len(missing) > 8 else ''}); refetching all.")
@@ -126,6 +126,26 @@ def align(data):
         if first is not None:
             aligned[sym] = (closes, highs, vols, first, opens)
     return cal, aligned
+
+
+def align_lows(data, cal):
+    """-> {sym: lows} on the same calendar/forward-fill convention as align().
+
+    Kept separate from align() so the (closes, highs, vols, first, opens) tuple every
+    round already unpacks stays exactly as it is. Only code that models intrabar stops
+    needs lows. Bars cached before 2026-09 have no low; those symbols are skipped."""
+    lows = {}
+    for sym, series in data.items():
+        out = [None] * len(cal)
+        last = None
+        for i, d in enumerate(cal):
+            if d in series:
+                last = series[d]
+            if last and len(last) > 4:
+                out[i] = last[4]
+        if any(v is not None for v in out):
+            lows[sym] = out
+    return lows
 
 
 def hold_ret(aligned, sym, t, hold):

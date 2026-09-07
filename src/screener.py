@@ -450,11 +450,38 @@ def update_paper_log(datamap, strategies, results, today_str):
 RECENT_N = 60      # closed trades in the "recent" live window
 MIN_LIVE = 30      # closed trades before the live record is judged at all
 
+_LFL_CACHE = {}
+
+
+def likeforlike_expectations():
+    """Backtest expectation computed on the SAME rules the paper log uses - entry at the
+    signal close, exit at close, 1.5x/2x ATR stop and target, stop checked first.
+
+    Without this the kill switch compares the live record (stopped out of 26% of its
+    trades) against an open-to-open backtest that has no stops at all, which reads as
+    underperformance even when the strategy is behaving exactly as expected. Produced by
+    src/stop_test.py -> state/stop_test.json; when that file is missing we fall back to
+    variants_results.json and say so."""
+    if not _LFL_CACHE:
+        _LFL_CACHE["loaded"] = True
+        try:
+            with open(os.path.join(STATE, "stop_test.json"), encoding="utf-8") as f:
+                st = json.load(f)
+            _LFL_CACHE["run"] = (st.get("meta") or {}).get("run")
+            _LFL_CACHE["avg"] = {k: v.get("close+stops")
+                                 for k, v in (st.get("strategies") or {}).items()
+                                 if v.get("close+stops") is not None}
+        except Exception:
+            _LFL_CACHE["avg"] = {}
+    return _LFL_CACHE.get("avg", {})
+
 
 def strategy_health(st, paper_agg):
     """Live paper-trade record vs backtest expectation - the kill switch.
     Compares avg % per trade in the paper log (real fills incl. stops/targets) with the
-    backtest's avg % per hold. Rules, deliberately simple and transparent:
+    backtest's avg % per hold, preferring the like-for-like expectation from
+    stop_test.json (same entry convention and same stops) over the raw open-to-open
+    number in variants_results.json. Rules, deliberately simple and transparent:
       research - backtest itself is <= 0 (the shorts): not for live use, whatever live says
       young    - fewer than MIN_LIVE closed live trades: no verdict yet
       demoted  - >= MIN_LIVE closed and live avg < 0, or the recent window (>= MIN_LIVE
@@ -463,12 +490,17 @@ def strategy_health(st, paper_agg):
       ok       - otherwise"""
     a = paper_agg.get(st["key"]) or {}
     bt = st.get("stats") or {}
-    bt_avg = bt.get("avgWeek")
+    lfl = likeforlike_expectations().get(st["key"])
+    if lfl is not None:
+        bt_avg, bt_basis = lfl, "like-for-like (same entry, same stops)"
+    else:
+        bt_avg, bt_basis = bt.get("avgWeek"), "open-to-open, no stops"
     closed = a.get("closed", 0)
     live_avg = a.get("avgRet")
     rec = a.get("recent") or {}
     h = {"liveN": closed, "liveAvg": live_avg, "liveHit": a.get("hitRate"),
          "recentN": rec.get("n", 0), "recentAvg": rec.get("avgRet"), "btAvg": bt_avg,
+         "btBasis": bt_basis, "btRaw": bt.get("avgWeek"),
          "ratio": (round(live_avg / bt_avg, 2) if live_avg is not None and bt_avg else None)}
     if bt_avg is None:
         h.update(status="young", note="No backtest stats.")

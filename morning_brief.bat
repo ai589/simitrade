@@ -10,7 +10,8 @@ if not exist "%~dp0src\morning_brief.py" (
   exit /b 1
 )
 echo ===== %date% %time% ===== >> logs\brief_log.txt
-python src\morning_brief.py --save >> logs\brief_log.txt 2>&1
-rem morning_brief.py exits 1 on stale data so the task shows as failed rather than
-rem passing quietly with a warning nobody reads.
+python src\morning_brief.py --save --send >> logs\brief_log.txt 2>&1
+rem morning_brief.py exits 1 on stale data, or if the WhatsApp delivery failed, so the
+rem task shows as failed rather than passing quietly with a warning nobody reads.
+rem Drop --send to go back to file-only (output\brief-YYYY-MM-DD.txt).
 exit /b %errorlevel%

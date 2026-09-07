@@ -266,6 +266,40 @@ def place(orders, info, cfg, mode, close_rotate_out):
     print(f"{placed} bracket orders placed on the {mode} account; log: {SENT}")
 
 
+def check(cfg, mode):
+    """Connect, authenticate and read the account back. Places nothing.
+
+    Worth running before the first --paper: it separates 'my credentials are wrong' from
+    'the order was rejected', which are otherwise easy to confuse at 3pm on a Monday."""
+    try:
+        from tigeropen.tiger_open_config import get_client_config
+        from tigeropen.trade.trade_client import TradeClient
+    except ImportError:
+        raise SystemExit("tigeropen not installed: pip install tigeropen")
+    account = cfg["live_account"] if mode == "live" else cfg["paper_account"]
+    missing = [k for k in ("tiger_id", "private_key_path") if not cfg.get(k)]
+    if not account:
+        missing.append("%s_account" % mode)
+    if missing:
+        raise SystemExit("Missing in %s: %s" % (CONFIG, ", ".join(missing)))
+    if not os.path.exists(cfg["private_key_path"]):
+        raise SystemExit("private_key_path does not exist: %s" % cfg["private_key_path"])
+
+    print("\nConnecting to Tiger (%s account %s)..." % (mode, account))
+    client = TradeClient(get_client_config(private_key_path=cfg["private_key_path"],
+                                           tiger_id=cfg["tiger_id"], account=account))
+    open_orders = client.get_open_orders(account=account) or []
+    positions = client.get_positions(account=account) or []
+    print("  connected.")
+    print("  open orders at broker: %d %s"
+          % (len(open_orders), sorted({o.contract.symbol for o in open_orders}) or ""))
+    print("  positions at broker:   %d %s"
+          % (len(positions), sorted({p.contract.symbol for p in positions}) or ""))
+    sent = load_sent()
+    print("  orders_sent.json:      %d recorded" % len(sent["sent"]))
+    print("\nNothing was placed. Re-run without --check to send.")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     g = ap.add_mutually_exclusive_group()
@@ -273,12 +307,16 @@ def main():
     g.add_argument("--live", action="store_true", help="place on the live account (needs allow_live)")
     ap.add_argument("--close-rotate-out", action="store_true",
                     help="also market-close broker positions in the rotate-out list")
+    ap.add_argument("--check", action="store_true",
+                    help="connect to the broker and report account state; place nothing")
     a = ap.parse_args()
     cfg = load_config()
     D = load_payload()
     orders, info = build_orders(D, cfg)
     print_table(orders, info, cfg)
     mode = "live" if a.live else "paper" if a.paper else "dry"
+    if a.check:
+        return check(cfg, "live" if a.live else "paper")
     if mode == "dry":
         print("\nDry run only. Add --paper (or --live) to send; see header for setup.")
         return

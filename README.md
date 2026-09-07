@@ -14,8 +14,8 @@ compared with the backtest.
 |---|---|
 | `1. refresh.bat` | pull fresh prices, rebuild `data.js`, open the dashboard |
 | `2. publish.bat` | mirror to GitHub and deploy to Vercel |
-| `3. push_orders.bat` | dry-run this week's bracket orders (add `--paper` / `--live` to send) |
-| `morning_brief.bat` | today's brief → `output/brief-YYYY-MM-DD.txt` |
+| `3. push_orders.bat` | dry-run this week's bracket orders (`--check` to test the broker connection, `--paper` / `--live` to send) |
+| `morning_brief.bat` | today's brief → `output/brief-YYYY-MM-DD.txt` + WhatsApp self-chat |
 | `tools\install_tasks.ps1` | (re)register the scheduled tasks at the current path |
 
 ```
@@ -23,6 +23,10 @@ python -m pytest tests/ -q          # 62 tests over the indicator, sizing and ex
 python src/delay_test.py            # does acting late cost anything?
 python src/stop_test.py             # what the ATR stop costs, per strategy
 python src/variants.py              # the production backtest
+
+python src/whatsapp_send.py --login # one-off: log the brief's Chrome profile into WhatsApp
+python src/whatsapp_send.py --check # is that session still live?
+python src/morning_brief.py --whatsapp   # phone-formatted brief, sends nothing
 ```
 
 ## Layout
@@ -42,6 +46,9 @@ logs/       refresh / publish / brief logs
 The US session is 21:30–04:00 SGT, so signals land overnight and orders are placed the
 next SGT daytime as limit-with-bracket orders that rest until the US open. The delay this
 implies costs nothing — see [`docs/delay-and-stops-2026-09.md`](docs/delay-and-stops-2026-09.md).
+
+Broker setup and the paper-trading checklist:
+[`docs/tiger-paper-setup.md`](docs/tiger-paper-setup.md).
 
 ## Honest numbers
 

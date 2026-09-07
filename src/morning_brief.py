@@ -13,8 +13,11 @@
 #   python src/morning_brief.py --out FILE       also write it to FILE
 #   python src/morning_brief.py --save           write to output/brief-YYYY-MM-DD.txt
 #   python src/morning_brief.py --quiet-if-fresh exit 0 silently when nothing to do
+#   python src/morning_brief.py --whatsapp       render the phone version, send nothing
+#   python src/morning_brief.py --save --send    write the file AND push to WhatsApp
 #
-# Delivery to WhatsApp/Telegram is NOT wired up - see notify() at the bottom.
+# Delivery goes to the WhatsApp self-chat through src/whatsapp_send.py, which needs its
+# Chrome profile logged in once:  python src/whatsapp_send.py --login
 
 import argparse
 import datetime
@@ -122,14 +125,75 @@ def build_brief(D, cfg):
     return "\n".join(L), orders, info, stale
 
 
-def notify(text):
-    """Delivery hook - intentionally not wired to any channel yet.
+def whatsapp_text(D, cfg, orders, info, stale):
+    """The same brief, formatted for a phone.
 
-    Whatever gets plugged in here (WhatsApp, Telegram, email) sends outbound messages on
-    a schedule with no human in the loop, so it needs a deliberate decision about the
-    channel and credentials rather than a default. Until then the brief is written to a
-    file and printed."""
-    return False
+    The console version uses fixed-width columns that wrap into noise on WhatsApp, so the
+    table becomes one block per name. WhatsApp markup is *single asterisks* for bold, not
+    Markdown."""
+    hrs = data_age_hours(D.get("generated"))
+    now = datetime.datetime.now()
+    L = ["*ECL morning brief*", now.strftime("%a %d %b %Y, %H:%M SGT")]
+
+    if stale:
+        L += ["", "*STALE DATA - DO NOT TRADE OFF THIS*",
+              "Screen is from %s (%s). The overnight refresh did not run."
+              % (D.get("generated"), fmt_age(hrs)),
+              "Fix: tools\\install_tasks.ps1, then refresh.bat."]
+        return "\n".join(L)
+
+    L.append("Data %s (%s)" % (D.get("generated"), fmt_age(hrs)))
+    L.append("Regime %s - breadth %.1f%% - size x%.2f"
+             % ("ON" if D.get("regimeOn") is not False else "OFF",
+                D.get("breadth20") or 0, info["regimeMult"]))
+
+    if orders:
+        L += ["", "*BUY* - limits rest until the 21:30 open"]
+        for o in orders:
+            L.append("- *%s* %s %d @ %.2f" % (o["sym"], o["side"], o["qty"], o["limit"]))
+            L.append("   stop %.2f - target %.2f - risk $%s"
+                     % (o["stop"], o["target"], format(int(o["risk"]), ",")))
+        risk = sum(o["risk"] for o in orders)
+        L.append("%d orders - risk $%s (%.1f%%) - notional $%s"
+                 % (len(orders), format(int(risk), ","),
+                    risk / cfg["account_size"] * 100,
+                    format(int(sum(o["notional"] for o in orders)), ",")))
+    else:
+        L += ["", "*BUY* nothing new today."]
+
+    if info["rotateOut"]:
+        L += ["", "*CLOSE if held* (%d)" % len(info["rotateOut"]),
+              ", ".join(info["rotateOut"])]
+
+    if info["skippedHealth"]:
+        L += ["", "Kill switch skipped: " + ", ".join(info["skippedHealth"])]
+    if info["heatScale"] < 1:
+        L.append("Sizes scaled x%.2f for the %.0f%% heat cap"
+                 % (info["heatScale"], cfg["max_heat_pct"]))
+
+    L += ["", "Trading: " + ", ".join(cfg["strategies"]),
+          "Then: push_orders.py (dry run) -> --paper"]
+    return "\n".join(L)
+
+
+def notify(text, marker=None, send=False):
+    """Push the brief to the WhatsApp self-chat via src/whatsapp_send.py.
+
+    Sending is off unless send=True. `marker` makes a re-run on the same day a no-op
+    rather than a duplicate message."""
+    try:
+        import whatsapp_send
+    except ImportError as e:
+        print("WhatsApp delivery unavailable: %s" % e, file=sys.stderr)
+        return False
+    try:
+        whatsapp_send.send(text, dry_run=not send, marker=marker)
+        # send() returns False for a deliberate duplicate skip as well as for a dry run;
+        # neither is a delivery failure, so only an exception counts as one.
+        return True
+    except whatsapp_send.WhatsAppError as e:
+        print("WhatsApp delivery failed: %s" % e, file=sys.stderr)
+        return False
 
 
 def main():
@@ -139,6 +203,10 @@ def main():
                     help="also write to output/brief-YYYY-MM-DD.txt")
     ap.add_argument("--quiet-if-fresh", action="store_true",
                     help="print nothing and exit 0 when there is nothing to act on")
+    ap.add_argument("--whatsapp", action="store_true",
+                    help="render the phone-formatted version instead of the console one")
+    ap.add_argument("--send", action="store_true",
+                    help="push the brief to the WhatsApp self-chat (implies --whatsapp)")
     args = ap.parse_args()
 
     if not os.path.exists(DATA_JS):
@@ -151,7 +219,18 @@ def main():
     if args.quiet_if_fresh and not stale and not orders and not info["rotateOut"]:
         return 0
 
-    print(text)
+    if args.whatsapp or args.send:
+        print(whatsapp_text(D, cfg, orders, info, stale))
+    else:
+        print(text)
+
+    delivery_failed = False
+    if args.send:
+        # One brief per day: the marker is the date line the message starts with, so a
+        # second run finds it in the recent messages and skips.
+        marker = datetime.datetime.now().strftime("%a %d %b %Y")
+        delivery_failed = not notify(whatsapp_text(D, cfg, orders, info, stale),
+                                     marker=marker, send=True)
 
     paths = []
     if args.out:
@@ -165,9 +244,12 @@ def main():
             f.write(text + "\n")
         print("\nWrote %s" % p)
 
-    # Non-zero on stale data so a scheduled run shows up as failed rather than passing
-    # quietly with a warning nobody reads.
-    return 1 if stale else 0
+    # Non-zero on stale data, or when a requested delivery did not go out, so a scheduled
+    # run shows up as failed rather than passing quietly with a warning nobody reads.
+    if delivery_failed:
+        print("\nBrief was NOT delivered to WhatsApp - see the error above.",
+              file=sys.stderr)
+    return 1 if (stale or delivery_failed) else 0
 
 
 if __name__ == "__main__":

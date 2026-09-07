@@ -1,10 +1,12 @@
 {
+  "_comment": "Copy to tiger_config.json and fill in the four credential fields. That file is gitignored and excluded from the Vercel mirror. See docs/tiger-paper-setup.md.",
   "tiger_id": "YOUR_TIGER_ID",
   "private_key_path": "C:/path/to/tiger_private_key.pem",
   "paper_account": "YOUR_PAPER_ACCOUNT_NO",
   "live_account": "",
   "allow_live": false,
-  "strategies": ["mom14", "sector14", "valueDD"],
+  "strategies": ["valueDD", "weeklyDip", "value200"],
+  "never_trade": ["shortSpike", "shortBlowoff", "shortOverext", "shortRally"],
   "account_size": 100000,
   "risk_pct": 1.0,
   "max_heat_pct": 6.0,

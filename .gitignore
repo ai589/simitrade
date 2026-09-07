@@ -12,3 +12,5 @@ orders_sent.json
 refresh_log.txt
 publish_log.txt
 .claude/
+output/
+scratch/

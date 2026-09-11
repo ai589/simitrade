@@ -45617,6 +45617,18 @@
    "holdDays": 5,
    "sellBy": "2026-09-17",
    "status": "open"
+  },
+  {
+   "date": "2026-09-09",
+   "strategy": "weeklyDip",
+   "sym": "ADBE",
+   "entry": 254.86,
+   "stop": 238.6,
+   "target": 276.54,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-09-16",
+   "status": "open"
   }
  ]
 }

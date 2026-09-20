@@ -51009,6 +51009,18 @@
    "holdDays": 5,
    "sellBy": "2026-09-25",
    "status": "open"
+  },
+  {
+   "date": "2026-09-18",
+   "strategy": "weeklyDip",
+   "sym": "CF",
+   "entry": 127.7,
+   "stop": 119.53,
+   "target": 138.6,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-09-25",
+   "status": "open"
   }
  ]
 }

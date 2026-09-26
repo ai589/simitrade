@@ -57045,6 +57045,78 @@
    "holdDays": 5,
    "sellBy": "2026-10-02",
    "status": "open"
+  },
+  {
+   "date": "2026-09-24",
+   "strategy": "momTop10",
+   "sym": "VLO",
+   "entry": 382.86,
+   "stop": 359.66,
+   "target": 413.8,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-10-01",
+   "status": "open"
+  },
+  {
+   "date": "2026-09-24",
+   "strategy": "momTop5",
+   "sym": "PLTR",
+   "entry": 192.59,
+   "stop": 182.03,
+   "target": 206.67,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-10-01",
+   "status": "open"
+  },
+  {
+   "date": "2026-09-24",
+   "strategy": "weeklyDip",
+   "sym": "HPQ",
+   "entry": 31.14,
+   "stop": 28.73,
+   "target": 34.36,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-10-01",
+   "status": "open"
+  },
+  {
+   "date": "2026-09-24",
+   "strategy": "weeklyDip",
+   "sym": "MOS",
+   "entry": 23.69,
+   "stop": 22.05,
+   "target": 25.87,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-10-01",
+   "status": "open"
+  },
+  {
+   "date": "2026-09-24",
+   "strategy": "mom14",
+   "sym": "PLTR",
+   "entry": 192.59,
+   "stop": 178.51,
+   "target": 213.71,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-10-08",
+   "status": "open"
+  },
+  {
+   "date": "2026-09-24",
+   "strategy": "value200",
+   "sym": "LEN",
+   "entry": 81.47,
+   "stop": 77.36,
+   "target": 86.95,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-10-01",
+   "status": "open"
   }
  ]
 }

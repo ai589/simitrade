@@ -65537,6 +65537,18 @@
    "holdDays": 5,
    "sellBy": "2026-10-13",
    "status": "open"
+  },
+  {
+   "date": "2026-10-05",
+   "strategy": "lowvol",
+   "sym": "SHEL",
+   "entry": 97.62,
+   "stop": 95.19,
+   "target": 100.86,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-10-12",
+   "status": "open"
   }
  ]
 }

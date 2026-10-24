@@ -71193,6 +71193,42 @@
    "holdDays": 5,
    "sellBy": "2026-10-30",
    "status": "open"
+  },
+  {
+   "date": "2026-10-22",
+   "strategy": "weeklyDip",
+   "sym": "ADI",
+   "entry": 385.76,
+   "stop": 366.03,
+   "target": 412.06,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-10-29",
+   "status": "open"
+  },
+  {
+   "date": "2026-10-22",
+   "strategy": "shortSpike",
+   "sym": "GIS",
+   "entry": 35.18,
+   "stop": 36.84,
+   "target": 32.96,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-10-29",
+   "status": "open"
+  },
+  {
+   "date": "2026-10-22",
+   "strategy": "shortBlowoff",
+   "sym": "ROP",
+   "entry": 436.23,
+   "stop": 453.57,
+   "target": 413.11,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-10-29",
+   "status": "open"
   }
  ]
 }

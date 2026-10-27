@@ -71893,6 +71893,54 @@
    "holdDays": 5,
    "sellBy": "2026-11-02",
    "status": "open"
+  },
+  {
+   "date": "2026-10-23",
+   "strategy": "momTop5",
+   "sym": "FDS",
+   "entry": 331.32,
+   "stop": 313.88,
+   "target": 354.58,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-10-30",
+   "status": "open"
+  },
+  {
+   "date": "2026-10-23",
+   "strategy": "weeklyDip",
+   "sym": "PM",
+   "entry": 199.47,
+   "stop": 191.4,
+   "target": 210.23,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-10-30",
+   "status": "open"
+  },
+  {
+   "date": "2026-10-23",
+   "strategy": "valueDD",
+   "sym": "ALB",
+   "entry": 93.67,
+   "stop": 88.17,
+   "target": 101.01,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-10-30",
+   "status": "open"
+  },
+  {
+   "date": "2026-10-23",
+   "strategy": "shortOverext",
+   "sym": "COP",
+   "entry": 150.8,
+   "stop": 156.23,
+   "target": 143.56,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-10-30",
+   "status": "open"
   }
  ]
 }

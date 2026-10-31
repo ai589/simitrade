@@ -77125,6 +77125,54 @@
    "holdDays": 5,
    "sellBy": "2026-11-06",
    "status": "open"
+  },
+  {
+   "date": "2026-10-29",
+   "strategy": "lowvol",
+   "sym": "DOV",
+   "entry": 210.37,
+   "stop": 204.47,
+   "target": 218.23,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-05",
+   "status": "open"
+  },
+  {
+   "date": "2026-10-29",
+   "strategy": "sectorNeutral",
+   "sym": "CVX",
+   "entry": 231.46,
+   "stop": 224.65,
+   "target": 240.54,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-05",
+   "status": "open"
+  },
+  {
+   "date": "2026-10-29",
+   "strategy": "sector14",
+   "sym": "CVX",
+   "entry": 231.46,
+   "stop": 222.38,
+   "target": 245.08,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-11-12",
+   "status": "open"
+  },
+  {
+   "date": "2026-10-29",
+   "strategy": "zblend",
+   "sym": "CVX",
+   "entry": 231.46,
+   "stop": 224.65,
+   "target": 240.54,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-05",
+   "status": "open"
   }
  ]
 }

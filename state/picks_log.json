@@ -77173,6 +77173,18 @@
    "holdDays": 5,
    "sellBy": "2026-11-05",
    "status": "open"
+  },
+  {
+   "date": "2026-10-30",
+   "strategy": "valueDD",
+   "sym": "CRWV",
+   "entry": 54.87,
+   "stop": 46.03,
+   "target": 66.65,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-06",
+   "status": "open"
   }
  ]
 }

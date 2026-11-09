@@ -81757,6 +81757,30 @@
    "holdDays": 5,
    "sellBy": "2026-11-13",
    "status": "open"
+  },
+  {
+   "date": "2026-11-06",
+   "strategy": "value200",
+   "sym": "LVS",
+   "entry": 40.73,
+   "stop": 39.05,
+   "target": 42.97,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-13",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-06",
+   "strategy": "shortSpike",
+   "sym": "CHTR",
+   "entry": 118.07,
+   "stop": 127.31,
+   "target": 105.75,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-13",
+   "status": "open"
   }
  ]
 }

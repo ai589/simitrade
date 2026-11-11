@@ -18,6 +18,10 @@ import requests
 # other exchange are dropped automatically via the exchange check in main().
 # UNIVERSE is Yahoo-form (BRK-B); UNIVERSE_INFO / SECTOR_OF are keyed dot-form (BRK.B).
 from universe import load_universe, fold_sector, BUCKETS
+import macro as macro_mod
+import news as news_mod
+import ai_read
+import picks as picks_mod
 
 UNIVERSE, UNIVERSE_INFO, UNIVERSE_META = load_universe()
 
@@ -30,6 +34,19 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{sym}?range=2y&interval=1d"
 
 MIN_DOLLAR_VOL = 50_000_000  # 20-day avg dollar volume floor
+
+
+def drop_partial_bar(rows, meta, now):
+    """Drop today's half-formed bar while the regular session is still open.
+
+    Yahoo appends a live bar for the session in progress. The 21:40/22:40 SGT refresh
+    runs ten minutes after the US open, so without this every score, entry price and
+    paper-log entry from that run was built on ten minutes of trading."""
+    per = ((meta or {}).get("currentTradingPeriod") or {}).get("regular") or {}
+    start, end = per.get("start"), per.get("end")
+    if rows and start and end and start <= now < end and rows[-1]["t"] >= start:
+        return rows[:-1]
+    return rows
 
 
 def fetch(sym):
@@ -51,6 +68,7 @@ def fetch(sym):
                 if c is None or h is None or l is None or v is None:
                     continue
                 rows.append({"t": ts[i], "o": o, "h": h, "l": l, "c": c, "v": v})
+            rows = drop_partial_bar(rows, meta, time.time())
             return {"symbol": sym,
                     "exchange": meta.get("fullExchangeName", ""),
                     "name": meta.get("longName") or meta.get("shortName") or sym,
@@ -743,6 +761,16 @@ def strategy_picks(results, regime_on, last_session):
     ]], stats_map.get("spy"), curves
 
 
+def lead_backtest_stats():
+    """10y backtest of the price-setup part of the lead lists (src/picks_backtest.py ->
+    state/picks_backtest.json). Missing file = no stats, and the cards say so."""
+    try:
+        with open(os.path.join(STATE, "picks_backtest.json"), encoding="utf-8") as f:
+            return json.load(f).get("stats") or {}
+    except Exception:
+        return {}
+
+
 def open_paper_syms():
     """Symbols with an open paper trade in picks_log.json (dot-form)."""
     try:
@@ -843,8 +871,35 @@ def main():
         last_session = datetime.datetime.utcfromtimestamp(
             any_rows[-1]["t"]).strftime("%Y-%m-%d")
 
-    strategies, spy_stats, curves = strategy_picks(
-        results, regime_on, last_session or today.isoformat())
+    session = last_session or today.isoformat()
+    strategies, spy_stats, curves = strategy_picks(results, regime_on, session)
+
+    # ---- the lead lists: Top Buys / Top Sells from setup + news + macro ----
+    # Guarded as a block: if a new data source misbehaves on an unattended run, the
+    # rest of the screen still publishes and the dashboard says the lists are missing.
+    macro, lead = {}, {"topBuys": [], "topSells": [], "newsMeta": {}, "aiMacro": None,
+                       "marketNews": []}
+    try:
+        print("Fetching macro series...")
+        macro = macro_mod.snapshot(fetch, breadth)
+        macro["breadth20"] = breadth
+        if macro.get("missing"):
+            print("  macro series unavailable:", ", ".join(macro["missing"]))
+        print(f"Macro: {macro['riskLabel']} ({macro['riskScore']:+d})")
+        sell_by = add_trading_days(session, picks_mod.HOLD_DAYS)
+        lead = picks_mod.build(results, macro, news_mod.fetch_news, ai_read.read,
+                               session, sell_by)
+        nm = lead["newsMeta"]
+        print(f"News: {nm.get('withNews')}/{nm.get('shortlisted')} shortlisted names have "
+              f"headlines, {nm.get('market')} market headlines; read by {nm.get('source')}"
+              + (f" - {nm.get('note')}" if nm.get("note") else ""))
+        print("Top buys:  " + (", ".join(f'{p["sym"]}({p["score"]:.0f})' for p in lead["topBuys"]) or "none"))
+        print("Top sells: " + (", ".join(f'{p["sym"]}({p["score"]:.0f})' for p in lead["topSells"]) or "none"))
+        strategies = picks_mod.strategy_entries(
+            lead["topBuys"], lead["topSells"], sell_by, lead_backtest_stats()) + strategies
+    except Exception as e:
+        print(f"WARNING: Top Buys / Top Sells unavailable this run ({type(e).__name__}: {e})")
+        lead["newsMeta"] = {"error": f"{type(e).__name__}: {e}"}
 
     # paper-trade log; SPY is logged alongside as the benchmark (no stops)
     log_strategies = list(strategies)
@@ -854,8 +909,7 @@ def main():
         log_strategies.append({"key": "spy", "picks": ["SPY"]})
         log_results.append({"sym": "SPY", "entry": round(spy_px, 2),
                             "stop": 0.0, "target": 9e9})
-    paper = update_paper_log(datamap, log_strategies, log_results,
-                             last_session or today.isoformat())
+    paper = update_paper_log(datamap, log_strategies, log_results, session)
     n_open = sum(a["open"] for a in paper.values())
     n_closed = sum(a["closed"] for a in paper.values())
     print(f"Paper log: {n_open} open, {n_closed} closed trades.")
@@ -889,6 +943,11 @@ def main():
         "regimeOn": regime_on,
         "spyPx": round(spy_px, 2) if spy_px else None,
         "spySma50": round(spy_sma50, 2) if spy_sma50 else None,
+        "macro": dict(macro, ai=lead.get("aiMacro")),
+        "topBuys": lead["topBuys"],
+        "topSells": lead["topSells"],
+        "newsMeta": lead["newsMeta"],
+        "marketNews": lead.get("marketNews") or [],
         "strategies": strategies,
         "btMeta": bt_meta,
         "spyStats": spy_stats,

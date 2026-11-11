@@ -4,9 +4,24 @@ A US large-cap swing-trade screener, backtester and paper-trade tracker, publish
 static dashboard: **https://simitrade.vercel.app**
 
 Daily bars from Yahoo Finance for the S&P 500 + Nasdaq-100 + Dow 30 + 21 pinned ADRs
-(~534 names), scored into 13 strategy baskets with ATR-based stops and targets, held 5 or
-10 trading days. Every pick is logged and marked to market, so the live record can be
-compared with the backtest.
+(~534 names). The dashboard leads with **Top Buys** and **Top Sells** for the next 5 to 10
+trading days. Each pick's score has three visible parts:
+
+- **setup** - the short-term price pattern (dip in an uptrend, value turning up,
+  breakdown, blow-off...)
+- **news** - recent headlines for the stock, read and scored by Claude
+- **macro** - sector strength plus a risk-appetite score built from the S&P trend,
+  breadth, VIX, credit, yields and the dollar
+
+Below that, a "Strategy lab" keeps the 13 older rule-based baskets, their 10-year
+backtests and the paper-trade record. Every pick is logged and marked to market, so the
+live record can be compared with the backtest.
+
+### News needs an API key
+
+The news read uses the Anthropic API. Put a key in `state/anthropic_key.txt` (one line),
+or set `ANTHROPIC_API_KEY`. Without a key the tool still runs but scores headlines with a
+crude keyword list, and says so at the top of the dashboard and the brief.
 
 ## Run it
 
@@ -19,7 +34,8 @@ compared with the backtest.
 | `tools\install_tasks.ps1` | (re)register the scheduled tasks at the current path |
 
 ```
-python -m pytest tests/ -q          # 62 tests over the indicator, sizing and exit logic
+python -m pytest tests/ -q          # indicators, sizing, exits, pick ranking, macro, news read
+python src/picks_backtest.py        # 10y backtest of the price-setup part of the two lists
 python src/delay_test.py            # does acting late cost anything?
 python src/stop_test.py             # what the ATR stop costs, per strategy
 python src/variants.py              # the production backtest
@@ -56,5 +72,10 @@ Over 488 weekly rebalances (10y, next-open fills, point-in-time S&P membership, 
 round-trip cost) **no strategy here beat simply holding SPY** on risk-adjusted terms —
 SPY returned +252% at Sharpe 0.89 and a −29.2% max drawdown. Treat these as a satellite
 around a core holding, not as a portfolio.
+
+The news and macro overlays on Top Buys / Top Sells **have no backtest** - there are no
+historical headlines to replay. Only the price-setup part is backtested. Every short rule
+tested here lost money, so Top Sells is a list to avoid, trim or hedge, and the order
+pusher will not short it.
 
 Not investment advice.

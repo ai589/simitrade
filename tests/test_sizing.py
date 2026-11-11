@@ -182,6 +182,7 @@ def test_never_trade_blocks_the_short_baskets():
 
 def test_default_traded_set_is_the_mean_reversion_trio():
     # Guards the 2026-09 switch away from the demoted momentum baskets.
-    assert po.DEFAULTS["strategies"] == ["valueDD", "weeklyDip", "value200"]
+    assert po.DEFAULTS["strategies"] == ["topBuys"]
+    assert "topSells" in po.DEFAULTS["never_trade"]
     for k in ("shortSpike", "shortBlowoff", "shortOverext"):
         assert k in po.DEFAULTS["never_trade"]

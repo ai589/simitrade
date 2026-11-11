@@ -40,11 +40,15 @@ DEFAULTS = {
     # backtest (state/stop_test.json) rather than trailing it. Was
     # ["mom14", "sector14", "valueDD"] until 2026-09; mom14 is the worst performer in the
     # paper log (-0.54%/trade over 191 trades) and both it and sector14 have been demoted.
-    "strategies": ["valueDD", "weeklyDip", "value200"],
+    #
+    # Since 2026-11 the traded set is the lead list, topBuys (src/picks.py): the same
+    # mean-reversion setups, re-ranked by news and macro. To go back to the old trio set
+    # "strategies": ["valueDD", "weeklyDip", "value200"] in tiger_config.json.
+    "strategies": ["topBuys"],
     # Hard block, independent of the health status: every short basket loses in both the
     # backtest and the paper log (-0.77% to -3.15%/trade), and borrow fees are not even
     # modelled. Research only.
-    "never_trade": ["shortSpike", "shortBlowoff", "shortOverext", "shortRally"],
+    "never_trade": ["shortSpike", "shortBlowoff", "shortOverext", "shortRally", "topSells"],
     "account_size": 100000, "risk_pct": 1.0, "max_heat_pct": 6.0, "max_per_sector": 2,
     "max_pos_pct": 20, "regime_scale": True, "budget": 0,
     "entry_limit_slip_pct": 0.5,   # limit = entry x (1 + slip) for longs: marketable at the open

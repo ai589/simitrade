@@ -38,7 +38,9 @@ import time
 DEFAULT_PROFILE = os.path.join(os.environ.get("LOCALAPPDATA", ""),
                                "ecl-trade-brief", "chrome-profile")
 DEFAULT_SESSION = "ecl-trade-brief"
-DEFAULT_CHAT = "Chen Lian (You)"
+# The self-chat is listed as "<your name> (You)". This file is published, so the name is
+# not hard-coded: set ECL_WHATSAPP_CHAT to the full label, or pass --chat.
+DEFAULT_CHAT = os.environ.get("ECL_WHATSAPP_CHAT") or "(You)"
 SELF_CHAT_HEADER = "Message yourself"
 
 # agent-browser's bundled Chromium is rejected by WhatsApp Web with "WhatsApp works with

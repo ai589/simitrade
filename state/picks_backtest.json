@@ -1,0 +1,93 @@
+{
+ "meta": {
+  "run": "2026-11-12 01:21",
+  "from": "2017-11-24",
+  "to": "2026-11-02",
+  "entry": "nextopen",
+  "pointInTime": true,
+  "costPct": 0.1,
+  "note": "Price setup only. No news, no macro, no earnings exclusion."
+ },
+ "stats": {
+  "topBuys": {
+   "weeks": 450,
+   "hitRate": 60.2,
+   "avgWeek": 0.488,
+   "sharpe": 0.84,
+   "maxDD": -29.2,
+   "total": 513.7,
+   "worstWeek": -21.37,
+   "bestWeek": 38.29,
+   "beatSpyPct": 50.2,
+   "avgWeekH1": 0.412,
+   "avgWeekH2": 0.564,
+   "avgNames": 8.0,
+   "emptyWeeks": 0
+  },
+  "topSells": {
+   "weeks": 450,
+   "hitRate": 44.4,
+   "avgWeek": -0.198,
+   "sharpe": -0.45,
+   "maxDD": -74.1,
+   "total": -67.2,
+   "worstWeek": -14.71,
+   "bestWeek": 18.19,
+   "beatSpyPct": 42.0,
+   "avgWeekH1": -0.133,
+   "avgWeekH2": -0.263,
+   "avgNames": 8.0,
+   "emptyWeeks": 0
+  }
+ },
+ "spy": {
+  "weeks": 450,
+  "hitRate": 62.4,
+  "avgWeek": 0.264,
+  "sharpe": 0.79,
+  "maxDD": -29.2,
+  "total": 187.2,
+  "worstWeek": -16.06,
+  "bestWeek": 13.21,
+  "beatSpyPct": 0.0,
+  "avgWeekH1": 0.234,
+  "avgWeekH2": 0.294
+ },
+ "bySetup": {
+  "Blow-off": {
+   "trades": 280,
+   "avgPct": 0.178,
+   "hitRate": 49.6
+  },
+  "Bounce in a downtrend": {
+   "trades": 542,
+   "avgPct": -0.226,
+   "hitRate": 47.4
+  },
+  "Breakdown": {
+   "trades": 2762,
+   "avgPct": -0.098,
+   "hitRate": 48.1
+  },
+  "Deep drawdown": {
+   "trades": 41,
+   "avgPct": 5.496,
+   "hitRate": 65.9
+  },
+  "Dip in an uptrend": {
+   "trades": 1826,
+   "avgPct": 0.348,
+   "hitRate": 55.1
+  },
+  "Momentum": {
+   "trades": 4,
+   "avgPct": -11.553,
+   "hitRate": 25.0
+  },
+  "Value turning up": {
+   "trades": 1724,
+   "avgPct": 0.749,
+   "hitRate": 54.9
+  }
+ }
+}

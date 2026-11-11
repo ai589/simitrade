@@ -9,6 +9,9 @@ universe.json
 px10y_cache.meta.json
 tiger_config.json
 orders_sent.json
+anthropic_key.txt
+news_cache.json
+ai_cache.json
 refresh_log.txt
 publish_log.txt
 .claude/

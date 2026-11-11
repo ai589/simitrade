@@ -23,6 +23,7 @@ import argparse
 import datetime
 import os
 import sys
+import textwrap
 
 from push_orders import load_payload, load_config, build_orders, DATA_JS
 
@@ -50,6 +51,115 @@ def fmt_age(hrs):
     return "%d days old" % round(hrs / 24)
 
 
+def _wrap(text, indent="  ", width=92):
+    return textwrap.wrap(text or "", width=width, initial_indent=indent,
+                         subsequent_indent=indent) or []
+
+
+def news_source_line(D):
+    """One line saying who read the news - never let a keyword read pass as Claude's."""
+    nm = D.get("newsMeta") or {}
+    if nm.get("error"):
+        return "News/macro lists FAILED this run: %s" % nm["error"]
+    if nm.get("source") == "claude":
+        return "News read by Claude (%s), %s of %s shortlisted names had headlines." % (
+            nm.get("model"), nm.get("withNews"), nm.get("shortlisted"))
+    if nm.get("source") == "keyword":
+        return ("News: KEYWORD FALLBACK, not Claude (%s). Treat the news scores as rough."
+                % (nm.get("note") or "no reason given"))
+    return None
+
+
+def macro_lines(D):
+    """The market backdrop block: rule-based score, the key levels, Claude's read."""
+    m = D.get("macro") or {}
+    if m.get("riskScore") is None:
+        return []
+    tiles = {t["sym"]: t for t in m.get("tiles") or []}
+
+    def lv(sym, fmt="%.2f"):
+        t = tiles.get(sym)
+        return fmt % t["last"] if t else "n/a"
+
+    L = ["MARKET: %s (%+d on a -100..+100 scale)" % (m.get("riskLabel"), m["riskScore"]),
+         "  VIX %s | 10y %s%% | dollar %s | oil %s | breadth %.0f%% above 20d"
+         % (lv("^VIX", "%.1f"), lv("^TNX"), lv("DX-Y.NYB", "%.1f"), lv("CL=F", "%.1f"),
+            D.get("breadth20") or 0)]
+    ai = m.get("ai") or {}
+    if ai.get("summary"):
+        L += _wrap(ai["summary"])
+        if ai.get("risks"):
+            L += _wrap("Watch: " + "; ".join(ai["risks"]))
+    sec = m.get("sectors") or {}
+    ai_sec = ai.get("sectors") or {}
+
+    def tilt(b):
+        t = sec.get(b, {}).get("tilt", 0)
+        return 0.5 * t + 0.5 * ai_sec[b]["tilt"] / 2 if b in ai_sec else t
+    ranked = sorted(sec, key=tilt, reverse=True)
+    up = [b for b in ranked if tilt(b) >= 0.25][:3]
+    dn = [b for b in reversed(ranked) if tilt(b) <= -0.25][:3]
+    if up or dn:
+        L.append("  Sector tailwinds: %s | headwinds: %s"
+                 % (", ".join(up) or "none", ", ".join(dn) or "none"))
+    return L
+
+
+def pick_lines(p, order=None, held=False):
+    """One pick from Top Buys / Top Sells, with its score parts and the reasons."""
+    parts = p.get("parts") or {}
+    L = ["  %d. %-6s score %3.0f  %s  (%s)"
+         % (p.get("rank") or 0, p["sym"], p["score"], p.get("setup") or "",
+            p.get("sector") or ""),
+         "       setup %.0f | news %+.1f | macro %+.1f   px %.2f  stop %.2f  target %.2f"
+         % (parts.get("setup", 0), parts.get("news", 0), parts.get("macro", 0),
+            p["px"], p["stop"], p["target"])]
+    if p["side"] == "long":
+        if order:
+            L.append("       order: BUY %d @ %.2f limit, risk $%s"
+                     % (order["qty"], order["limit"], format(int(order["risk"]), ",")))
+        elif held:
+            L.append("       already held from an earlier day - no new order")
+        else:
+            L.append("       no order (sector cap, sized to zero, or strategy not traded)")
+    if p.get("why"):
+        L += _wrap("Chart: " + "; ".join(p["why"]), "       ")
+    if p.get("newsReason"):
+        L += _wrap("News: " + p["newsReason"], "       ")
+    return L
+
+
+def lead_lines(D, orders):
+    """Top Buys and Top Sells - the two lists the brief leads with."""
+    if "topBuys" not in D and "topSells" not in D:
+        return []
+    buys, sells = D.get("topBuys") or [], D.get("topSells") or []
+    by_order = {o["sym"]: o for o in orders if o["strategy"] == "topBuys"}
+    held = next((st.get("held") or {} for st in D.get("strategies") or []
+                 if st.get("key") == "topBuys"), {})
+    sell_by = (buys or sells or [{}])[0].get("sellBy")
+    L = ["TOP BUYS - hold about 5 trading days%s"
+         % (", sell by %s" % sell_by if sell_by else "")]
+    for p in buys:
+        L += pick_lines(p, by_order.get(p["sym"]), p["sym"] in held)
+    if not buys:
+        L.append("  none - nothing scores high enough today.")
+    L.append("")
+    L.append("TOP SELLS - avoid, trim or hedge. Not sent as orders (shorting is blocked).")
+    for p in sells:
+        L += pick_lines(p)
+    if not sells:
+        L.append("  none - nothing scores high enough today.")
+    vetoed = (D.get("newsMeta") or {}).get("vetoed") or []
+    if vetoed:
+        L.append("")
+        L.append("Dropped on news:")
+        for v in vetoed:
+            L += _wrap("%s (%s): %s" % (v["sym"], "buy" if v["side"] == "long" else "sell",
+                                        v.get("reason") or ""))
+    return L
+
+
 def build_brief(D, cfg):
     orders, info = build_orders(D, cfg)
     hrs = data_age_hours(D.get("generated"))
@@ -65,7 +175,7 @@ def build_brief(D, cfg):
         add("*** STALE DATA - DO NOT TRADE OFF THIS BRIEF ***")
         add("Screen is from %s (%s). The overnight refresh did not run."
             % (D.get("generated"), fmt_age(hrs)))
-        add("Fix: run tools\\install_tasks.ps1, then refresh.bat. "
+        add("Fix: run tools\\install_tasks.ps1, then \"1. refresh.bat\". "
             "Check logs\\refresh_log.txt.")
     else:
         add("Data: %s (%s) - ok" % (D.get("generated"), fmt_age(hrs)))
@@ -76,10 +186,23 @@ def build_brief(D, cfg):
         % (regime, D.get("spyPx") or 0, D.get("spySma50") or 0,
            D.get("breadth20") or 0, info["regimeMult"]))
 
+    # --- the lead: macro backdrop, then the two lists ---------------------------------
+    block = macro_lines(D)
+    if block:
+        add("")
+        L.extend(block)
+    src = news_source_line(D)
+    if src:
+        add("  " + src)
+    block = lead_lines(D, orders)
+    if block:
+        add("")
+        L.extend(block)
+
     # --- what to do ---------------------------------------------------------------
     add("")
     if orders:
-        add("BUY / SELL SHORT - limit orders, they rest until the 21:30 SGT open")
+        add("ORDERS - limit orders, they rest until the 21:30 SGT open")
         for o in orders:
             add("  %-10s %-6s %-4s %5d @ %8.2f   stop %8.2f  target %8.2f   risk $%s"
                 % (o["strategy"], o["sym"], o["side"], o["qty"], o["limit"],
@@ -139,16 +262,38 @@ def whatsapp_text(D, cfg, orders, info, stale):
         L += ["", "*STALE DATA - DO NOT TRADE OFF THIS*",
               "Screen is from %s (%s). The overnight refresh did not run."
               % (D.get("generated"), fmt_age(hrs)),
-              "Fix: tools\\install_tasks.ps1, then refresh.bat."]
+              "Fix: tools\\install_tasks.ps1, then \"1. refresh.bat\"."]
         return "\n".join(L)
 
     L.append("Data %s (%s)" % (D.get("generated"), fmt_age(hrs)))
-    L.append("Regime %s - breadth %.1f%% - size x%.2f"
-             % ("ON" if D.get("regimeOn") is not False else "OFF",
-                D.get("breadth20") or 0, info["regimeMult"]))
+    m = D.get("macro") or {}
+    if m.get("riskScore") is not None:
+        L.append("*Market: %s* (%+d) - size x%.2f"
+                 % (m.get("riskLabel"), m["riskScore"], info["regimeMult"]))
+        if (m.get("ai") or {}).get("summary"):
+            L.append(m["ai"]["summary"])
+    else:
+        L.append("Regime %s - breadth %.1f%% - size x%.2f"
+                 % ("ON" if D.get("regimeOn") is not False else "OFF",
+                    D.get("breadth20") or 0, info["regimeMult"]))
+    src = news_source_line(D)
+    if src and (D.get("newsMeta") or {}).get("source") != "claude":
+        L.append("_%s_" % src)
+
+    for title, key in (("TOP BUYS", "topBuys"), ("TOP SELLS (avoid / trim)", "topSells")):
+        if key not in D:
+            continue
+        L += ["", "*%s*" % title]
+        for p in D.get(key) or []:
+            L.append("%d. *%s* %.0f - %s" % (p.get("rank") or 0, p["sym"], p["score"],
+                                             p.get("setup") or ""))
+            if p.get("newsReason") and p.get("materiality"):
+                L.append("   %s" % p["newsReason"])
+        if not D.get(key):
+            L.append("none today")
 
     if orders:
-        L += ["", "*BUY* - limits rest until the 21:30 open"]
+        L += ["", "*ORDERS* - limits rest until the 21:30 open"]
         for o in orders:
             L.append("- *%s* %s %d @ %.2f" % (o["sym"], o["side"], o["qty"], o["limit"]))
             L.append("   stop %.2f - target %.2f - risk $%s"
@@ -159,7 +304,7 @@ def whatsapp_text(D, cfg, orders, info, stale):
                     risk / cfg["account_size"] * 100,
                     format(int(sum(o["notional"] for o in orders)), ",")))
     else:
-        L += ["", "*BUY* nothing new today."]
+        L += ["", "*ORDERS* nothing new today."]
 
     if info["rotateOut"]:
         L += ["", "*CLOSE if held* (%d)" % len(info["rotateOut"]),
@@ -210,7 +355,7 @@ def main():
     args = ap.parse_args()
 
     if not os.path.exists(DATA_JS):
-        sys.exit("No data.js at %s - run refresh.bat first." % DATA_JS)
+        sys.exit('No data.js at %s - run "1. refresh.bat" first.' % DATA_JS)
 
     D = load_payload()
     cfg = load_config()

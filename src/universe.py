@@ -27,7 +27,7 @@ TTL_DAYS = 7
 SCHEMA = 2  # bump when the cached info shape changes; older caches are rebuilt
 
 # Wikipedia returns 403 to the default python User-Agent; a descriptive UA is required.
-WIKI_HEADERS = {"User-Agent": "ECLScreener/1.0 (ai@bepc.com.sg)"}
+WIKI_HEADERS = {"User-Agent": "ECLScreener/1.0 (US equity screener; python-requests)"}
 WIKI = "https://en.wikipedia.org/wiki/{}?action=raw"
 PAGES = {
     "SPX": "List_of_S%26P_500_companies",

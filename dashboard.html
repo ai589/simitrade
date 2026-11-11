@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>US 1-Week Swing Screener (NYSE + Nasdaq)</title>
+<title>US Swing Screener - Top Buys and Sells</title>
 <style>
   :root {
     --bg: #0a0e14; --panel: #11161d; --panel2: #182029; --border: #242d39; --hair: #1a212b;
@@ -151,6 +151,65 @@
   .plinks a { color: var(--accent); text-decoration: none; margin-right: 14px; font-size: 12.5px; }
   .plinks a:hover { text-decoration: underline; }
 
+  /* ---- lead: market backdrop + top buys / top sells ---- */
+  .macrogrid { display: grid; grid-template-columns: minmax(300px, 1.1fr) minmax(300px, 1.6fr); gap: 12px; align-items: start; }
+  .macrogrid .card h3, .leadcol h3 { font: 600 11px var(--mono); color: var(--dim); text-transform: uppercase;
+    letter-spacing: .1em; margin-bottom: 10px; }
+  .riskhead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .riskhead .big { font: 700 26px/1.1 var(--mono); }
+  .riskhead .num { font: 600 14px var(--mono); color: var(--dim); }
+  /* diverging track: neutral midpoint, fill grows left (risk-off) or right (risk-on) */
+  .dv { position: relative; height: 8px; background: var(--panel2); border-radius: 4px; }
+  .dv::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--dim); opacity: .6; }
+  .dv i { position: absolute; top: 0; bottom: 0; border-radius: 4px; }
+  .dv i.pos { left: 50%; background: var(--green); }
+  .dv i.neg { right: 50%; background: var(--red); }
+  .dv.sm { height: 5px; }
+  .complist { margin-top: 12px; display: grid; grid-template-columns: 1fr auto 70px 44px; gap: 5px 10px;
+    font-size: 12px; align-items: center; }
+  .complist .rd { color: var(--dim); font-family: var(--mono); font-size: 11.5px; text-align: right; }
+  .complist .pt { font-family: var(--mono); font-size: 11.5px; text-align: right; font-variant-numeric: tabular-nums; }
+  .mtiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 8px; }
+  .mtile { background: var(--panel2); border: 1px solid var(--hair); border-radius: 8px; padding: 8px 10px; }
+  .mtile .l { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mtile .v { font: 700 16px/1.3 var(--mono); font-variant-numeric: tabular-nums; }
+  .mtile .c { font: 11px var(--mono); color: var(--dim); font-variant-numeric: tabular-nums; }
+  .seclist { display: grid; grid-template-columns: auto 1fr 58px; gap: 6px 10px; font-size: 12px; align-items: center; margin-top: 4px; }
+  .seclist .pt { font-family: var(--mono); font-size: 11.5px; text-align: right; font-variant-numeric: tabular-nums; }
+  .airead { font-size: 13.5px; line-height: 1.6; }
+  .airead ul { margin: 8px 0 0 18px; color: var(--dim); font-size: 12.5px; }
+  .notice { border: 1px solid var(--amber); border-left: 4px solid var(--amber); border-radius: 8px;
+    padding: 9px 12px; font-size: 12.5px; color: var(--text); background: rgba(232,177,63,.07); margin-bottom: 12px; }
+  .notice.bad { border-color: var(--red); background: rgba(240,97,109,.08); }
+  .notice.ok { border-color: var(--border); border-left-color: var(--green); background: none; color: var(--dim); }
+  .notice code { font-family: var(--mono); color: var(--accent); }
+  .leadgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .leadcol h3 { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text); }
+  .leadcol h3 .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .leadcol .cards { grid-template-columns: 1fr; gap: 10px; }
+  .pick { padding: 13px 15px; }
+  .pick .top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding-right: 54px; }
+  .pick .score { position: absolute; top: 11px; right: 14px; text-align: right; }
+  .pick .score b { font: 700 22px/1 var(--mono); }
+  .pick .score span { display: block; font-size: 9.5px; color: var(--dim); text-transform: uppercase; letter-spacing: .06em; }
+  .parts { display: grid; grid-template-columns: 46px 1fr 44px; gap: 5px 8px; align-items: center; margin: 10px 0 8px;
+    font-size: 11px; color: var(--dim); }
+  .parts .pt { font-family: var(--mono); color: var(--text); text-align: right; font-variant-numeric: tabular-nums; }
+  .bar0 { height: 5px; background: var(--panel2); border-radius: 3px; overflow: hidden; }
+  .bar0 i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+  .pick .why { font-size: 12.5px; color: var(--text); margin-top: 4px; }
+  .pick .why span { color: var(--dim); }
+  .pick .heads { margin-top: 7px; font-size: 12px; }
+  .pick .heads a { color: var(--text); text-decoration: none; border-bottom: 1px dotted var(--border); }
+  .pick .heads a:hover { color: var(--accent); }
+  .pick .heads div { margin-top: 3px; color: var(--dim); }
+  .pick .lv { grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--hair); padding-top: 8px; margin-top: 10px; }
+  details.lab { margin-top: 34px; border-top: 1px solid var(--hair); }
+  details.lab > summary { cursor: pointer; padding: 14px 2px; font: 600 12px var(--mono); color: var(--accent);
+    text-transform: uppercase; letter-spacing: .14em; }
+  details.lab > summary span { color: var(--dim); text-transform: none; letter-spacing: 0; font: 13px var(--sans); margin-left: 8px; }
+  @media (max-width: 900px) { .macrogrid, .leadgrid { grid-template-columns: 1fr; } }
+
   /* ---- load rhythm ---- */
   @media (prefers-reduced-motion: no-preference) {
     .wrap > * { animation: rise .4s ease both; }
@@ -172,8 +231,10 @@
 
 <header id="topnav">
   <h1>US Swing Screener · NYSE + Nasdaq</h1>
-  <span class="ver" title="Dashboard version — bumped on every publish. Data freshness is shown separately below.">v2026.11.11-2240 (SGT)</span>
+  <span class="ver" title="Dashboard version — bumped on every publish. Data freshness is shown separately below.">v2026.11.12-0515 (SGT)</span>
   <nav>
+    <a href="#market">market</a>
+    <a href="#lead">buys &amp; sells</a>
     <a href="#calc">tools</a>
     <a href="#strategies">strategies</a>
     <a href="#backtest">backtest</a>
@@ -186,15 +247,44 @@
 <div class="wrap">
 
 <div id="staleBanner" hidden></div>
-<div id="regimeBanner" class="tape"></div>
-<div class="stats">
-  <div class="stat"><div class="v" id="stRegime"></div><div class="l">Market regime</div></div>
-  <div class="stat"><div class="v" id="stBreadth"></div><div class="l">% above 20-day MA</div></div>
-  <div class="stat"><div class="v" id="stAvg5"></div><div class="l">Avg 5-day return</div></div>
-  <div class="stat"><div class="v" id="stCount"></div><div class="l">Names screened</div></div>
-</div>
 <div class="statusline"><span id="genInfo"></span>
-  <span class="howto"> · Auto-refreshes daily at 8:00 AM SGT and ~10-15 min after US market open &amp; close (DST-aware scheduled tasks) — this page reloads itself when new data lands. Manual refresh: double-click <b>refresh.bat</b>.</span></div>
+  <span class="howto"> · Auto-refreshes daily at 8:00 AM SGT and ~10-15 min after US market open &amp; close (DST-aware scheduled tasks) — this page reloads itself when new data lands. Manual refresh: double-click <b>1. refresh.bat</b>.</span></div>
+
+<h2 id="market">Market backdrop</h2>
+<div id="newsNotice"></div>
+<div class="macrogrid">
+  <div class="card">
+    <h3>Risk appetite</h3>
+    <div id="riskBox"></div>
+  </div>
+  <div class="card">
+    <h3>Cross-asset</h3>
+    <div class="mtiles" id="macroTiles"></div>
+    <h3 style="margin-top:16px">Sectors - 20-day return vs S&amp;P 500</h3>
+    <div class="seclist" id="sectorBox"></div>
+  </div>
+</div>
+<div class="card" style="margin-top:12px" id="aiReadCard">
+  <h3 style="font:600 11px var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">What the news says about the next two weeks</h3>
+  <div class="airead" id="aiRead"></div>
+  <details style="margin-top:10px"><summary style="cursor:pointer;color:var(--accent);font-size:12.5px">Market headlines used</summary>
+    <div class="pick"><div class="heads" id="marketHeads"></div></div></details>
+</div>
+
+<h2 id="lead">Top buys and top sells - next 5 to 10 trading days</h2>
+<div class="sub" style="margin-bottom:12px">Each score = <b>setup</b> (the price pattern, 0-100) + <b>news</b> (-20 to +20) + <b>macro</b> (-15 to +15: sector tailwind and the risk backdrop).
+  For sells, bad news and a risk-off market add to the score. Names reporting earnings inside the hold are left out. Max 2 per sector.</div>
+<div class="leadgrid">
+  <div class="leadcol">
+    <h3><span class="dot" style="background:var(--green)"></span>Top buys <span class="sub" id="buyMeta" style="font:12px var(--sans);text-transform:none;letter-spacing:0"></span></h3>
+    <div class="cards" id="topBuys"></div>
+  </div>
+  <div class="leadcol">
+    <h3><span class="dot" style="background:var(--red)"></span>Top sells <span class="sub" id="sellMeta" style="font:12px var(--sans);text-transform:none;letter-spacing:0"></span></h3>
+    <div class="cards" id="topSells"></div>
+  </div>
+</div>
+<div class="disclaimer" style="margin-top:14px" id="leadCaveat"></div>
 
 <h2 id="calc">Trade tools</h2>
 <div class="toolgrid">
@@ -240,6 +330,15 @@
   </div>
 </div>
 
+<details class="lab" id="lab">
+<summary>Strategy lab <span>- the 13 rule-based baskets, 10-year backtests, paper-trade record and the full screen</span></summary>
+<div id="regimeBanner" class="tape"></div>
+<div class="stats">
+  <div class="stat"><div class="v" id="stRegime"></div><div class="l">Breadth regime</div></div>
+  <div class="stat"><div class="v" id="stBreadth"></div><div class="l">% above 20-day MA</div></div>
+  <div class="stat"><div class="v" id="stAvg5"></div><div class="l">Avg 5-day return</div></div>
+  <div class="stat"><div class="v" id="stCount"></div><div class="l">Names screened</div></div>
+</div>
 <h2 id="strategies">Backtested strategies — live picks</h2>
 <div class="controls" id="statsWinBtns" style="margin-bottom:10px">
   <span class="sub">Backtest stats window:</span>
@@ -364,9 +463,10 @@
   <tbody id="tbody"></tbody>
 </table>
 </div>
+</details>
 
 <div class="disclaimer">
-  <b>How to read this:</b> Score (0–100) blends medium-term momentum (30), trend alignment vs 20/50-day MAs (20),
+  <b>How to read the Strategy lab:</b> Score (0–100) blends medium-term momentum (30), trend alignment vs 20/50-day MAs (20),
   RSI positioning (20), proximity to the 20-day high (15) and volume confirmation (15) — a continuation setup
   profile for a ~5-trading-day hold. Stop = entry − 1.5×ATR(14); Target = entry + 2×ATR(14) (≈1.33 R:R).
   Shares = (account × risk%) ÷ (entry − stop), capped at 20% of account per position and, if a
@@ -403,7 +503,7 @@ function renderFreshness() {
   const state = hrs < 20 ? ['fresh', 'green'] : hrs < 48 ? ['ageing', 'amber'] : ['STALE', 'red'];
   document.getElementById('genInfo').innerHTML =
     `Data pulled <b>${D.generated}</b> (${age}) <span class="tag ${state[1] === 'green' ? '' : 'hot'}" style="color:var(--${state[1]});border-color:var(--${state[1]})">${state[0]}</span>
-     · ${D.asOfNote} · long-side continuation screen, ~5 trading day horizon`;
+     · ${D.asOfNote} · ${D.count} names screened`;
 
   // Anything past 20h means the unattended refresh did not run. That has happened
   // silently before (Sep 2026: the folder moved and the scheduled tasks still pointed
@@ -415,12 +515,12 @@ function renderFreshness() {
   bar.innerHTML = hrs < 48
     ? `<b>Data is ${age}</b> — the overnight refresh has not landed. Picks below are from
        <b>${D.generated}</b>; do not place orders off them until you refresh.
-       <span class="fix">Double-click <code>refresh.bat</code>. If it keeps happening, the scheduled
+       <span class="fix">Double-click <code>1. refresh.bat</code>. If it keeps happening, the scheduled
        tasks have drifted — run <code>tools\\install_tasks.ps1</code>.</span>`
     : `<b>STALE — data is ${age}.</b> The automatic refresh is not running. Everything on this
        page (picks, levels, paper log) is from <b>${D.generated}</b> and is <b>not tradeable</b>.
        <span class="fix">Run <code>tools\\install_tasks.ps1</code> to repoint the scheduled tasks,
-       then <code>refresh.bat</code>. Check <code>logs\\refresh_log.txt</code> for the last successful run.</span>`;
+       then <code>1. refresh.bat</code>. Check <code>logs\\refresh_log.txt</code> for the last successful run.</span>`;
 }
 renderFreshness();
 setInterval(renderFreshness, 60000);
@@ -568,7 +668,7 @@ function showProfile(sym) {
       ${r && r.earnDate && r.earnDays >= 0 ? row('Next earnings', `${r.earnDate} (${r.earnDays}d)`) : ''}
       ${r ? row('Avg $ vol', '$' + fmt(r.dvol, 0) + 'M/day') : ''}
     </div>
-    ${p.summary ? `<p class="sub" style="margin-top:12px;font-size:12.5px;line-height:1.55">${p.summary}${p.summary.length >= 600 ? '…' : ''}</p>` : '<p class="sub" style="margin-top:12px">No company description available — run refresh.bat to fetch profiles.</p>'}
+    ${p.summary ? `<p class="sub" style="margin-top:12px;font-size:12.5px;line-height:1.55">${p.summary}${p.summary.length >= 600 ? '…' : ''}</p>` : '<p class="sub" style="margin-top:12px">No company description available — run "1. refresh.bat" to fetch profiles.</p>'}
     <div class="plinks" style="margin-top:14px">
       ${p.website ? `<a href="${p.website}" target="_blank" rel="noopener">Website</a>` : ''}
       <a href="https://finance.yahoo.com/quote/${raw}" target="_blank" rel="noopener">Yahoo Finance</a>
@@ -680,9 +780,12 @@ document.querySelectorAll('#statsWinBtns .zbtn').forEach(b => {
 function levels(r, st) {
   const sm = st.stopMult || 1.5, tm = st.targetMult || 2.0;
   if (!r.atr) return { stop: r.stop, target: r.target };
+  // Rounded to cents exactly as push_orders.levels() does - unrounded stops gave a share
+  // count one higher than the brief on some names (toFixed rounds like Python's round()).
+  const r2 = v => +v.toFixed(2);
   return st.side === 'short'
-    ? { stop: r.entry + sm * r.atr, target: r.entry - tm * r.atr }
-    : { stop: r.entry - sm * r.atr, target: r.entry + tm * r.atr };
+    ? { stop: r2(r.entry + sm * r.atr), target: r2(r.entry - tm * r.atr) }
+    : { stop: r2(r.entry - sm * r.atr), target: r2(r.entry + tm * r.atr) };
 }
 
 function renderStrategies() {
@@ -845,7 +948,199 @@ function renderStrategies() {
   });
   if (!el.children.length)
     el.innerHTML = '<div class="sub">All strategies hidden — click a chip above to show one.</div>';
+  renderLead();   // share counts on the lead cards follow the same sizing inputs
 }
+
+// ---------------------------------------------------------------------------------
+// Lead section: market backdrop + Top Buys / Top Sells (src/macro.py, src/picks.py).
+// Headlines and Claude's text are third-party / generated text: always escaped.
+function esc(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g,
+    c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function sgn(n, dp = 1) { return (n > 0 ? '+' : '') + fmt(n, dp); }
+function ago(ts) {
+  const h = Math.max(0, (Date.now() / 1000 - ts) / 3600);
+  return h < 1 ? 'just now' : h < 48 ? Math.round(h) + 'h ago' : Math.round(h / 24) + 'd ago';
+}
+// Diverging bar: v in [-max, +max], neutral midpoint, green right / red left.
+function dvBar(v, max, small) {
+  const w = Math.min(Math.abs(v) / max, 1) * 50;
+  return `<div class="dv${small ? ' sm' : ''}"><i class="${v >= 0 ? 'pos' : 'neg'}" style="width:${w}%"></i></div>`;
+}
+function headsHtml(list) {
+  return (list || []).map(h => {
+    const t = esc(h.t);
+    const link = h.u && /^https:\/\//.test(h.u)
+      ? `<a href="${esc(h.u)}" target="_blank" rel="noopener noreferrer">${t}</a>` : t;
+    return `<div>${link} <span class="sub" style="font-size:11px">· ${esc(h.p)} · ${ago(h.ts)}</span></div>`;
+  }).join('');
+}
+
+// Share count for a Top Buys pick. Mirrors push_orders.build_orders() with the default
+// config (traded set = topBuys only): sector cap, then a heat cap across that one list.
+function leadSizing() {
+  const st = (D.strategies || []).find(x => x.key === 'topBuys');
+  const out = { st, n: {}, skip: new Set(), held: (st && st.held) || {}, scale: 1 };
+  if (!st) return out;
+  const keep = sectorKeep(st);
+  const acct = +document.getElementById('acct').value || 0;
+  const maxHeat = +document.getElementById('maxHeat').value || 0;
+  let heat = 0;
+  st.picks.forEach(sym => {
+    const r = bySym[sym]; if (!r || !keep.has(sym)) { out.skip.add(sym); return; }
+    const lv = levels(r, st);
+    heat += shares(r, st.picks.length, lv.stop, 1) * Math.abs(r.entry - lv.stop);
+  });
+  out.scale = (maxHeat > 0 && acct > 0 && heat > acct * maxHeat / 100) ? acct * maxHeat / 100 / heat : 1;
+  st.picks.forEach(sym => {
+    const r = bySym[sym]; if (!r || out.skip.has(sym)) return;
+    out.n[sym] = shares(r, st.picks.length, levels(r, st).stop, out.scale);
+  });
+  return out;
+}
+
+function pickCard(p, sz) {
+  const long = p.side === 'long';
+  const pr = p.parts || {};
+  const tags = [`<span class="tag">${esc(p.setup)}</span>`, `<span class="tag">${esc(p.sector)}</span>`];
+  if (p.earnDate && p.earnDays != null && p.earnDays >= 0) tags.push(`<span class="tag" title="Next earnings date">earnings ${esc(p.earnDate.slice(5))}</span>`);
+  if (long && sz.held[p.sym]) tags.push(`<span class="tag holdtag" title="Already in the paper book since ${esc(sz.held[p.sym])} - keep holding, no new order.">↻ hold</span>`);
+  if (long && sz.skip.has(p.sym)) tags.push('<span class="tag" title="Over the max-per-sector setting in Position sizing">sector cap</span>');
+  const news = p.newsReason
+    ? `<div class="why"><span>News:</span> ${esc(p.newsReason)}${p.catalyst ? ` <span class="tag">${esc(p.catalyst)}</span>` : ''}</div>` : '';
+  const n = sz.n[p.sym];
+  const last = long
+    ? `<div><span>Shares</span>${sz.held[p.sym] ? 'held' : (n != null ? n.toLocaleString() : '—')}</div>`
+    : `<div><span>5d / 20d</span>${sgn(p.ret5)}% / ${sgn(p.ret20)}%</div>`;
+  const c = document.createElement('div');
+  c.className = 'card pick';
+  c.innerHTML = `
+    <div class="score"><b>${Math.round(p.score)}</b><span>score</span></div>
+    <div class="top"><span class="rank" style="position:static">#${p.rank}</span>
+      <span class="sym symlink" data-sym="${esc(p.sym)}">${esc(p.sym)}</span>
+      <span class="nm" style="max-width:220px">${esc(p.name)}</span></div>
+    <div style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap">${tags.join('')}</div>
+    <div class="parts">
+      <span>Setup</span><div class="bar0" title="Price setup ${pr.setup} of 100"><i style="width:${Math.min(pr.setup, 100)}%"></i></div><span class="pt">${fmt(pr.setup, 0)}</span>
+      <span>News</span><div title="News: ${sgn(pr.news)} of ±20">${dvBar(pr.news, 20, true)}</div><span class="pt">${sgn(pr.news)}</span>
+      <span>Macro</span><div title="Macro: ${sgn(pr.macro)} of ±15">${dvBar(pr.macro, 15, true)}</div><span class="pt">${sgn(pr.macro)}</span>
+    </div>
+    <div class="why"><span>Chart:</span> ${esc((p.why || []).join('; '))}</div>
+    ${news}
+    <div class="heads">${headsHtml(p.headlines)}</div>
+    <div class="lv">
+      <div><span>${long ? 'Entry' : 'Last'}</span>$${fmt(p.entry)}</div>
+      <div><span>${long ? 'Stop' : 'Stop if short'}</span><span class="red">$${fmt(p.stop)}</span></div>
+      <div><span>${long ? 'Target' : 'Downside target'}</span><span class="green">$${fmt(p.target)}</span></div>
+      ${last}
+    </div>`;
+  return c;
+}
+
+function renderLead() {
+  const M = D.macro || {}, NM = D.newsMeta || {}, ai = M.ai || null;
+  const $ = id => document.getElementById(id);
+
+  // who read the news - never let the keyword fallback pass as Claude
+  const nn = $('newsNotice');
+  if (NM.error) {
+    nn.innerHTML = `<div class="notice bad"><b>The buy / sell lists failed to build on the last refresh.</b> ${esc(NM.error)}. The Strategy lab below is unaffected.</div>`;
+  } else if (NM.source === 'claude') {
+    nn.innerHTML = `<div class="notice ok">News read by Claude (${esc(NM.model)}) · ${NM.withNews} of ${NM.shortlisted} shortlisted names had recent headlines · ${NM.market} market headlines.</div>`;
+  } else if (NM.source === 'keyword') {
+    nn.innerHTML = `<div class="notice"><b>News is being scored by a crude keyword match, not by Claude.</b> ${esc(NM.note || '')}.
+      Keyword scores count half and there is no written macro read. To switch Claude on, put an Anthropic API key in <code>state/anthropic_key.txt</code> (or set <code>ANTHROPIC_API_KEY</code>) and refresh.</div>`;
+  } else nn.innerHTML = '';
+
+  // risk appetite
+  if (M.riskScore == null) {
+    $('riskBox').innerHTML = '<div class="sub">No macro data in this refresh.</div>';
+  } else {
+    const col = M.riskScore >= 25 ? 'green' : M.riskScore <= -25 ? 'red' : 'amber';
+    $('riskBox').innerHTML = `
+      <div class="riskhead"><span class="big ${col}">${esc(M.riskLabel)}</span>
+        <span class="num">${sgn(M.riskScore, 0)} on a −100 to +100 scale</span></div>
+      <div style="margin:12px 0 4px" title="Risk score ${M.riskScore}">${dvBar(M.riskScore, 100)}</div>
+      <div class="sub" style="display:flex;justify-content:space-between;font-size:10.5px"><span>risk-off</span><span>neutral</span><span>risk-on</span></div>
+      <div class="complist">${(M.components || []).map(c => `
+        <span>${esc(c.name)}</span><span class="rd">${esc(c.read)}</span>
+        <div title="${sgn(c.pts)} of ±${c.max}">${dvBar(c.pts, c.max, true)}</div><span class="pt">${sgn(c.pts)}</span>`).join('')}</div>
+      <div class="sub" style="margin-top:10px;font-size:11.5px">Rule-based: each line adds or subtracts points. Position sizes are scaled ×${regimeMult()} by the regime setting in Position sizing.</div>`;
+  }
+
+  // cross-asset tiles: level + 5d / 20d change (points for VIX and yields)
+  $('macroTiles').innerHTML = (M.tiles || []).map(t => {
+    const u = t.kind === 'pts' ? '' : '%';
+    const dir = t.kind === 'pct' && !['DX-Y.NYB'].includes(t.sym);
+    const c5 = dir ? cls(t.chg5) : '', c20 = dir ? cls(t.chg20) : '';
+    return `<div class="mtile" title="${esc(t.label)}"><div class="l">${esc(t.label)}</div>
+      <div class="v">${fmt(t.last, t.last >= 1000 ? 0 : 2)}</div>
+      <div class="c">5d <span class="${c5}">${sgn(t.chg5, 2)}${u}</span> · 20d <span class="${c20}">${sgn(t.chg20, 2)}${u}</span></div></div>`;
+  }).join('') + (M.credit20 != null ? `<div class="mtile" title="High-yield bonds vs Treasuries over 20 days. Falling = credit stress."><div class="l">Credit vs Treasuries</div>
+      <div class="v">${sgn(M.credit20, 2)}%</div><div class="c">20d, HYG ÷ IEF</div></div>` : '');
+
+  // sectors: 20d relative strength, plus Claude's tilt when there is one
+  const secs = Object.entries(M.sectors || {}).sort((a, b) => b[1].rel20 - a[1].rel20);
+  const aiSec = (ai && ai.sectors) || {};
+  $('sectorBox').innerHTML = secs.length ? secs.map(([b, v]) => {
+    const a = aiSec[b];
+    const chip = a && a.tilt ? ` <span class="tag" title="${esc(a.reason)}">Claude ${a.tilt > 0 ? '+' : ''}${a.tilt}</span>` : '';
+    return `<span>${esc(b)}${chip}</span><div title="${sgn(v.rel20, 2)}% vs S&P 500 over 20 days">${dvBar(v.rel20, 12, true)}</div><span class="pt">${sgn(v.rel20)}%</span>`;
+  }).join('') : '<span class="sub">No sector data.</span>';
+
+  // Claude's written read
+  $('aiRead').innerHTML = ai && ai.summary
+    ? `${esc(ai.summary)}${(ai.risks || []).length ? '<ul>' + ai.risks.map(r => `<li>${esc(r)}</li>`).join('') + '</ul>' : ''}`
+    : '<span class="sub">No written macro read on this refresh - that needs the Claude API key (see the notice above). The numbers on this page are still live.</span>';
+  $('marketHeads').innerHTML = headsHtml(D.marketNews) || '<span class="sub">No market headlines fetched.</span>';
+
+  // the two lists
+  const sz = leadSizing();
+  const fill = (id, list, empty) => {
+    const el = $(id); el.innerHTML = '';
+    (list || []).forEach(p => el.appendChild(pickCard(p, sz)));
+    if (!el.children.length) el.innerHTML = `<div class="sub">${empty}</div>`;
+  };
+  fill('topBuys', D.topBuys, 'Nothing scores high enough to buy right now.');
+  fill('topSells', D.topSells, 'Nothing scores high enough to flag as a sell right now.');
+  const sellBy = ((D.topBuys || [])[0] || (D.topSells || [])[0] || {}).sellBy;
+  $('buyMeta').textContent = sellBy ? `· limit orders rest until the US open · sell by ${sellBy}` : '';
+  $('sellMeta').textContent = '· avoid, trim or hedge - not sent as orders';
+
+  // honesty: what is and is not proven
+  const P = D.paper || {};
+  const rec = k => { const a = P[k]; return a && a.closed ? `${a.closed} closed paper trades, ${sgn(a.avgRet, 2)}% avg` : 'no closed paper trades yet'; };
+  const vetoed = NM.vetoed || [];
+  const bt = k => ((D.strategies || []).find(x => x.key === k) || {}).stats;
+  const bb = bt('topBuys'), bs = bt('topSells'), sp = D.spyStats;
+  const btLine = bb && bs
+    ? `<b>Backtest of the price setups alone</b> (${fmt(bb.weeks / 52, 1)} years, weekly, next-open fills, costs included, no news or macro):
+       the buy list averaged <b>${sgn(bb.avgWeek, 2)}% a week</b> (Sharpe ${fmt(bb.sharpe)}, worst drawdown ${fmt(bb.maxDD, 1)}%)${sp ? ` against about ${sgn(sp.avgWeek, 2)}% for the S&amp;P 500` : ''}.
+       Shorting the sell list <b>lost ${fmt(Math.abs(bs.avgWeek), 2)}% a week</b> - those names still rose on average, just by less than the market.
+       The test uses today's index members, which flatters buy-the-dip results, so read the buy number as an upper bound.<br>`
+    : 'The price setups have not been backtested yet - run <code>python src/picks_backtest.py</code>.<br>';
+  $('leadCaveat').innerHTML = `<b>What is proven and what is not.</b> ${btLine}
+    The <b>news and macro overlays have no backtest</b> (there are no historical headlines to test on),
+    so judge them on the live record as it builds: buys - ${rec('topBuys')}; sells - ${rec('topSells')}.
+    That is why the sell list is for avoiding, trimming and hedging, and why the order pusher will not short it.
+    ${vetoed.length ? '<br><b>Dropped on news:</b> ' + vetoed.map(v => `${esc(v.sym)} (${v.side === 'long' ? 'buy' : 'sell'}): ${esc(v.reason)}`).join(' · ') : ''}
+    <br>Not investment advice.`;
+}
+
+// Strategy lab: collapsed by default; remembers its state; anchors inside it open it.
+(function () {
+  const lab = document.getElementById('lab');
+  try { lab.open = localStorage.getItem('labOpen') === '1'; } catch (e) {}
+  lab.addEventListener('toggle', () => {
+    try { localStorage.setItem('labOpen', lab.open ? '1' : '0'); } catch (e) {}
+    if (lab.open) renderCurves();          // the canvas has no width while hidden
+  });
+  document.querySelectorAll('#topnav nav a').forEach(a => a.addEventListener('click', () => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t && lab.contains(t) && !lab.open) lab.open = true;
+  }));
+})();
 
 let zoomRange = null; // {t0, t1} in ms; null = full 10y
 
@@ -1021,8 +1316,8 @@ function renderCurves() {
     history so start Jul 2017. Bands: red = recession/bear, green = Fed easing, blue = Fed hiking.`;
 }
 
-document.querySelectorAll('.zbtn').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('.zbtn').forEach(o => o.classList.remove('active'));
+document.querySelectorAll('.zbtn[data-z]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.zbtn[data-z]').forEach(o => o.classList.remove('active'));
   b.classList.add('active');
   const z = b.dataset.z, now = Date.now();
   if (z === 'all') zoomRange = null;

@@ -85269,6 +85269,66 @@
    "holdDays": 5,
    "sellBy": "2026-11-19",
    "status": "open"
+  },
+  {
+   "date": "2026-11-12",
+   "strategy": "topBuys",
+   "sym": "ABT",
+   "entry": 107.25,
+   "stop": 102.77,
+   "target": 113.23,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-19",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-12",
+   "strategy": "topBuys",
+   "sym": "MNST",
+   "entry": 45.57,
+   "stop": 43.76,
+   "target": 47.99,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-19",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-12",
+   "strategy": "topBuys",
+   "sym": "ERIE",
+   "entry": 270.0,
+   "stop": 256.39,
+   "target": 288.14,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-19",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-12",
+   "strategy": "topSells",
+   "sym": "FLEX",
+   "entry": 78.12,
+   "stop": 89.03,
+   "target": 63.58,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-19",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-12",
+   "strategy": "topSells",
+   "sym": "PWR",
+   "entry": 606.16,
+   "stop": 660.8,
+   "target": 533.3,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-19",
+   "status": "open"
   }
  ]
 }

@@ -85329,6 +85329,54 @@
    "holdDays": 5,
    "sellBy": "2026-11-19",
    "status": "open"
+  },
+  {
+   "date": "2026-11-12",
+   "strategy": "topBuys",
+   "sym": "CRWV",
+   "entry": 56.6,
+   "stop": 46.87,
+   "target": 69.58,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-19",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-12",
+   "strategy": "topBuys",
+   "sym": "VRT",
+   "entry": 209.64,
+   "stop": 183.9,
+   "target": 243.96,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-19",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-12",
+   "strategy": "topSells",
+   "sym": "NBIS",
+   "entry": 128.64,
+   "stop": 156.16,
+   "target": 91.94,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-19",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-12",
+   "strategy": "topSells",
+   "sym": "MCHP",
+   "entry": 62.08,
+   "stop": 68.52,
+   "target": 53.5,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-19",
+   "status": "open"
   }
  ]
 }

@@ -86161,6 +86161,42 @@
    "holdDays": 5,
    "sellBy": "2026-11-20",
    "status": "open"
+  },
+  {
+   "date": "2026-11-13",
+   "strategy": "topBuys",
+   "sym": "CHRW",
+   "entry": 134.46,
+   "stop": 126.65,
+   "target": 144.88,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-20",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-13",
+   "strategy": "topSells",
+   "sym": "RDDT",
+   "entry": 98.45,
+   "stop": 110.56,
+   "target": 82.31,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-20",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-13",
+   "strategy": "topSells",
+   "sym": "ON",
+   "entry": 71.06,
+   "stop": 77.6,
+   "target": 62.34,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-20",
+   "status": "open"
   }
  ]
 }

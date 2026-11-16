@@ -86221,6 +86221,18 @@
    "holdDays": 5,
    "sellBy": "2026-11-20",
    "status": "open"
+  },
+  {
+   "date": "2026-11-13",
+   "strategy": "topSells",
+   "sym": "CMI",
+   "entry": 452.18,
+   "stop": 476.09,
+   "target": 420.3,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-20",
+   "status": "open"
   }
  ]
 }

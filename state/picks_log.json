@@ -86197,6 +86197,30 @@
    "holdDays": 5,
    "sellBy": "2026-11-20",
    "status": "open"
+  },
+  {
+   "date": "2026-11-13",
+   "strategy": "topSells",
+   "sym": "PWR",
+   "entry": 602.01,
+   "stop": 655.85,
+   "target": 530.23,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-20",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-13",
+   "strategy": "topSells",
+   "sym": "MS",
+   "entry": 190.65,
+   "stop": 198.71,
+   "target": 179.91,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-20",
+   "status": "open"
   }
  ]
 }

@@ -88077,6 +88077,78 @@
    "holdDays": 5,
    "sellBy": "2026-11-24",
    "status": "open"
+  },
+  {
+   "date": "2026-11-17",
+   "strategy": "topBuys",
+   "sym": "TXT",
+   "entry": 81.63,
+   "stop": 77.89,
+   "target": 86.61,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-17",
+   "strategy": "topBuys",
+   "sym": "DHR",
+   "entry": 225.77,
+   "stop": 216.43,
+   "target": 238.23,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-17",
+   "strategy": "topSells",
+   "sym": "GOOG",
+   "entry": 277.6,
+   "stop": 292.5,
+   "target": 257.74,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-17",
+   "strategy": "topSells",
+   "sym": "GOOGL",
+   "entry": 280.2,
+   "stop": 295.39,
+   "target": 259.94,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-17",
+   "strategy": "topSells",
+   "sym": "FANG",
+   "entry": 177.07,
+   "stop": 186.29,
+   "target": 164.77,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-17",
+   "strategy": "topSells",
+   "sym": "ADM",
+   "entry": 69.47,
+   "stop": 72.61,
+   "target": 65.29,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-24",
+   "status": "open"
   }
  ]
 }

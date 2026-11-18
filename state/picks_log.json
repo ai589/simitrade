@@ -88053,6 +88053,30 @@
    "holdDays": 5,
    "sellBy": "2026-11-24",
    "status": "open"
+  },
+  {
+   "date": "2026-11-17",
+   "strategy": "topSells",
+   "sym": "ALNY",
+   "entry": 156.5,
+   "stop": 171.47,
+   "target": 136.54,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-24",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-17",
+   "strategy": "shortSpike",
+   "sym": "AVGO",
+   "entry": 341.6,
+   "stop": 367.82,
+   "target": 306.64,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-24",
+   "status": "open"
   }
  ]
 }

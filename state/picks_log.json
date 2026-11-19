@@ -88953,6 +88953,138 @@
    "holdDays": 5,
    "sellBy": "2026-11-25",
    "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "topBuys",
+   "sym": "MCO",
+   "entry": 481.29,
+   "stop": 461.69,
+   "target": 507.43,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "topBuys",
+   "sym": "NVS",
+   "entry": 155.21,
+   "stop": 150.75,
+   "target": 161.15,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "topBuys",
+   "sym": "HII",
+   "entry": 287.89,
+   "stop": 271.78,
+   "target": 309.37,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "topSells",
+   "sym": "GOOG",
+   "entry": 279.2,
+   "stop": 293.54,
+   "target": 260.08,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "topSells",
+   "sym": "GOOGL",
+   "entry": 282.44,
+   "stop": 297.05,
+   "target": 262.96,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "topSells",
+   "sym": "APTV",
+   "entry": 38.58,
+   "stop": 40.66,
+   "target": 35.8,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "momTop5",
+   "sym": "VLTO",
+   "entry": 117.87,
+   "stop": 114.05,
+   "target": 122.97,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "mom14",
+   "sym": "VLTO",
+   "entry": 117.87,
+   "stop": 112.77,
+   "target": 125.52,
+   "side": "long",
+   "holdDays": 10,
+   "sellBy": "2026-12-02",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "shortSpike",
+   "sym": "OKTA",
+   "entry": 195.61,
+   "stop": 214.71,
+   "target": 170.15,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "shortSpike",
+   "sym": "CRWD",
+   "entry": 237.03,
+   "stop": 257.55,
+   "target": 209.67,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "shortSpike",
+   "sym": "FTNT",
+   "entry": 131.81,
+   "stop": 142.84,
+   "target": 117.11,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
   }
  ]
 }

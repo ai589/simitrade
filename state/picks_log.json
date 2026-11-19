@@ -85700,7 +85700,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-11-19",
-   "status": "open"
+   "status": "stopped",
+   "exitDate": "2026-11-18",
+   "exitPx": 83.43,
+   "days": 4,
+   "retPct": -7.33
   },
   {
    "date": "2026-11-12",
@@ -86488,7 +86492,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-11-20",
-   "status": "open"
+   "status": "stopped",
+   "exitDate": "2026-11-18",
+   "exitPx": 83.43,
+   "days": 3,
+   "retPct": -7.24
   },
   {
    "date": "2026-11-13",
@@ -86836,7 +86844,11 @@
    "side": "short",
    "holdDays": 5,
    "sellBy": "2026-11-20",
-   "status": "open"
+   "status": "target",
+   "exitDate": "2026-11-18",
+   "exitPx": 573.43,
+   "days": 3,
+   "retPct": 3.27
   },
   {
    "date": "2026-11-13",
@@ -87596,7 +87608,11 @@
    "side": "short",
    "holdDays": 5,
    "sellBy": "2026-11-23",
-   "status": "open"
+   "status": "target",
+   "exitDate": "2026-11-18",
+   "exitPx": 573.81,
+   "days": 2,
+   "retPct": 3.21
   },
   {
    "date": "2026-11-16",
@@ -87680,7 +87696,11 @@
    "side": "long",
    "holdDays": 5,
    "sellBy": "2026-11-23",
-   "status": "open"
+   "status": "stopped",
+   "exitDate": "2026-11-18",
+   "exitPx": 78.08,
+   "days": 2,
+   "retPct": -5.88
   },
   {
    "date": "2026-11-16",
@@ -88268,7 +88288,11 @@
    "side": "short",
    "holdDays": 5,
    "sellBy": "2026-11-24",
-   "status": "open"
+   "status": "stopped",
+   "exitDate": "2026-11-18",
+   "exitPx": 204.14,
+   "days": 1,
+   "retPct": -9.12
   },
   {
    "date": "2026-11-17",
@@ -89082,6 +89106,42 @@
    "stop": 142.84,
    "target": 117.11,
    "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "topSells",
+   "sym": "NBIS",
+   "entry": 106.96,
+   "stop": 132.1,
+   "target": 73.44,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "topSells",
+   "sym": "OXY",
+   "entry": 53.76,
+   "stop": 56.47,
+   "target": 50.14,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "valueDD",
+   "sym": "RDDT",
+   "entry": 94.09,
+   "stop": 82.98,
+   "target": 108.91,
+   "side": "long",
    "holdDays": 5,
    "sellBy": "2026-11-25",
    "status": "open"

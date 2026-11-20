@@ -89145,6 +89145,30 @@
    "holdDays": 5,
    "sellBy": "2026-11-25",
    "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "topSells",
+   "sym": "SMCI",
+   "entry": 24.37,
+   "stop": 28.05,
+   "target": 19.47,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-18",
+   "strategy": "topSells",
+   "sym": "FANG",
+   "entry": 174.32,
+   "stop": 183.35,
+   "target": 162.28,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-25",
+   "status": "open"
   }
  ]
 }

@@ -90953,6 +90953,78 @@
    "holdDays": 5,
    "sellBy": "2026-11-27",
    "status": "open"
+  },
+  {
+   "date": "2026-11-20",
+   "strategy": "topBuys",
+   "sym": "ABNB",
+   "entry": 170.36,
+   "stop": 160.04,
+   "target": 184.12,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-27",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-20",
+   "strategy": "topBuys",
+   "sym": "NDAQ",
+   "entry": 102.92,
+   "stop": 99.23,
+   "target": 107.84,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-27",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-20",
+   "strategy": "topBuys",
+   "sym": "NVS",
+   "entry": 150.47,
+   "stop": 145.78,
+   "target": 156.73,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-27",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-20",
+   "strategy": "topSells",
+   "sym": "NTES",
+   "entry": 99.85,
+   "stop": 105.66,
+   "target": 92.11,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-27",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-20",
+   "strategy": "topSells",
+   "sym": "XYL",
+   "entry": 94.66,
+   "stop": 99.2,
+   "target": 88.6,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-27",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-20",
+   "strategy": "topSells",
+   "sym": "ROST",
+   "entry": 213.46,
+   "stop": 225.37,
+   "target": 197.58,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-27",
+   "status": "open"
   }
  ]
 }

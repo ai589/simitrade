@@ -91025,6 +91025,30 @@
    "holdDays": 5,
    "sellBy": "2026-11-27",
    "status": "open"
+  },
+  {
+   "date": "2026-11-20",
+   "strategy": "topSells",
+   "sym": "BIDU",
+   "entry": 61.9,
+   "stop": 66.14,
+   "target": 56.24,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-27",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-20",
+   "strategy": "topSells",
+   "sym": "FCX",
+   "entry": 45.99,
+   "stop": 50.56,
+   "target": 39.89,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-27",
+   "status": "open"
   }
  ]
 }

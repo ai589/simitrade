@@ -91049,6 +91049,42 @@
    "holdDays": 5,
    "sellBy": "2026-11-27",
    "status": "open"
+  },
+  {
+   "date": "2026-11-20",
+   "strategy": "topBuys",
+   "sym": "MSCI",
+   "entry": 610.48,
+   "stop": 585.67,
+   "target": 643.56,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-27",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-20",
+   "strategy": "topSells",
+   "sym": "CVS",
+   "entry": 80.84,
+   "stop": 85.51,
+   "target": 74.62,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-27",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-20",
+   "strategy": "topSells",
+   "sym": "FTNT",
+   "entry": 124.56,
+   "stop": 136.08,
+   "target": 109.2,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-27",
+   "status": "open"
   }
  ]
 }

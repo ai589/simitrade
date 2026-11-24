@@ -91849,6 +91849,42 @@
    "holdDays": 5,
    "sellBy": "2026-11-30",
    "status": "open"
+  },
+  {
+   "date": "2026-11-23",
+   "strategy": "topBuys",
+   "sym": "MSCI",
+   "entry": 627.64,
+   "stop": 602.66,
+   "target": 660.94,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-30",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-23",
+   "strategy": "topBuys",
+   "sym": "COHR",
+   "entry": 215.81,
+   "stop": 177.5,
+   "target": 266.89,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-30",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-23",
+   "strategy": "topSells",
+   "sym": "FIS",
+   "entry": 26.73,
+   "stop": 28.98,
+   "target": 23.73,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-30",
+   "status": "open"
   }
  ]
 }

@@ -91885,6 +91885,54 @@
    "holdDays": 5,
    "sellBy": "2026-11-30",
    "status": "open"
+  },
+  {
+   "date": "2026-11-23",
+   "strategy": "topBuys",
+   "sym": "BF.B",
+   "entry": 28.83,
+   "stop": 27.42,
+   "target": 30.71,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-11-30",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-23",
+   "strategy": "topSells",
+   "sym": "DDOG",
+   "entry": 169.02,
+   "stop": 189.78,
+   "target": 141.34,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-30",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-23",
+   "strategy": "topSells",
+   "sym": "BKR",
+   "entry": 46.04,
+   "stop": 48.99,
+   "target": 42.1,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-30",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-23",
+   "strategy": "topSells",
+   "sym": "CMI",
+   "entry": 426.03,
+   "stop": 451.12,
+   "target": 392.57,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-11-30",
+   "status": "open"
   }
  ]
 }

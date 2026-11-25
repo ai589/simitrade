@@ -92697,6 +92697,18 @@
    "holdDays": 5,
    "sellBy": "2026-12-01",
    "status": "open"
+  },
+  {
+   "date": "2026-11-24",
+   "strategy": "topSells",
+   "sym": "BP",
+   "entry": 42.77,
+   "stop": 44.41,
+   "target": 40.59,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-12-01",
+   "status": "open"
   }
  ]
 }

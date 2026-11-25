@@ -92709,6 +92709,42 @@
    "holdDays": 5,
    "sellBy": "2026-12-01",
    "status": "open"
+  },
+  {
+   "date": "2026-11-24",
+   "strategy": "topBuys",
+   "sym": "WST",
+   "entry": 388.75,
+   "stop": 371.49,
+   "target": 411.77,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-12-01",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-24",
+   "strategy": "topBuys",
+   "sym": "ROL",
+   "entry": 38.07,
+   "stop": 36.45,
+   "target": 40.23,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-12-01",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-24",
+   "strategy": "topSells",
+   "sym": "CAT",
+   "entry": 540.63,
+   "stop": 584.97,
+   "target": 481.51,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-12-01",
+   "status": "open"
   }
  ]
 }

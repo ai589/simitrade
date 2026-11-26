@@ -93621,6 +93621,42 @@
    "holdDays": 5,
    "sellBy": "2026-12-02",
    "status": "open"
+  },
+  {
+   "date": "2026-11-25",
+   "strategy": "topBuys",
+   "sym": "AXON",
+   "entry": 343.05,
+   "stop": 307.29,
+   "target": 390.73,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-12-02",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-25",
+   "strategy": "topSells",
+   "sym": "CAT",
+   "entry": 543.69,
+   "stop": 588.41,
+   "target": 484.07,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-12-02",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-25",
+   "strategy": "topSells",
+   "sym": "CMI",
+   "entry": 420.72,
+   "stop": 446.52,
+   "target": 386.32,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-12-02",
+   "status": "open"
   }
  ]
 }

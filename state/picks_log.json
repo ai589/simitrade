@@ -93657,6 +93657,30 @@
    "holdDays": 5,
    "sellBy": "2026-12-02",
    "status": "open"
+  },
+  {
+   "date": "2026-11-25",
+   "strategy": "topSells",
+   "sym": "HPE",
+   "entry": 40.82,
+   "stop": 47.26,
+   "target": 32.24,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-12-02",
+   "status": "open"
+  },
+  {
+   "date": "2026-11-25",
+   "strategy": "topSells",
+   "sym": "UNH",
+   "entry": 346.19,
+   "stop": 369.65,
+   "target": 314.91,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-12-02",
+   "status": "open"
   }
  ]
 }

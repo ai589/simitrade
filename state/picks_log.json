@@ -93681,6 +93681,18 @@
    "holdDays": 5,
    "sellBy": "2026-12-02",
    "status": "open"
+  },
+  {
+   "date": "2026-11-25",
+   "strategy": "topSells",
+   "sym": "MU",
+   "entry": 601.25,
+   "stop": 704.42,
+   "target": 463.69,
+   "side": "short",
+   "holdDays": 5,
+   "sellBy": "2026-12-02",
+   "status": "open"
   }
  ]
 }

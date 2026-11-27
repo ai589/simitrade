@@ -93693,6 +93693,18 @@
    "holdDays": 5,
    "sellBy": "2026-12-02",
    "status": "open"
+  },
+  {
+   "date": "2026-11-25",
+   "strategy": "topBuys",
+   "sym": "AKAM",
+   "entry": 88.66,
+   "stop": 80.92,
+   "target": 98.98,
+   "side": "long",
+   "holdDays": 5,
+   "sellBy": "2026-12-02",
+   "status": "open"
   }
  ]
 }
